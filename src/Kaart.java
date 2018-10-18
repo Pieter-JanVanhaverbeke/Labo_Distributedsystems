@@ -42,6 +42,10 @@ public class Kaart {
     }
 
 
+    public void printKaartFaceUp(){
+        System.out.print("| " + soort + " |");
+    }
+
 
 
 }

@@ -1,6 +1,6 @@
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 public class Bordspel {
     private Kaart[][] bord;
@@ -67,21 +67,32 @@ public class Bordspel {
         List<Integer> lijst = new ArrayList<>(); //lijst met de verschillende soorten die verdeeld moeten worden onder kaarten
 
 
-        for (int i = 0; i < lengte; i++) {
+        for (int i = 0; i < lengte/2; i++) {
             for (int j = 0; j < 8; j++) {
                 lijst.add(j);               // Spel bevat steeds 8 soorten, KAN AANPASSEN ALS NODIG
             }
         }
 
+
+
         //Iedere kaart random soort geven van de lijst
-        for (int i = 0; i < lengte; i++) {
+        Collections.shuffle(lijst);                         //lijst shufflen
+        for(int i=0; i<lengte;i++){
+            for(int j=0; j<breedte; j++){
+                bord[i][j].setSoort(lijst.get(4*i+j));      //geef iedere kaart een soort
+            }
+        }
+
+        //Iedere kaart random soort geven van de lijst
+      /*  for (int i = 0; i < lengte; i++) {
             for (int j = 0; j <breedte; j++) {
                 Random rand = new Random();
                 int randomElement = lijst.get(rand.nextInt(lijst.size()));
                 bord[i][j].setSoort(randomElement);
+                System.out.println("random: " + randomElement +" size: "+ lijst.size());
                 lijst.remove(randomElement);                                //gebruikte soort verwijderen
             }
-        }
+        }*/
     }
 
 
@@ -94,4 +105,15 @@ public class Bordspel {
         }
         System.out.println();
     }
+
+    public void printBordspelFaceUp(){
+        for (int i = 0; i < lengte; i++) {
+            System.out.println();
+            for (int j = 0; j < breedte; j++) {
+                bord[i][j].printKaartFaceUp();
+            }
+        }
+        System.out.println();
+    }
+
 }
