@@ -1,10 +1,12 @@
+package memory_spel;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class Bordspel {
     private Kaart[][] bord;
-    // private String type; //layout van Bordspel
+    // private String type; //layout van memory_spel.Bordspel
     private int lengte;
     private int breedte;
 

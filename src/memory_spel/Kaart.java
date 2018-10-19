@@ -1,3 +1,5 @@
+package memory_spel;
+
 public class Kaart {
     private int soort; //kaarttype
     private boolean faceUp;
