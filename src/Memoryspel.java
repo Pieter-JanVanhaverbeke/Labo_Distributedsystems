@@ -115,7 +115,7 @@ public class Memoryspel {
             //1) Speler aan de beurt kiest een kaart
             System.out.println();
             System.out.println("speler " + (spelerbeurt+1) + " is aan de beurt");
-            bordspel.printBordspel();
+            bordspel.printBordspelFaceUp();
 
             lengte = sc.nextInt();
             breedte = sc.nextInt();
@@ -168,7 +168,9 @@ public class Memoryspel {
         }
 
         //SPEL AFRONDEN, SCORES TONEN
-
+        for(int i=0; i<aantalspelers;i++){
+            System.out.println("speler score speler " + i+1 + ": " + puntenlijst.get(i));
+        }
 
 
     }
