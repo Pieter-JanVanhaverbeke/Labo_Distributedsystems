@@ -3,6 +3,7 @@ package memory_spel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 public class Bordspel {
     private Kaart[][] bord;
@@ -65,38 +66,44 @@ public class Bordspel {
         return true;
     }
 
+    // Spel bevat steeds 8 soorten, KAN AANPASSEN ALS NODIG
     public void initialiseerKaartType() {
         List<Integer> lijst = new ArrayList<>(); //lijst met de verschillende soorten die verdeeld moeten worden onder kaarten
+        int aantal = 0;     //aantal keer
 
+        if (lengte == 4) {
+            aantal = 2;
+        } else if (lengte == 6) {
+            aantal = 4;
+        } else if (lengte == 8) {
+            aantal = 8;
+        }
 
-        for (int i = 0; i < lengte/2; i++) {
+        for (int i = 0; i < aantal; i++) {
             for (int j = 0; j < 8; j++) {
                 lijst.add(j);               // Spel bevat steeds 8 soorten, KAN AANPASSEN ALS NODIG
             }
         }
 
+        if (lengte == 6) {
+            for (int i = 0; i < 2; i++) {
+                Random rand = new Random();
+                int randomnummer = rand.nextInt(7) + 1;
+                lijst.add(randomnummer);
+                lijst.add(randomnummer);
+            }
+        }
 
 
         //Iedere kaart random soort geven van de lijst
         Collections.shuffle(lijst);                         //lijst shufflen
-        for(int i=0; i<lengte;i++){
-            for(int j=0; j<breedte; j++){
-                bord[i][j].setSoort(lijst.get(4*i+j));      //geef iedere kaart een soort
+        for (int i = 0; i < lengte; i++) {
+            for (int j = 0; j < breedte; j++) {
+                bord[i][j].setSoort(lijst.get(lengte * i + j));      //geef iedere kaart een soort
             }
         }
 
-        //Iedere kaart random soort geven van de lijst
-      /*  for (int i = 0; i < lengte; i++) {
-            for (int j = 0; j <breedte; j++) {
-                Random rand = new Random();
-                int randomElement = lijst.get(rand.nextInt(lijst.size()));
-                bord[i][j].setSoort(randomElement);
-                System.out.println("random: " + randomElement +" size: "+ lijst.size());
-                lijst.remove(randomElement);                                //gebruikte soort verwijderen
-            }
-        }*/
     }
-
 
     public void printBordspel() {
         for (int i = 0; i < lengte; i++) {

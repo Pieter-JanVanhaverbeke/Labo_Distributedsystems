@@ -19,7 +19,7 @@ public class Memoryspel {
                                                                     //Steeds 8 soorten
     public Memoryspel(int aantalspelers, int bordgrootte) {         //bordgrootte 1=small,2=medium,3=large
 
-        int size = (int)Math.pow((2*bordgrootte+2),2);
+      //  int size = (int)Math.pow((2*bordgrootte+2),2);
         bordspel = new Bordspel(2*bordgrootte+2,2*bordgrootte+2);
         gedaan = false;
         spelerbeurt = 0;

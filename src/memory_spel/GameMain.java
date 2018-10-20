@@ -73,7 +73,7 @@ public class GameMain {
                     boolean created = false;
                     while (!created) {
                         created = lobby.createNewGame(gameSpelers, bordGrootte);
-                        System.out.println("Het aantal speler of de bordgrootte is niet geldig.");
+                        System.out.println("Het aantal spelers of de bordgrootte is niet geldig.");
                     }
                     break;
                 case 4:
