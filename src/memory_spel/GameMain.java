@@ -70,11 +70,17 @@ public class GameMain {
                         bordGrootte = Integer.parseInt(scanner.nextLine());
                     }
 
+
                     boolean created = false;
-                    while (!created) {
+                    created = lobby.createNewGame(gameSpelers, bordGrootte);
+
+                    //: Oneindige lus, en spel zal ook al crashen wanneer je dit niet controlleerd deze boolean
+
+                /*    while (!created) {
                         created = lobby.createNewGame(gameSpelers, bordGrootte);
                         System.out.println("Het aantal spelers of de bordgrootte is niet geldig.");
-                    }
+                        System.out.println(created);
+                    }*/
                     break;
                 case 4:
                     System.out.println("Kies een spel om te starten (nummer).");

@@ -22,8 +22,7 @@ public class Lobby {
             activeGames.add(game);
             return true;
         }
-        else
-            return false;
+        else return true;
     }
 
     public synchronized void deleteGame(Game game){
