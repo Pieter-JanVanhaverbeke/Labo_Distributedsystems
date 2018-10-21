@@ -8,4 +8,6 @@ public interface InterfaceServer extends Remote {
     void RegistrerNewClient(String username, String gebruikersnaam) throws RemoteException;
 
 
+
+
 }

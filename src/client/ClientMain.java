@@ -21,21 +21,27 @@ public class ClientMain {
 
             System.out.println("1: registreer 2:log in");
 
-            if(sc.nextInt()==1){
+            int keuze = sc.nextInt();
 
-            System.out.println("Geef een gebruikersnaam in:");
+            if(keuze==1){
 
-            String username = sc.nextLine();
+                sc.nextLine();      //anders problemen met inlezen
+                System.out.println("Geef een gebruikersnaam in:");
 
+                String username = sc.nextLine();
 
-            System.out.println("geef een wachtwoord in");
-            String wachtwoord = sc.nextLine();
+            System.out.println("Geef een wachtwoord in");
+            String password = sc.nextLine();
+
             System.out.println("herhaal het wachtwoord ");
-            if(!wachtwoord.equals(sc.nextLine())){
+
+            if(!password.equals(sc.nextLine())){
                 System.out.println("wachtwoord matcht niet");
             }
             else{
+                impl.RegistrerNewClient(username,password);
                 //stuur gegevens naar server
+
 
             }
 
@@ -44,6 +50,13 @@ public class ClientMain {
 
             else {
                 System.out.println("Geef een gebruikersnaam in:");
+                String username = sc.nextLine();
+                String password = sc.nextLine();
+
+
+
+                //TRY LOGIN(username, wachtwoord)
+
             }
 
 
