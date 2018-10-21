@@ -18,8 +18,33 @@ public class ClientMain {
 
             // setup scanner for user input, ask for username
             Scanner sc = new Scanner(System.in);
+
+            System.out.println("1: registreer 2:log in");
+
+            if(sc.nextInt()==1){
+
             System.out.println("Geef een gebruikersnaam in:");
+
             String username = sc.nextLine();
+
+
+            System.out.println("geef een wachtwoord in");
+            String wachtwoord = sc.nextLine();
+            System.out.println("herhaal het wachtwoord ");
+            if(!wachtwoord.equals(sc.nextLine())){
+                System.out.println("wachtwoord matcht niet");
+            }
+            else{
+                //stuur gegevens naar server
+
+            }
+
+
+            }
+
+            else {
+                System.out.println("Geef een gebruikersnaam in:");
+            }
 
 
         } catch (Exception e) {
