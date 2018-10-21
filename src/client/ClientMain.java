@@ -39,8 +39,14 @@ public class ClientMain {
                 System.out.println("wachtwoord matcht niet");
             }
             else{
-                impl.RegistrerNewClient(username,password);
+                boolean gelukt;
+                gelukt = impl.RegistrerNewClient(username,password);
                 //stuur gegevens naar server
+
+                if(gelukt){
+                    System.out.println("Registratie voltooid");
+                }
+                else System.out.println("Gebruikersnaam is al gebruikt");
 
 
             }

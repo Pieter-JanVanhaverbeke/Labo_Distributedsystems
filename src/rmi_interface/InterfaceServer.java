@@ -5,7 +5,9 @@ import java.rmi.RemoteException;
 
 public interface InterfaceServer extends Remote {
 
-    void RegistrerNewClient(String username, String gebruikersnaam) throws RemoteException;
+    boolean RegistrerNewClient(String username, String gebruikersnaam) throws RemoteException;
+
+    boolean LogIn(String username, String gebruikersnaam) throws RemoteException;
 
 
 
