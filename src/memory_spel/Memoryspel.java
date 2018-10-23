@@ -85,7 +85,7 @@ public class Memoryspel {
         this.puntenlijst = puntenlijst;
     }
 
-    public void flipCard(int x, int y){         //x-coordinaat en y=coordiaat
+    public void flipCard(int x, int y){         //x-coordinaat en y-coordiaat
         bordspel.getBord()[x][y].draaiOm();     //omdraaien specifieke kaart
     }
 

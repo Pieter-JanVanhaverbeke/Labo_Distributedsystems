@@ -7,13 +7,15 @@ import java.util.List;
  */
 public class Game {
 
+    private String gameId;
     private Memoryspel memoryspel;
     private List<Speler> spelers;
 
 
-    public Game(List<Speler> spelers, int bordGrootte){
+    public Game(List<Speler> spelers, int bordGrootte, String gameId){
         memoryspel = new Memoryspel(spelers.size(), bordGrootte);
         this.spelers = spelers;
+        this.gameId = gameId;
     }
 
     public void start(){
@@ -45,5 +47,17 @@ public class Game {
 
     public void setSpelers(List<Speler> spelers) {
         this.spelers = spelers;
+    }
+
+    public String getGameId() {
+        return gameId;
+    }
+
+    public void setGameId(String gameId) {
+        this.gameId = gameId;
+    }
+
+    public void addSpeler(Speler speler) {
+        spelers.add(speler);
     }
 }
