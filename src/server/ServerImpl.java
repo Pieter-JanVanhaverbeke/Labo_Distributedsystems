@@ -1,5 +1,6 @@
 package server;
 
+import DbConnection.dbConnection;
 import rmi_interface.InterfaceServer;
 
 import java.rmi.RemoteException;
@@ -27,7 +28,10 @@ public class ServerImpl extends UnicastRemoteObject implements InterfaceServer {
         }
         else{
             //Wachtwoord Hashen en naar databank sturen(bij de client hashen)
+
+
             clientList.put(username,password);           //later opslaan in databank ipv applicatielaag
+            dbConnection.insert(username,password);
             System.out.println("gebruiker: " + username + " aangemaakt!");
             return true;
         }

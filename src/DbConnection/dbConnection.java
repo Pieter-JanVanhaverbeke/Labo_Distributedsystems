@@ -3,39 +3,40 @@ package DbConnection;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class dbConnection {
-    /**
-     * Connect to a sample database
-     */
-    public static void connect() {
-        Connection conn = null;
-        try {
-            // db parameters
-            String url = "jdbc:sqlite:C:/Users/piete/Distributed/Labo_Distributedsystems/src/memory.mysqlite";      //eigen padnaam naar database zetten
-            //C:\Users\piete\Distributed\Labo_Distributedsystems\src
-            // create a connection to the database
-            conn = DriverManager.getConnection(url);
 
-            System.out.println("Connection to SQLite has been established.");
 
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        } finally {
+        public static Connection connect(){
+            Connection c = null;
+
             try {
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (SQLException ex) {
-                System.out.println(ex.getMessage());
+                Class.forName("org.sqlite.JDBC");
+                c = DriverManager.getConnection("jdbc:sqlite:memory.db");
+            } catch (Exception e) {
+                System.err.println(e.getClass().getName() + ": " + e.getMessage());
+                System.exit(0);
+            }
+            System.out.println("Opened database successfully");
+            return c;
+        }
+
+        public static void insert(String username1, String password1) {
+            String sql = "INSERT INTO Users(username,password) VALUES(?,?)";
+            // String sql = "INSERT INTO Users(username,password) VALUES(PJ,PJ)";
+
+            try (Connection conn = connect();
+                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setString(1, username1);
+                pstmt.setString(2, password1);
+                pstmt.executeUpdate();
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
             }
         }
     }
     /**
-     * @param args the command line arguments
+     * Connect to a sample database
      */
-    public static void main(String[] args) {
-        connect();
-    }
-}

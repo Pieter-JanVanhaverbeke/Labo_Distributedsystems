@@ -1,5 +1,7 @@
 package server;
 
+import DbConnection.dbConnection;
+
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
@@ -22,5 +24,7 @@ public class ServerMain {
     public static void main(String[] args) {
         ServerMain main = new ServerMain();
         main.startServer();
+       // dbConnection.connect();
+
     }
 }
