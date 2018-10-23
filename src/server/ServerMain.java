@@ -4,6 +4,8 @@ import DbConnection.dbConnection;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.Iterator;
+import java.util.Set;
 
 public class ServerMain {
     private void startServer() {
@@ -24,7 +26,14 @@ public class ServerMain {
     public static void main(String[] args) {
         ServerMain main = new ServerMain();
         main.startServer();
-       // dbConnection.connect();
+     //   dbConnection.connect();
+     //   dbConnection.selectAll();
+      //  Set<String> set = dbConnection.getUserSet();
 
+      /*  Iterator iter = set.iterator();
+        while (iter.hasNext()) {
+            System.out.println(iter.next());
+        }
+*/
     }
 }

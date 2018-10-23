@@ -1,10 +1,9 @@
 package DbConnection;
 
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.HashSet;
+import java.util.Set;
 
 public class dbConnection {
 
@@ -36,6 +35,56 @@ public class dbConnection {
                 System.out.println(e.getMessage());
             }
         }
+
+    public static void selectAll(){
+        String sql = "SELECT username, password FROM Users";
+
+        try (Connection conn = connect();
+             Statement stmt  = conn.createStatement();
+             ResultSet rs    = stmt.executeQuery(sql)){
+
+            // loop through the result set
+            while (rs.next()) {
+                System.out.println(rs.getString("username") + "\t" +
+                        rs.getString("password"));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+
+    public static Set<String> getUserSet(){
+        Set<String> userlijst = new HashSet<String>();
+
+        String sql = "SELECT username FROM Users";
+
+        try (Connection conn = connect();
+             Statement stmt  = conn.createStatement();
+             ResultSet rs    = stmt.executeQuery(sql)){
+
+            // loop through the result set
+            while (rs.next()) {
+               userlijst.add(rs.getString("username"));
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return userlijst;
+    }
+
+      /*  public  void getUser(String username){
+            String sql = "SELECT \n" +
+                    " id,\n" +
+                    " name,\n" +
+                    " capacity\n" +
+                    "FROM\n" +
+                    " warehouses;"
+        }
+*/
+
     }
     /**
      * Connect to a sample database
