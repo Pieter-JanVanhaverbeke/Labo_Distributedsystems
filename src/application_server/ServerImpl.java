@@ -1,15 +1,14 @@
-package server;
+package application_server;
 
 import DbConnection.dbConnection;
 import Utils.Utils;
 import exceptions.GameNotCreatedException;
-import exceptions.LoginFailedException;
 import exceptions.NoValidTokenException;
 import exceptions.UsernameAlreadyInUseException;
 import memory_spel.Game;
 import memory_spel.Lobby;
 import memory_spel.Speler;
-import rmi_interface.InterfaceServer;
+import rmi_int_client_appserver.rmi_int_client_appserver;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -17,7 +16,7 @@ import java.util.*;
 
 import static Utils.Utils.validateToken;
 
-public class ServerImpl extends UnicastRemoteObject implements InterfaceServer {
+public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_appserver {
     ArrayList<String> users = new ArrayList<>(); //wat is dit?
     HashMap<String, String> clientList = new HashMap<>(); // = account die ooit zijn aangemaakt (zit in db => list in memory nodig?)
     private HashMap<String, Speler> userTokens = new HashMap<>(); //bevat de huidig uitgeleende tokens ( = aangemelde users)
@@ -78,6 +77,11 @@ public class ServerImpl extends UnicastRemoteObject implements InterfaceServer {
         if(validateToken(token))
             return lobby.getActiveGames();
         throw new NoValidTokenException("Token not valid.");
+
+    }
+
+    @Override
+    public void logout(String token) {
 
     }
 

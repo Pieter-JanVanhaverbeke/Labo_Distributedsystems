@@ -5,15 +5,12 @@ import exceptions.LoginFailedException;
 import exceptions.NoValidTokenException;
 import exceptions.UsernameAlreadyInUseException;
 import memory_spel.Game;
-import memory_spel.Speler;
-import rmi_interface.InterfaceServer;
+import rmi_int_client_appserver.rmi_int_client_appserver;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -22,22 +19,17 @@ import static memory_spel.Constants.*;
 public class ClientMain {
     private static String token = null;
     private static final Scanner scanner = new Scanner(System.in);
-    private static InterfaceServer impl;
+    private static rmi_int_client_appserver impl;
 
     private void startClient() {
         try {
             Registry registryServer = LocateRegistry.getRegistry("localhost", 10001);
-            impl = (InterfaceServer) registryServer.lookup("ServerImplService");
+            impl = (rmi_int_client_appserver) registryServer.lookup("ServerImplService");
             printMenu();
 
         } catch (RemoteException | NotBoundException e) {
             e.printStackTrace();
         }
-    }
-
-    public static void logOut(){
-        token = null;
-        System.out.println("Uitgelogd");
     }
 
 
@@ -77,7 +69,7 @@ public class ClientMain {
                     if (!password.equals(scanner.nextLine())) {
                         System.out.println("wachtwoord matcht niet");
                     } else {
-                        //stuur gegevens naar server
+                        //stuur gegevens naar application_server
                         try {
                             //na registratie autmatisch aangemeld
                             token = impl.RegistrerNewClient(username, password); //met exceptions werken ipv return boolean/int? wat denk je?
@@ -160,7 +152,9 @@ public class ClientMain {
                     break;
 
                 case 6:
-                    logOut();
+                    impl.logout(token);
+                    token = null;
+                    System.out.println("Uitgelogd");
             }
         }
     }

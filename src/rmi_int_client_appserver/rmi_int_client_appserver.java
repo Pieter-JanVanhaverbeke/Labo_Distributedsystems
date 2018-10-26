@@ -1,4 +1,4 @@
-package rmi_interface;
+package rmi_int_client_appserver;
 
 import exceptions.GameNotCreatedException;
 import exceptions.LoginFailedException;
@@ -10,11 +10,12 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Map;
 
-public interface InterfaceServer extends Remote {
+public interface rmi_int_client_appserver extends Remote {
 
-    String RegistrerNewClient(String username, String gebruikersnaam) throws RemoteException, UsernameAlreadyInUseException;
+    //////////////////////////////////// Control /////////////////////////////////////////
+    String RegistrerNewClient(String username, String passwdHash) throws RemoteException, UsernameAlreadyInUseException;
 
-    String logIn(String username, String password) throws RemoteException, LoginFailedException;
+    String logIn(String username, String passwdHash) throws RemoteException, LoginFailedException;
 
     String createGame(int aantalSpelers, int bordGrootte, String token) throws GameNotCreatedException, NoValidTokenException;
 
@@ -22,7 +23,10 @@ public interface InterfaceServer extends Remote {
 
     Map<String, Game> getActiveGames(String token) throws NoValidTokenException;
 
+    void logout(String token);
 
+
+    //////////////////////////////////// Game ///////////////////////////////////////////
 
 
 }

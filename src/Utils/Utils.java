@@ -11,7 +11,7 @@ public class Utils {
     }
 
     public static String generateGameId(){
-        return "Dit is een zeer random gameId: wafels.";
+        return "Dit is een zeer random gameId: 4.";
 
     }
 

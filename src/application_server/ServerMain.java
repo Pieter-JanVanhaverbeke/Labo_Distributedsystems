@@ -1,20 +1,12 @@
-package server;
-
-import DbConnection.dbConnection;
+package application_server;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.Iterator;
-import java.util.Set;
 
 public class ServerMain {
     private void startServer() {
         try {
-            //create on ort 1099
             Registry registry = LocateRegistry.createRegistry(10001);
-
-            //create a new service named CounterService
-
             registry.rebind("ServerImplService", new ServerImpl());
 
         } catch (Exception e) {
