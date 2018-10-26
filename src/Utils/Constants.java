@@ -1,4 +1,4 @@
-package memory_spel;
+package Utils;
 
 /**
  * Created by ruben on 19/10/18.

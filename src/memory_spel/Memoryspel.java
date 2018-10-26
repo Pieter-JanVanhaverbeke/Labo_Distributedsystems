@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Memoryspel {
-    private Bordspel bordspel;
+    /*private Bordspel bordspel;
     private boolean gedaan;
     private  int spelerbeurt; //elke speler heeft index
     private int aantalspelers;
@@ -173,6 +173,6 @@ public class Memoryspel {
 
 
     }
-
+*/
 
 }

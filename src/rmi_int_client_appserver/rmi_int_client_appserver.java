@@ -1,9 +1,6 @@
 package rmi_int_client_appserver;
 
-import exceptions.GameNotCreatedException;
-import exceptions.LoginFailedException;
-import exceptions.NoValidTokenException;
-import exceptions.UsernameAlreadyInUseException;
+import exceptions.*;
 import memory_spel.Game;
 
 import java.rmi.Remote;
@@ -17,20 +14,18 @@ public interface rmi_int_client_appserver extends Remote {
 
     String logIn(String username, String passwdHash) throws RemoteException, LoginFailedException;
 
+    void logOut(String token) throws RemoteException;
+
+    //////////////////////////////////// Lobby /////////////////////////////////////////
     String createGame(int aantalSpelers, int bordGrootte, String token) throws RemoteException, GameNotCreatedException, NoValidTokenException;
 
-    void joinGame(String gameId, String token) throws RemoteException, NoValidTokenException;
+    void joinGame(String gameId, String token) throws RemoteException, NoValidTokenException, PlayerNumberexceededException;
 
     Map<String, Game> getActiveGames(String token) throws RemoteException, NoValidTokenException;
 
-    void logout(String token) throws RemoteException;
-
-    void exitGame(String token) throws RemoteException;
-
-    void flipCard(String token, String gameId, int card) throws RemoteException;
-
 
     //////////////////////////////////// Game ///////////////////////////////////////////
+    void flipCard(String token, String gameId, int x, int y) throws RemoteException, NoValidTokenException, NotYourTurnException, NotEnoughSpelersException;
 
 
 

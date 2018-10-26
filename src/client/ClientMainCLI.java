@@ -1,9 +1,6 @@
 package client;
 
-import exceptions.GameNotCreatedException;
-import exceptions.LoginFailedException;
-import exceptions.NoValidTokenException;
-import exceptions.UsernameAlreadyInUseException;
+import exceptions.*;
 import memory_spel.Game;
 import rmi_int_client_appserver.rmi_int_client_appserver;
 
@@ -14,9 +11,9 @@ import java.rmi.registry.Registry;
 import java.util.Map;
 import java.util.Scanner;
 
-import static memory_spel.Constants.*;
+import static Utils.Constants.*;
 
-public class ClientMain {
+public class ClientMainCLI {
     private static String token = null;
     private static String gameId = null;
     private static final Scanner scanner = new Scanner(System.in);
@@ -35,7 +32,7 @@ public class ClientMain {
 
 
     public static void main(String[] args) {
-        ClientMain main = new ClientMain();
+        ClientMainCLI main = new ClientMainCLI();
         main.startClient();
     }
 
@@ -133,6 +130,8 @@ public class ClientMain {
                         impl.joinGame(actieveGamess.get(keuzeGame).getGameId(), token);
                     } catch (NoValidTokenException e) {
                         System.out.println(e.getMessage());
+                    } catch (PlayerNumberexceededException e) {
+                        e.printStackTrace();
                     }
                     break;
 
@@ -153,13 +152,9 @@ public class ClientMain {
                     break;
 
                 case 6:
-                    impl.logout(token);
+                    impl.logOut(token);
                     token = null;
                     System.out.println("Uitgelogd");
-                case 7:
-                    impl.exitGame(token);
-                    gameId = null;
-                    System.out.println("Game verlaten.");
             }
         }
     }

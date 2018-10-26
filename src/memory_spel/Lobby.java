@@ -3,36 +3,41 @@ package memory_spel;
 
 import Utils.Utils;
 import exceptions.GameNotCreatedException;
+import exceptions.PlayerNumberexceededException;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import static memory_spel.Constants.*;
+import static Utils.Constants.*;
 
 public class Lobby {
-    private Map<String, Game> activeGames; //gameId is key
+    private static Lobby lobby = null;
+    private static Map<String, Game> activeGames; //gameId is key
 
-    public Lobby(){
+    public static Lobby getLobby(){
+        if(lobby == null)
+            lobby = new Lobby();
+        return lobby;
+    }
+
+    //singleton
+    private Lobby(){
         activeGames = new HashMap<>();
     }
 
-    //return true if game successful gemaakt, false if not
-    public synchronized String createNewGame(int aantalSpelers, int bordGrootte) throws GameNotCreatedException {
+    //returned gameId
+    public String createNewGame(int aantalSpelers, int bordGrootte) throws GameNotCreatedException {
         if(aantalSpelers <= MAX_PLAYER_COUNT && aantalSpelers >= MIN_PLAYER_COUNT && bordGrootte >= MIN_BOARD_SIZE && bordGrootte <= MAX_BOARD_SIZE) {
             String gameId = Utils.generateGameId();
-            List<Speler> spelers = new ArrayList<>();
-            Game game = new Game(spelers, bordGrootte, gameId);
+            Game game = new Game(bordGrootte, gameId, aantalSpelers);
             activeGames.put(gameId, game);
             return gameId;
         }
-
         throw new GameNotCreatedException("aantal spelers/bordgrootte niet toegelaten.");
     }
 
-    public synchronized void deleteGame(Game game){
-        activeGames.remove(game);
+    public static void deleteGame(String gameId){
+        activeGames.remove(gameId);
     }
 
     public Map<String, Game> getActiveGames(){
@@ -40,7 +45,7 @@ public class Lobby {
     }
 
 
-    public void joinGame(String gameId, Speler speler) {
+    public void joinGame(String gameId, Speler speler) throws PlayerNumberexceededException {
         Game game = activeGames.get(gameId);
         game.addSpeler(speler);
     }
