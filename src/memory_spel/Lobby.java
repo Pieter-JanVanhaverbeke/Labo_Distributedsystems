@@ -12,7 +12,7 @@ import java.util.Map;
 import static memory_spel.Constants.*;
 
 public class Lobby {
-    private Map<String, Game> activeGames;
+    private Map<String, Game> activeGames; //gameId is key
 
     public Lobby(){
         activeGames = new HashMap<>();
@@ -43,5 +43,9 @@ public class Lobby {
     public void joinGame(String gameId, Speler speler) {
         Game game = activeGames.get(gameId);
         game.addSpeler(speler);
+    }
+
+    public Game getGame(String gameId){
+        return activeGames.get(gameId);
     }
 }

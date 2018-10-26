@@ -18,6 +18,7 @@ import static memory_spel.Constants.*;
 
 public class ClientMain {
     private static String token = null;
+    private static String gameId = null;
     private static final Scanner scanner = new Scanner(System.in);
     private static rmi_int_client_appserver impl;
 
@@ -39,20 +40,21 @@ public class ClientMain {
     }
 
 
-    private static void printMenu() {
+    private static void printMenu() throws RemoteException {
         while (true) {
             System.out.println(
                     "1. User aanmaken\n" +
                             "2. Actieve games in lobby opvragen\n" +
                             "3. Nieuwe game aanmaken\n" +
                             "4. Deelnemen aan bestaande game uit lobby.\n" +
-                            "5. aanmelden." +
-                            "6. Log out."
+                            "5. aanmelden.\n" +
+                            "6. Log out.\n" +
+                            "7. Stop game.\n"
             );
 
             int keuze = -1;
             keuze = Integer.parseInt(scanner.nextLine());
-            while (keuze < 0 || keuze > 6) {
+            while (keuze < 0 || keuze > 7) {
                 keuze = Integer.parseInt(scanner.nextLine());
                 System.out.println("Ongeldige keuze. Probeer opnieuw.");
             }
@@ -83,7 +85,6 @@ public class ClientMain {
                     break;
 
                 case 2:
-                    int i = 1;
                     System.out.println("Lijst van actieve games: ");
                     Map<String, Game> actieveGames = null;
                     try {
@@ -111,7 +112,7 @@ public class ClientMain {
                     }
 
                     try {
-                        String gameId = impl.createGame(aantalSpelers, bordGrootte, token);
+                        gameId = impl.createGame(aantalSpelers, bordGrootte, token);
                     } catch (GameNotCreatedException e) {
                         System.out.println("Game creatie mislukt: " + e.getMessage());
                     } catch (NoValidTokenException e) {
@@ -155,6 +156,10 @@ public class ClientMain {
                     impl.logout(token);
                     token = null;
                     System.out.println("Uitgelogd");
+                case 7:
+                    impl.exitGame(token);
+                    gameId = null;
+                    System.out.println("Game verlaten.");
             }
         }
     }

@@ -21,7 +21,7 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
     HashMap<String, String> clientList = new HashMap<>(); // = account die ooit zijn aangemaakt (zit in db => list in memory nodig?)
     private HashMap<String, Speler> userTokens = new HashMap<>(); //bevat de huidig uitgeleende tokens ( = aangemelde users)
 
-    Lobby lobby;
+    private Lobby lobby;
 
     public ServerImpl() throws RemoteException {
         lobby = new Lobby();
@@ -82,6 +82,16 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
 
     @Override
     public void logout(String token) {
+
+    }
+
+    @Override
+    public void exitGame(String token) {
+
+    }
+
+    @Override
+    public void flipCard(String token, String gameId, int card) throws RemoteException {
 
     }
 

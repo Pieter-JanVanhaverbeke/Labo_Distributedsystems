@@ -8,25 +8,25 @@ import java.util.Scanner;
 public class Memoryspel {
     private Bordspel bordspel;
     private boolean gedaan;
-    private  int spelerbeurt;     //teller dat zegt wie aan beurt is
+    private  int spelerbeurt; //elke speler heeft index
     private int aantalspelers;
-    private List<Integer> puntenlijst; //was HashMap -> waarom?
+    private List<Integer> puntenlijst;
 
-    //   private memory_spel.Kaart [] [] bordspel;
-    //   private List<memory_spel.Speler> spelerslijst;
+    // SMALL = 4X4 MED = 6X6 LARGE = 8X8
+    // Steeds 8 soorten
+    // bordgrootte 1=small,2=medium,3=large
+    public Memoryspel(int aantalspelers, int bordgrootte) {
 
-                                                                    //SMALL = 4X4 MED = 6X6 LARGE = 8X8
-                                                                    //Steeds 8 soorten
-    public Memoryspel(int aantalspelers, int bordgrootte) {         //bordgrootte 1=small,2=medium,3=large
-
-      //  int size = (int)Math.pow((2*bordgrootte+2),2);
-        bordspel = new Bordspel(2*bordgrootte+2,2*bordgrootte+2);
+        int size = 2*bordgrootte+2;
+        bordspel = new Bordspel(size, size);
         gedaan = false;
         spelerbeurt = 0;
         this.aantalspelers = aantalspelers;
 
         puntenlijst = new ArrayList<>();
-        for(int i=0; i<aantalspelers;i++){                      //iedere speler start met 0 punten
+
+        //iedere speler start met 0 punten
+        for(int i=0; i<aantalspelers;i++){
             puntenlijst.add(0);
         }
 
@@ -39,10 +39,11 @@ public class Memoryspel {
         this.aantalspelers = aantalspelers;
 
         puntenlijst = new ArrayList<>();
-        for(int i=0; i<aantalspelers;i++){                      //iedere speler start met 0 punten
+
+        //iedere speler start met 0 punten
+        for(int i=0; i<aantalspelers;i++){
             puntenlijst.add(0);
         }
-
     }
 
     public Bordspel getBordspel() {
@@ -93,17 +94,12 @@ public class Memoryspel {
        gedaan = bordspel.checkEindeSpel();
     }
 
-    public boolean juisteBeurt(){
-        return false;
-    }
-
     public List<Integer> start(){
         Scanner sc = new Scanner(System.in);
         while(!gedaan){
 
             int lengte;
             int breedte;
-
 
             Kaart kaart1;
             Kaart kaart2;
