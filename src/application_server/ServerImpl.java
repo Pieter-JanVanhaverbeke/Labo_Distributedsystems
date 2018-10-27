@@ -17,8 +17,6 @@ import java.util.*;
 import static Utils.Utils.validateToken;
 
 public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_appserver {
-    ArrayList<String> users = new ArrayList<>(); //wat is dit?
-    HashMap<String, String> clientList = new HashMap<>(); // = account die ooit zijn aangemaakt (zit in db => list in memory nodig?)
     private HashMap<String, Speler> userTokens = new HashMap<>(); //bevat de huidig uitgeleende tokens ( = aangemelde users)
 
     Lobby lobby;
@@ -41,8 +39,6 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
         String token = Utils.generateUserToken(username);
         Speler speler = new Speler(username);
         userTokens.put(token, speler);
-  //      clientList.put(username,password);           //later opslaan in databank ipv applicatielaag
-  //      dbConnection.insert(username,password);
         System.out.println("gebruiker: " + username + " aangemaakt en aangemeld!");
         return token;
 

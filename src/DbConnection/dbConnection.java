@@ -75,15 +75,7 @@ public class dbConnection {
         return userlijst;
     }
 
-      /*  public  void getUser(String username){
-            String sql = "SELECT \n" +
-                    " id,\n" +
-                    " name,\n" +
-                    " capacity\n" +
-                    "FROM\n" +
-                    " warehouses;"
-        }
-*/
+
 
     }
     /**
