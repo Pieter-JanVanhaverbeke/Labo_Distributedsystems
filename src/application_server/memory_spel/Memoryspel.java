@@ -1,9 +1,4 @@
-package memory_spel;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Scanner;
+package application_server.memory_spel;
 
 public class Memoryspel {
     /*private Bordspel bordspel;
@@ -109,7 +104,7 @@ public class Memoryspel {
 
 
 
-            //1) memory_spel.Speler aan de beurt kiest een kaart
+            //1) application_server.memory_spel.Speler aan de beurt kiest een kaart
             System.out.println();
             System.out.println("speler " + (spelerbeurt+1) + " is aan de beurt");
             bordspel.printBordspelFaceUp();
@@ -117,7 +112,7 @@ public class Memoryspel {
             lengte = sc.nextInt();
             breedte = sc.nextInt();
 
-            //2) memory_spel.Kaart wordt omgedraait
+            //2) application_server.memory_spel.Kaart wordt omgedraait
 
             //NOG ZORGEN DAT FACEUPKAARTEN NIET OMGEDRAAIT KUNNEN WORDEN
 
@@ -137,7 +132,7 @@ public class Memoryspel {
 
             bordspel.printBordspel();
 
-            //4) memory_spel.Kaart wordt omgedraait
+            //4) application_server.memory_spel.Kaart wordt omgedraait
 
             //NOG ZORGEN DAT FACEUPKAARTEN NIET OMGEDRAAIT KUNNEN WORDEN
 

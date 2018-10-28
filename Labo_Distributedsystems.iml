@@ -8,6 +8,11 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="sqlite-jdbc-3.23.1" level="project" />
-    <orderEntry type="library" name="libs" level="project" />
+    <orderEntry type="library" name="jjwt-api-0.10.5" level="project" />
+    <orderEntry type="library" name="jjwt-impl-0.10.5" level="project" />
+    <orderEntry type="library" name="jjwt-jackson-0.10.5" level="project" />
+    <orderEntry type="library" name="jackson-databind-2.9.7" level="project" />
+    <orderEntry type="library" name="jackson-core-2.9.7" level="project" />
+    <orderEntry type="library" name="jackson-annotations-2.9.7" level="project" />
   </component>
 </module>

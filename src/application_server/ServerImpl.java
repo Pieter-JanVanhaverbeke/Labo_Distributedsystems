@@ -1,22 +1,20 @@
 package application_server;
 
-import DbConnection.dbConnection;
-import Utils.Utils;
+import application_server.DbConnection.dbConnection;
+import application_server.Utils.Utils;
 import exceptions.*;
-import memory_spel.Game;
-import memory_spel.Lobby;
-import memory_spel.Speler;
+import application_server.memory_spel.Game;
+import application_server.memory_spel.Lobby;
+import application_server.memory_spel.Speler;
 import rmi_int_client_appserver.rmi_int_client_appserver;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 
-import static Utils.Utils.validateToken;
+import static application_server.Utils.Utils.validateToken;
 
 public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_appserver {
-    private HashMap<String, Speler> userTokens = new HashMap<>(); //bevat de huidig uitgeleende tokens ( = aangemelde users)
-
     private Lobby lobby;
 
     public ServerImpl() throws RemoteException {
@@ -25,7 +23,7 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
 
     //////////////////////////////// Control //////////////////////////////////////////
     @Override
-    public String RegistrerNewClient(String username, String passwdHash) throws UsernameAlreadyInUseException {
+    public String registrerNewClient(String username, String passwdHash) throws UsernameAlreadyInUseException {
         if(dbConnection.getUserSet().contains(username)){
             System.out.println("gebruikersnaam al gebruikt");
             throw new UsernameAlreadyInUseException();
@@ -33,7 +31,6 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
 
         String token = Utils.generateUserToken(username);
         Speler speler = new Speler(username);
-        userTokens.put(token, speler);
         //dbConnection.insert(username,passwdHash); //TODO: db
         System.out.println("gebruiker: " + username + " aangemaakt en aangemeld!");
         return token;
@@ -42,52 +39,46 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
 
     @Override
     public String logIn(String username, String password) {
-        String token = Utils.generateUserToken(username);
+        //TODO: check db voor credentials
         Speler speler = null; //TODO: = get speler op username uit db
-        userTokens.put(token, speler);
+        String token = Utils.generateUserToken(username);
         return token;
     }
 
-    @Override
-    public void logOut(String token) {
-        Utils.invalidateToken(token);
-        userTokens.remove(token);
-    }
 
     //////////////////////////////// Lobby //////////////////////////////////////////
     //returned de gameId van de gemaakte game
     @Override
     public String createGame(int aantalSpelers, int bordGrootte, String token) throws GameNotCreatedException, NoValidTokenException {
-        if(validateToken(token))
-            return lobby.createNewGame(aantalSpelers, bordGrootte);
-        throw new NoValidTokenException("Token not valid.");
+        validateToken(token);
+        return lobby.createNewGame(aantalSpelers, bordGrootte);
     }
 
     //voegt speler toe aan game spelerslijst
     @Override
     public void joinGame(String gameId, String token) throws NoValidTokenException, PlayerNumberexceededException {
-        if(validateToken(token)) {
-            Speler speler = userTokens.get(token);
-            if(speler == null)
-                throw new NoValidTokenException("Token not valid.");
-            lobby.joinGame(gameId, speler);
-        }
+        Speler speler = validateToken(token);
+        lobby.joinGame(gameId, speler);
     }
 
     @Override
     public Map<String, Game> getActiveGames(String token) throws NoValidTokenException {
-        if(validateToken(token))
-            return lobby.getActiveGames();
-        return null;
+        validateToken(token);
+        return lobby.getActiveGames();
     }
 
     //////////////////////////////////// Game ///////////////////////////////////////////
     @Override
-    public void flipCard(String token, String gameId, int x, int y) throws RemoteException, NoValidTokenException, NotYourTurnException, NotEnoughSpelersException {
-        if(validateToken(token)) {
-            Speler speler = userTokens.get(token);
-            lobby.getActiveGames().get(gameId).flipCard(x, y, speler);
-        }
+    public void flipCard(String token, String gameId, int x, int y) throws NoValidTokenException, NotYourTurnException, NotEnoughSpelersException {
+        Speler speler = validateToken(token);
+        lobby.getActiveGames().get(gameId).flipCard(x, y, speler);
     }
+
+    @Override
+    public int[][] getBord(String token, String gameId) throws NoValidTokenException {
+        validateToken(token);
+        return lobby.getGame(gameId).getBordspel().getBordRemote();
+    }
+
 
 }

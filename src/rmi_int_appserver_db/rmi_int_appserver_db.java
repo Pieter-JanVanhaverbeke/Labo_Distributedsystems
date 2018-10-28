@@ -1,7 +1,7 @@
 package rmi_int_appserver_db;
 
 import exceptions.UsernameAlreadyInUseException;
-import memory_spel.Speler;
+import application_server.memory_spel.Speler;
 
 import java.rmi.Remote;
 import java.util.List;

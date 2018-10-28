@@ -1,4 +1,4 @@
-package memory_spel;
+package application_server.memory_spel;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -126,4 +126,13 @@ public class Bordspel {
         System.out.println();
     }
 
+    public int[][] getBordRemote(){
+        int result[][] = new int[lengte][breedte];
+
+        for(int i = 0; i<lengte; i++)
+            for (int j = 0; j<breedte;j++)
+                result[i][j] = bord[i][j].getSoort();
+
+        return result;
+    }
 }

@@ -1,4 +1,4 @@
-package memory_spel;
+package application_server.memory_spel;
 
 import exceptions.NotEnoughSpelersException;
 import exceptions.NotYourTurnException;

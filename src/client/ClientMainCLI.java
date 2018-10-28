@@ -1,7 +1,7 @@
 package client;
 
 import exceptions.*;
-import memory_spel.Game;
+import application_server.memory_spel.Game;
 import rmi_int_client_appserver.rmi_int_client_appserver;
 
 import java.rmi.NotBoundException;
@@ -11,7 +11,7 @@ import java.rmi.registry.Registry;
 import java.util.Map;
 import java.util.Scanner;
 
-import static Utils.Constants.*;
+import static application_server.Utils.Constants.*;
 
 public class ClientMainCLI {
     private static String token = null;
@@ -71,7 +71,7 @@ public class ClientMainCLI {
                         //stuur gegevens naar application_server
                         try {
                             //na registratie autmatisch aangemeld
-                            token = impl.RegistrerNewClient(username, password); //met exceptions werken ipv return boolean/int? wat denk je?
+                            token = impl.registrerNewClient(username, password); //met exceptions werken ipv return boolean/int? wat denk je?
                             System.out.println("Registratie voltooid");
                         } catch (UsernameAlreadyInUseException e) {
                             System.out.println("Gebruikersnaam is al gebruikt");
@@ -152,7 +152,6 @@ public class ClientMainCLI {
                     break;
 
                 case 6:
-                    impl.logOut(token);
                     token = null;
                     System.out.println("Uitgelogd");
             }

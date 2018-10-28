@@ -1,4 +1,4 @@
-package memory_spel;
+package application_server.memory_spel;
 
 /**
  * Created by ruben on 26/10/18.

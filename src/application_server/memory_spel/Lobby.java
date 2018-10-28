@@ -1,14 +1,14 @@
-package memory_spel;
+package application_server.memory_spel;
 
 
-import Utils.Utils;
+import application_server.Utils.Utils;
 import exceptions.GameNotCreatedException;
 import exceptions.PlayerNumberexceededException;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static Utils.Constants.*;
+import static application_server.Utils.Constants.*;
 
 public class Lobby {
     private static Lobby lobby = null;
