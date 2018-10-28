@@ -2,11 +2,12 @@ package application_server;
 
 import application_server.DbConnection.dbConnection;
 import application_server.Utils.Utils;
+import client_appserver.GameInfo;
 import exceptions.*;
 import application_server.memory_spel.Game;
 import application_server.memory_spel.Lobby;
 import application_server.memory_spel.Speler;
-import rmi_int_client_appserver.rmi_int_client_appserver;
+import client_appserver.rmi_int_client_appserver;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -50,8 +51,8 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
     //returned de gameId van de gemaakte game
     @Override
     public String createGame(int aantalSpelers, int bordGrootte, String token) throws GameNotCreatedException, NoValidTokenException {
-        validateToken(token);
-        return lobby.createNewGame(aantalSpelers, bordGrootte);
+        String creator = validateToken(token).getUsername();
+        return lobby.createNewGame(aantalSpelers, bordGrootte, creator);
     }
 
     //voegt speler toe aan game spelerslijst
@@ -65,6 +66,12 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
     public Map<String, Game> getActiveGames(String token) throws NoValidTokenException {
         validateToken(token);
         return lobby.getActiveGames();
+    }
+
+    @Override
+    public List<GameInfo> getActiveGamesList(String token) throws NoValidTokenException {
+        validateToken(token);
+        return lobby.getActiveGamesList();
     }
 
     //////////////////////////////////// Game ///////////////////////////////////////////

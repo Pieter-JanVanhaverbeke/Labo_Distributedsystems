@@ -7,9 +7,7 @@ import javafx.scene.control.TextField;
 import java.rmi.RemoteException;
 
 import static client.ClientMainGUI.*;
-import static client.Utils.Constants.LOGIN_HEIGHT;
-import static client.Utils.Constants.LOGIN_SCENE;
-import static client.Utils.Constants.LOGIN_WIDTH;
+import static client.Utils.Constants.*;
 
 
 /**
@@ -33,6 +31,7 @@ public class RegisterController {
             try {
                 //TODO: hasing + salt
                 token = impl.registrerNewClient(username.getText(), password.getText());
+                setScene(LOBBY_SCENE, 1300, 700);
             } catch (RemoteException e) {
                 e.printStackTrace();
             } catch (UsernameAlreadyInUseException e) {

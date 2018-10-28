@@ -12,6 +12,9 @@ public class Constants {
 
     public static final String LOBBY_SCENE = "scenes/lobby.fxml";
     public static final String REGISTER_SCENE = "scenes/register.fxml";
+    public static final String LOBBY_GAME_TILE = "scenes/lobby_tile.fxml";
 
+
+    public static final int LOBBY_COLUMN_NUMBER = 4;
 
 }

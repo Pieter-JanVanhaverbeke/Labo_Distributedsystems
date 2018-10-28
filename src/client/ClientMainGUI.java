@@ -5,7 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import rmi_int_client_appserver.rmi_int_client_appserver;
+import client_appserver.rmi_int_client_appserver;
 
 import java.io.IOException;
 import java.rmi.NotBoundException;

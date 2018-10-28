@@ -3,7 +3,6 @@ package application_server.memory_spel;
 public class Speler {
     private int spelerId;
     private String username;
-    private String passwordHash;
     private int globalScore;
 
 

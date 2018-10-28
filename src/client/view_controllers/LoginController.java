@@ -28,7 +28,7 @@ public class LoginController extends Observable {
     public void login(){
         try {
             token = impl.logIn(username.getText(), password.getText());
-            setScene(LOBBY_SCENE, 1200, 800);
+            setScene(LOBBY_SCENE, 1300, 700);
         } catch (RemoteException e) {
             e.printStackTrace(); //TODO: error overlay tonen
         } catch (LoginFailedException e) {

@@ -2,7 +2,7 @@ package client;
 
 import exceptions.*;
 import application_server.memory_spel.Game;
-import rmi_int_client_appserver.rmi_int_client_appserver;
+import client_appserver.rmi_int_client_appserver;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;

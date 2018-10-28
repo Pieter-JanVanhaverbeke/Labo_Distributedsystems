@@ -1,4 +1,4 @@
-package rmi_int_appserver_db;
+package appserver_db;
 
 import exceptions.UsernameAlreadyInUseException;
 import application_server.memory_spel.Speler;
@@ -19,7 +19,7 @@ public interface rmi_int_appserver_db extends Remote {
 
     List<Speler> getAllSpelers();
 
-    Speler getSpeler(String username); //username uniek maken? (of email adres vragen als username => zeker uniek)
+    Speler getSpeler(String username);
 
     void changeCredentials(String username, String passwdHash) throws UsernameAlreadyInUseException; //verander usernamen en password, enkel dingen vervangen die niet null zijn
 

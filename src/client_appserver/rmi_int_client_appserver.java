@@ -1,10 +1,11 @@
-package rmi_int_client_appserver;
+package client_appserver;
 
-import exceptions.*;
 import application_server.memory_spel.Game;
+import exceptions.*;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.List;
 import java.util.Map;
 
 public interface rmi_int_client_appserver extends Remote {
@@ -20,6 +21,8 @@ public interface rmi_int_client_appserver extends Remote {
     void joinGame(String gameId, String token) throws RemoteException, NoValidTokenException, PlayerNumberexceededException;
 
     Map<String, Game> getActiveGames(String token) throws RemoteException, NoValidTokenException;
+
+    List<GameInfo> getActiveGamesList(String token) throws RemoteException, NoValidTokenException;
 
 
     //////////////////////////////////// Game ///////////////////////////////////////////

@@ -4,6 +4,8 @@ import exceptions.NotEnoughSpelersException;
 import exceptions.NotYourTurnException;
 import exceptions.PlayerNumberexceededException;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,13 +20,17 @@ public class Game {
     private  int spelerbeurt; //elke speler heeft index
     private int aantalspelers;
     private List<Integer> puntenlijst;
+    private String creator;
+    private String createDate;
     private Kaart kaart1 = null;
     private Kaart kaart2 = null;
 
     // SMALL = 4X4 MED = 6X6 LARGE = 8X8
     // Steeds 8 soorten
     // bordgrootte 1=small,2=medium,3=large
-    public Game(int bordGrootte, String gameId, int aantalspelers){
+    public Game(int bordGrootte, String gameId, int aantalspelers, String creator){
+        this.creator = creator;
+        this.createDate = ZonedDateTime.now(ZoneId.of("ECT")).toString();
         this.aantalspelers = aantalspelers;
         this.spelers = new ArrayList<>();
         this.gameId = gameId;
@@ -151,4 +157,19 @@ public class Game {
         this.puntenlijst = puntenlijst;
     }
 
+    public String getCreator() {
+        return creator;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator;
+    }
+
+    public String getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(String createDate) {
+        this.createDate = createDate;
+    }
 }
