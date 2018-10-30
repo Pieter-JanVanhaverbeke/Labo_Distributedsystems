@@ -1,4 +1,4 @@
-package memory_spel;
+package application_server.Utils;
 
 /**
  * Created by ruben on 19/10/18.

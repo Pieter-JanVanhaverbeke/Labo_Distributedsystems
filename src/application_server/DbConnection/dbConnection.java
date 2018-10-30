@@ -1,5 +1,7 @@
-package DbConnection;
+package application_server.DbConnection;
 
+
+import application_server.memory_spel.Speler;
 
 import java.sql.*;
 import java.util.HashSet;
@@ -75,6 +77,12 @@ public class dbConnection {
         return userlijst;
     }
 
+<<<<<<< HEAD:src/DbConnection/dbConnection.java
+=======
+        public static Speler getUser(String username){
+            return new Speler("bert");
+        }
+>>>>>>> origin/client-appserver:src/application_server/DbConnection/dbConnection.java
 
 
     }

@@ -1,32 +1,27 @@
-package memory_spel;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Scanner;
+package application_server.memory_spel;
 
 public class Memoryspel {
-    private Bordspel bordspel;
+    /*private Bordspel bordspel;
     private boolean gedaan;
-    private  int spelerbeurt;     //teller dat zegt wie aan beurt is
+    private  int spelerbeurt; //elke speler heeft index
     private int aantalspelers;
-    private List<Integer> puntenlijst; //was HashMap -> waarom?
+    private List<Integer> puntenlijst;
 
-    //   private memory_spel.Kaart [] [] bordspel;
-    //   private List<memory_spel.Speler> spelerslijst;
+    // SMALL = 4X4 MED = 6X6 LARGE = 8X8
+    // Steeds 8 soorten
+    // bordgrootte 1=small,2=medium,3=large
+    public Memoryspel(int aantalspelers, int bordgrootte) {
 
-                                                                    //SMALL = 4X4 MED = 6X6 LARGE = 8X8
-                                                                    //Steeds 8 soorten
-    public Memoryspel(int aantalspelers, int bordgrootte) {         //bordgrootte 1=small,2=medium,3=large
-
-      //  int size = (int)Math.pow((2*bordgrootte+2),2);
-        bordspel = new Bordspel(2*bordgrootte+2,2*bordgrootte+2);
+        int size = 2*bordgrootte+2;
+        bordspel = new Bordspel(size, size);
         gedaan = false;
         spelerbeurt = 0;
         this.aantalspelers = aantalspelers;
 
         puntenlijst = new ArrayList<>();
-        for(int i=0; i<aantalspelers;i++){                      //iedere speler start met 0 punten
+
+        //iedere speler start met 0 punten
+        for(int i=0; i<aantalspelers;i++){
             puntenlijst.add(0);
         }
 
@@ -39,10 +34,11 @@ public class Memoryspel {
         this.aantalspelers = aantalspelers;
 
         puntenlijst = new ArrayList<>();
-        for(int i=0; i<aantalspelers;i++){                      //iedere speler start met 0 punten
+
+        //iedere speler start met 0 punten
+        for(int i=0; i<aantalspelers;i++){
             puntenlijst.add(0);
         }
-
     }
 
     public Bordspel getBordspel() {
@@ -93,17 +89,12 @@ public class Memoryspel {
        gedaan = bordspel.checkEindeSpel();
     }
 
-    public boolean juisteBeurt(){
-        return false;
-    }
-
     public List<Integer> start(){
         Scanner sc = new Scanner(System.in);
         while(!gedaan){
 
             int lengte;
             int breedte;
-
 
             Kaart kaart1;
             Kaart kaart2;
@@ -113,7 +104,7 @@ public class Memoryspel {
 
 
 
-            //1) memory_spel.Speler aan de beurt kiest een kaart
+            //1) application_server.memory_spel.Speler aan de beurt kiest een kaart
             System.out.println();
             System.out.println("speler " + (spelerbeurt+1) + " is aan de beurt");
             bordspel.printBordspelFaceUp();
@@ -121,7 +112,7 @@ public class Memoryspel {
             lengte = sc.nextInt();
             breedte = sc.nextInt();
 
-            //2) memory_spel.Kaart wordt omgedraait
+            //2) application_server.memory_spel.Kaart wordt omgedraait
 
             //NOG ZORGEN DAT FACEUPKAARTEN NIET OMGEDRAAIT KUNNEN WORDEN
 
@@ -141,7 +132,7 @@ public class Memoryspel {
 
             bordspel.printBordspel();
 
-            //4) memory_spel.Kaart wordt omgedraait
+            //4) application_server.memory_spel.Kaart wordt omgedraait
 
             //NOG ZORGEN DAT FACEUPKAARTEN NIET OMGEDRAAIT KUNNEN WORDEN
 
@@ -177,6 +168,6 @@ public class Memoryspel {
 
 
     }
-
+*/
 
 }

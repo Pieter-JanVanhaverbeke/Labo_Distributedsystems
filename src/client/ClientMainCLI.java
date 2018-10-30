@@ -1,11 +1,8 @@
 package client;
 
-import exceptions.GameNotCreatedException;
-import exceptions.LoginFailedException;
-import exceptions.NoValidTokenException;
-import exceptions.UsernameAlreadyInUseException;
-import memory_spel.Game;
-import rmi_int_client_appserver.rmi_int_client_appserver;
+import exceptions.*;
+import application_server.memory_spel.Game;
+import client_appserver.rmi_int_client_appserver;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -14,10 +11,11 @@ import java.rmi.registry.Registry;
 import java.util.Map;
 import java.util.Scanner;
 
-import static memory_spel.Constants.*;
+import static application_server.Utils.Constants.*;
 
-public class ClientMain {
+public class ClientMainCLI {
     private static String token = null;
+    private static String gameId = null;
     private static final Scanner scanner = new Scanner(System.in);
     private static rmi_int_client_appserver impl;
 
@@ -34,25 +32,26 @@ public class ClientMain {
 
 
     public static void main(String[] args) {
-        ClientMain main = new ClientMain();
+        ClientMainCLI main = new ClientMainCLI();
         main.startClient();
     }
 
 
-    private static void printMenu() {
+    private static void printMenu() throws RemoteException {
         while (true) {
             System.out.println(
                     "1. User aanmaken\n" +
                             "2. Actieve games in lobby opvragen\n" +
                             "3. Nieuwe game aanmaken\n" +
                             "4. Deelnemen aan bestaande game uit lobby.\n" +
-                            "5. aanmelden." +
-                            "6. Log out."
+                            "5. aanmelden.\n" +
+                            "6. Log out.\n" +
+                            "7. Stop game.\n"
             );
 
             int keuze = -1;
             keuze = Integer.parseInt(scanner.nextLine());
-            while (keuze < 0 || keuze > 6) {
+            while (keuze < 0 || keuze > 7) {
                 keuze = Integer.parseInt(scanner.nextLine());
                 System.out.println("Ongeldige keuze. Probeer opnieuw.");
             }
@@ -72,7 +71,7 @@ public class ClientMain {
                         //stuur gegevens naar application_server
                         try {
                             //na registratie autmatisch aangemeld
-                            token = impl.RegistrerNewClient(username, password); //met exceptions werken ipv return boolean/int? wat denk je?
+                            token = impl.registrerNewClient(username, password); //met exceptions werken ipv return boolean/int? wat denk je?
                             System.out.println("Registratie voltooid");
                         } catch (UsernameAlreadyInUseException e) {
                             System.out.println("Gebruikersnaam is al gebruikt");
@@ -83,7 +82,6 @@ public class ClientMain {
                     break;
 
                 case 2:
-                    int i = 1;
                     System.out.println("Lijst van actieve games: ");
                     Map<String, Game> actieveGames = null;
                     try {
@@ -111,7 +109,7 @@ public class ClientMain {
                     }
 
                     try {
-                        String gameId = impl.createGame(aantalSpelers, bordGrootte, token);
+                        gameId = impl.createGame(aantalSpelers, bordGrootte, token);
                     } catch (GameNotCreatedException e) {
                         System.out.println("Game creatie mislukt: " + e.getMessage());
                     } catch (NoValidTokenException e) {
@@ -132,6 +130,8 @@ public class ClientMain {
                         impl.joinGame(actieveGamess.get(keuzeGame).getGameId(), token);
                     } catch (NoValidTokenException e) {
                         System.out.println(e.getMessage());
+                    } catch (PlayerNumberexceededException e) {
+                        e.printStackTrace();
                     }
                     break;
 
@@ -152,7 +152,6 @@ public class ClientMain {
                     break;
 
                 case 6:
-                    impl.logout(token);
                     token = null;
                     System.out.println("Uitgelogd");
             }
