@@ -1,4 +1,4 @@
-package application_server.memory_spel;
+package memory_spel;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,7 +7,7 @@ import java.util.Random;
 
 public class Bordspel {
     private Kaart[][] bord;
-    private BordThema type; //layout van bordspel
+    // private String type; //layout van memory_spel.Bordspel
     private int lengte;
     private int breedte;
 
@@ -60,8 +60,7 @@ public class Bordspel {
     public boolean checkEindeSpel() {
         for (int i = 0; i < lengte; i++) {
             for (int j = 0; j < breedte; j++) {
-                if (!bord[i][j].isFaceUp())
-                    return false;  //als 1 kaart facedown is, spel nog niet gedaan
+                if (!bord[i][j].isFaceUp()) return false;       //als 1 kaart facedown is, spel nog niet gedaan
             }
         }
         return true;
@@ -70,7 +69,7 @@ public class Bordspel {
     // Spel bevat steeds 8 soorten, KAN AANPASSEN ALS NODIG
     public void initialiseerKaartType() {
         List<Integer> lijst = new ArrayList<>(); //lijst met de verschillende soorten die verdeeld moeten worden onder kaarten
-        int aantal = 0;     //aantal keer//iedere speler start met 0 punten
+        int aantal = 0;     //aantal keer
 
         if (lengte == 4) {
             aantal = 2;
@@ -126,13 +125,4 @@ public class Bordspel {
         System.out.println();
     }
 
-    public int[][] getBordRemote(){
-        int result[][] = new int[lengte][breedte];
-
-        for(int i = 0; i<lengte; i++)
-            for (int j = 0; j<breedte;j++)
-                result[i][j] = bord[i][j].getSoort();
-
-        return result;
-    }
 }

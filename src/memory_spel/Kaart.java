@@ -1,4 +1,4 @@
-package application_server.memory_spel;
+package memory_spel;
 
 public class Kaart {
     private int soort; //kaarttype

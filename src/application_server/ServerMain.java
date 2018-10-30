@@ -18,16 +18,14 @@ public class ServerMain {
     public static void main(String[] args) {
         ServerMain main = new ServerMain();
         main.startServer();
+     //   dbConnection.connect();
+     //   dbConnection.selectAll();
+      //  Set<String> set = dbConnection.getUserSet();
 
-        //TODO: db
-        /*dbConnection.connect();
-        dbConnection.selectAll();
-        Set<String> set = dbConnection.getUserSet();
-
-        Iterator iter = set.iterator();
+      /*  Iterator iter = set.iterator();
         while (iter.hasNext()) {
             System.out.println(iter.next());
-        }*/
-
+        }
+*/
     }
 }
