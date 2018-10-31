@@ -38,7 +38,7 @@ public class dbConnection {
             }
         }
 
-    public static void selectAll(){
+  /*  public static void selectAll(){
         String sql = "SELECT username, password FROM Users";
 
         try (Connection conn = connect();
@@ -55,7 +55,7 @@ public class dbConnection {
         }
     }
 
-
+*/
     public static Set<String> getUserSet(){
         Set<String> userlijst = new HashSet<String>();
 

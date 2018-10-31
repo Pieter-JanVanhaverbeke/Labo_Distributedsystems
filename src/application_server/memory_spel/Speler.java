@@ -4,6 +4,7 @@ public class Speler {
     private int spelerId;
     private String username;
     private int globalScore;
+    private String passwordHash;
 
 
     public Speler(String username){
@@ -38,5 +39,13 @@ public class Speler {
 
     public void increaseGlobalScore(int increment) {
         globalScore += increment;
+    }
+
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 }

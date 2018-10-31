@@ -11,7 +11,7 @@ import java.util.List;
  */
 public interface rmi_int_appserver_db extends Remote {
 
-    void createUser(String username, String passwdHash) throws UsernameAlreadyInUseException;
+    String createUser(String username, String passwdHash) throws UsernameAlreadyInUseException;
 
     void setUsertoken(Speler speler, String token);
 
