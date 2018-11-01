@@ -1,4 +1,4 @@
-package appserver_db;
+package shared_db_appserver_stuff;
 
 import exceptions.UsernameAlreadyInUseException;
 import application_server.memory_spel.Speler;

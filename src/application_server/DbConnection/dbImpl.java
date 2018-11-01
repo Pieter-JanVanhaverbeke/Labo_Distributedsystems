@@ -1,21 +1,17 @@
 package application_server.DbConnection;
 
 import application_server.Utils.Utils;
-import application_server.memory_spel.Lobby;
 import application_server.memory_spel.Speler;
-import appserver_db.rmi_int_appserver_db;
+import shared_db_appserver_stuff.rmi_int_appserver_db;
 import exceptions.UsernameAlreadyInUseException;
 import org.joda.time.DateTime;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.*;
-import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.Date;
 
 import static application_server.DbConnection.dbConnection.connect;
-import static client.ClientMainGUI.token;
 
 public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db {
     private HashMap<String, Speler> userTokens = new HashMap<>(); //bevat de huidig uitgeleende tokens ( = aangemelde users)
