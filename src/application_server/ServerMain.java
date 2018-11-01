@@ -1,5 +1,7 @@
 package application_server;
 
+import application_server.DbConnection.dbImpl;
+
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
@@ -8,6 +10,8 @@ public class ServerMain {
         try {
             Registry registry = LocateRegistry.createRegistry(10001);
             registry.rebind("ServerImplService", new ServerImpl());
+            registry.rebind("DatabaseImplService", new dbImpl());
+
 
         } catch (Exception e) {
             e.printStackTrace();

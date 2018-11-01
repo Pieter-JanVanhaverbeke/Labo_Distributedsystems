@@ -4,6 +4,7 @@ import exceptions.UsernameAlreadyInUseException;
 import application_server.memory_spel.Speler;
 
 import java.rmi.Remote;
+import java.rmi.RemoteException;
 import java.util.List;
 
 /**
@@ -11,17 +12,17 @@ import java.util.List;
  */
 public interface rmi_int_appserver_db extends Remote {
 
-    String createUser(String username, String passwdHash) throws UsernameAlreadyInUseException;
+    String createUser(String username, String passwdHash) throws UsernameAlreadyInUseException, RemoteException;
 
-    void setUsertoken(Speler speler, String token);
+    void setUsertoken(Speler speler, String token) throws RemoteException;
 
-    void invalidateUsertoken(Speler speler);
+    void invalidateUsertoken(Speler speler) throws RemoteException;
 
-    List<Speler> getAllSpelers();
+    List<Speler> getAllSpelers() throws  RemoteException;
 
-    Speler getSpeler(String username);
+    Speler getSpeler(String username) throws RemoteException;
 
-    void changeCredentials(String username, String passwdHash) throws UsernameAlreadyInUseException; //verander usernamen en password, enkel dingen vervangen die niet null zijn
+    void changeCredentials(String username, String passwdHash) throws UsernameAlreadyInUseException, RemoteException; //verander usernamen en password, enkel dingen vervangen die niet null zijn
 
 
 
