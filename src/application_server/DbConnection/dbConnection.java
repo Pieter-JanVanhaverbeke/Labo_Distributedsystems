@@ -24,7 +24,7 @@ public class dbConnection {
             return c;
         }
 
-        public static void insert(String username1, String password1) {
+  /*      public static void insert(String username1, String password1) {
             String sql = "INSERT INTO Users(username,password) VALUES(?,?)";
             // String sql = "INSERT INTO Users(username,password) VALUES(PJ,PJ)";
 
@@ -37,7 +37,7 @@ public class dbConnection {
                 System.out.println(e.getMessage());
             }
         }
-
+*/
   /*  public static void selectAll(){
         String sql = "SELECT username, password FROM Users";
 
