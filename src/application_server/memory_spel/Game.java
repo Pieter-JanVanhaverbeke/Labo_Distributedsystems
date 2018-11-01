@@ -2,7 +2,7 @@ package application_server.memory_spel;
 
 import exceptions.NotEnoughSpelersException;
 import exceptions.NotYourTurnException;
-import exceptions.PlayerNumberexceededException;
+import exceptions.PlayerNumberExceededException;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -22,6 +22,7 @@ public class Game {
     private List<Integer> puntenlijst;
     private String creator;
     private String createDate;
+    private boolean started = false;
     private Kaart kaart1 = null;
     private Kaart kaart2 = null;
 
@@ -45,11 +46,11 @@ public class Game {
         }
     }
 
-    public void addSpeler(Speler speler) throws PlayerNumberexceededException {
+    public void addSpeler(Speler speler) throws PlayerNumberExceededException {
         if(spelers.size() < aantalspelers)
             spelers.add(speler);
         else
-            throw new PlayerNumberexceededException("Het maximum aantal spelers voor deze game is bereikt. Kan speler niet meer toevoegen.");
+            throw new PlayerNumberExceededException("Het maximum aantal spelers voor deze game is bereikt. Kan speler niet meer toevoegen.");
     }
 
     //flip kaart, eerste kaart blijft geflipt tot 2e geflipt word.
@@ -57,6 +58,7 @@ public class Game {
     // if niet gelijk => kaarten draaien terug om. if spel is gedaan
     // (alle kaarten gedraaid) => punten worden aan spelers profiel toegevoegd
     public void flipCard(int x, int y, Speler speler) throws NotYourTurnException, NotEnoughSpelersException {
+        started = true;
         //check of voldoende spelers zijn
         if(spelers.size() == aantalspelers) {
             //check of spelerbeurt ok is
@@ -171,5 +173,13 @@ public class Game {
 
     public void setCreateDate(String createDate) {
         this.createDate = createDate;
+    }
+
+    public boolean isStarted() {
+        return started;
+    }
+
+    public void setStarted(boolean started) {
+        this.started = started;
     }
 }

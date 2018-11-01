@@ -1,4 +1,4 @@
-package client_appserver;
+package shared_client_appserver_stuff;
 
 import application_server.memory_spel.Game;
 import exceptions.*;
@@ -15,10 +15,11 @@ public interface rmi_int_client_appserver extends Remote {
 
     String logIn(String username, String passwdHash) throws RemoteException, LoginFailedException;
 
-    //////////////////////////////////// Lobby /////////////////////////////////////////
-    String createGame(int aantalSpelers, int bordGrootte, String token) throws RemoteException, GameNotCreatedException, NoValidTokenException;
+    //////////////////////////////// Lobby //////////////////////////////////////////
+    //returned de gameId van de gemaakte game
+    String createGame(int aantalSpelers, int bordGrootte, String token, int style) throws GameNotCreatedException, NoValidTokenException;
 
-    void joinGame(String gameId, String token) throws RemoteException, NoValidTokenException, PlayerNumberexceededException;
+    void joinGame(String gameId, String token) throws RemoteException, NoValidTokenException, PlayerNumberExceededException;
 
     Map<String, Game> getActiveGames(String token) throws RemoteException, NoValidTokenException;
 

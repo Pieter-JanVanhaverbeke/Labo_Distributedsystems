@@ -5,7 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import client_appserver.rmi_int_client_appserver;
+import shared_client_appserver_stuff.rmi_int_client_appserver;
 
 import java.io.IOException;
 import java.rmi.NotBoundException;
@@ -22,6 +22,7 @@ public class ClientMainGUI extends Application {
     public static rmi_int_client_appserver impl;
     public static String token;
     public static String gameId;
+    public static String usernameLogedIn;
 
     private static Stage primaryStage;
     private static FXMLLoader loader;
@@ -51,9 +52,9 @@ public class ClientMainGUI extends Application {
     public static void main(String[] args) {
         launch(args);
 
-        /*try {
-            //serverConnection();
-            //launch(args);
+/*        try {
+            serverConnection();
+            launch(args);
         } catch (RemoteException e) {
             e.printStackTrace();
         } catch (NotBoundException e) {

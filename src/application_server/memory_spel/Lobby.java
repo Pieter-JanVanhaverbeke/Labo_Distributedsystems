@@ -2,9 +2,9 @@ package application_server.memory_spel;
 
 
 import application_server.Utils.Utils;
-import client_appserver.GameInfo;
+import shared_client_appserver_stuff.GameInfo;
 import exceptions.GameNotCreatedException;
-import exceptions.PlayerNumberexceededException;
+import exceptions.PlayerNumberExceededException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,7 +57,7 @@ public class Lobby {
         return result;
     }
 
-    public void joinGame(String gameId, Speler speler) throws PlayerNumberexceededException {
+    public void joinGame(String gameId, Speler speler) throws PlayerNumberExceededException {
         Game game = activeGames.get(gameId);
         game.addSpeler(speler);
     }

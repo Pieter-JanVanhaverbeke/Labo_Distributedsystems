@@ -5,7 +5,8 @@ package exceptions;
  */
 public class UsernameAlreadyInUseException extends Exception{
 
-    public UsernameAlreadyInUseException(){
+    public UsernameAlreadyInUseException(String username){
         super();
+        System.out.println("Username: " + username + " is already in use.");
     }
 }

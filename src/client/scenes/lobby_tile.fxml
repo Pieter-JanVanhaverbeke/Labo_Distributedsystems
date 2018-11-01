@@ -9,9 +9,9 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="370.0" prefWidth="200.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane prefHeight="370.0" prefWidth="270.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.view_controllers.LobbyTileController">
    <children>
-      <Button layoutY="296.0" mnemonicParsing="false" prefHeight="55.0" text="Button" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+      <Button fx:id="tileKnop" layoutY="296.0" mnemonicParsing="false" onAction="#buttonPressed" prefHeight="55.0" text="Button" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <font>
             <Font size="30.0" />
          </font>
@@ -48,6 +48,10 @@
                   <Font size="15.0" />
                </font>
             </Label>
+            <Label fx:id="created" GridPane.columnIndex="1" />
+            <Label fx:id="creator" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Label fx:id="joinedPlayers" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <Label fx:id="players" GridPane.columnIndex="1" GridPane.rowIndex="2" />
          </children>
       </GridPane>
       <ImageView fitHeight="189.0" fitWidth="264.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />

@@ -2,7 +2,7 @@ package client;
 
 import exceptions.*;
 import application_server.memory_spel.Game;
-import client_appserver.rmi_int_client_appserver;
+import shared_client_appserver_stuff.rmi_int_client_appserver;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -109,7 +109,7 @@ public class ClientMainCLI {
                     }
 
                     try {
-                        gameId = impl.createGame(aantalSpelers, bordGrootte, token);
+                        gameId = impl.createGame(aantalSpelers, bordGrootte, token, 2);
                     } catch (GameNotCreatedException e) {
                         System.out.println("Game creatie mislukt: " + e.getMessage());
                     } catch (NoValidTokenException e) {
@@ -130,7 +130,7 @@ public class ClientMainCLI {
                         impl.joinGame(actieveGamess.get(keuzeGame).getGameId(), token);
                     } catch (NoValidTokenException e) {
                         System.out.println(e.getMessage());
-                    } catch (PlayerNumberexceededException e) {
+                    } catch (PlayerNumberExceededException e) {
                         e.printStackTrace();
                     }
                     break;

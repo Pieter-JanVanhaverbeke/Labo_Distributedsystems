@@ -32,7 +32,7 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db 
     public String createUser(String username, String passwdHash) throws UsernameAlreadyInUseException {
         if (dbConnection.getUserSet().contains(username)) {
             System.out.println("gebruikersnaam al gebruikt");
-            throw new UsernameAlreadyInUseException();
+            throw new UsernameAlreadyInUseException(username);
         }
 
         //Wachtwoord Hashen en naar databank sturen(bij de client hashen)

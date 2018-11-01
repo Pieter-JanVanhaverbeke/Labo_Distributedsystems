@@ -1,19 +1,16 @@
 package client.view_controllers;
 
+import static application_server.Utils.Constants.*;
 import static client.ClientMainGUI.*;
-import static client.Utils.Constants.LOBBY_COLUMN_NUMBER;
-import static client.Utils.Constants.LOBBY_GAME_TILE;
+import static client.Utils.Constants.*;
 
-import client_appserver.GameInfo;
-import com.sun.xml.internal.bind.v2.runtime.unmarshaller.Loader;
+import shared_client_appserver_stuff.GameInfo;
 import exceptions.NoValidTokenException;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.layout.GridPane;
 
-import java.awt.*;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.List;
@@ -27,18 +24,55 @@ public class LobbyController {
     @FXML
     public GridPane gameGrid;
 
+    //vul lijst met actieve games die in lobby moeten staan
     @FXML
     public void initialize(){
         try {
             activeGames = impl.getActiveGamesList(token);
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource(LOBBY_GAME_TILE));
-            Parent tile = loader.load();
 
-            for(int i = 0; i<activeGames.size(); i++){
+            //add existing gametiles
+            loader.setLocation(getClass().getResource(LOBBY_GAME_TILE));
+            Parent tile = loader.load(); //TODO: check of niet telkens zelfde instantie in rij komt, if so -> deze lijn in for lus zetten
+            LobbyTileController lobbyTileController = loader.getController();
+
+            int i;
+            for(i = 0; i<activeGames.size(); i++){
                 GameInfo gameInfo = activeGames.get(i);
+                int maxAantalSpelers = gameInfo.getAantalSpelers();
+                int currentAantalSpelers = gameInfo.getSpelers().size();
+                boolean joined = gameInfo.getSpelers().contains(usernameLogedIn);
+
+                lobbyTileController.setCreated(gameInfo.getCreateDate());
+                lobbyTileController.setCreator(gameInfo.getCreator());
+                lobbyTileController.setPlayers(Integer.toString(maxAantalSpelers));
+                lobbyTileController.setJoinedPlayers(Integer.toString(currentAantalSpelers));
+
+                //set button text (join/start/unjoin/resume/watch)
+                if(currentAantalSpelers < maxAantalSpelers){
+                    if(joined)
+                        lobbyTileController.setTileKnopTekst(UNJOIN_GAME);
+                    else
+                        lobbyTileController.setTileKnopTekst(JOIN_GAME);
+                }
+                else{
+                    if(joined) {
+                        if (gameInfo.isStarted())
+                            lobbyTileController.setTileKnopTekst(RESUME_GAME);
+                        else
+                            lobbyTileController.setTileKnopTekst(START_GAME);
+                    }
+                    else{
+                        lobbyTileController.setTileKnopTekst(WATCH_GAME);
+                    }
+                }
                 gameGrid.add(tile, i/LOBBY_COLUMN_NUMBER, i%LOBBY_COLUMN_NUMBER); //TODO: check of automatisch rijen aanmaakt als index te groot word
             }
+
+            //add create game tile
+            loader.setLocation(getClass().getResource(LOBBY_ADD_GAME_TILE));
+            tile = loader.load();
+            gameGrid.add(tile, i/LOBBY_COLUMN_NUMBER, i%LOBBY_COLUMN_NUMBER); //TODO: check of automatisch rijen aanmaakt als index te groot word
 
         } catch (RemoteException e) {
             e.printStackTrace();

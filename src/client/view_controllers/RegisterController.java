@@ -31,7 +31,8 @@ public class RegisterController {
             try {
                 //TODO: hasing + salt
                 token = impl.registrerNewClient(username.getText(), password.getText());
-                setScene(LOBBY_SCENE, 1300, 700);
+                usernameLogedIn = username.getText();
+                setScene(LOBBY_SCENE, LOBBY_WIDTH, LOBBY_HEIGHT);
             } catch (RemoteException e) {
                 e.printStackTrace();
             } catch (UsernameAlreadyInUseException e) {
