@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import shared_client_appserver_stuff.rmi_int_client_appserver;
 
@@ -36,19 +37,6 @@ public class ClientMainGUI extends Application {
         primaryStage.show();
     }
 
-    public static void setScene(String scenePath, int width, int height) {
-        try {
-            loader = new FXMLLoader();
-            loader.setLocation(ClientMainGUI.class.getResource(scenePath));
-            Parent root = loader.load();
-            Scene scene = new Scene(root, width, height); //TODO: scene telkens afsluiten als nieuwe scene toon? of allemaal op stack zetten?
-            primaryStage.setScene(scene);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-
     public static void main(String[] args) {
         launch(args);
 
@@ -67,4 +55,37 @@ public class ClientMainGUI extends Application {
         impl = (rmi_int_client_appserver) registryServer.lookup("ServerImplService");
         System.out.println("Server connection ok");
     }
+
+    public static void setScene(String scenePath, int width, int height) {
+        try {
+            loader = new FXMLLoader();
+            loader.setLocation(ClientMainGUI.class.getResource(scenePath));
+            Parent root = loader.load();
+            Scene scene = new Scene(root, width, height); //TODO: scene telkens afsluiten als nieuwe scene toon? of allemaal op stack zetten?
+            primaryStage.setScene(scene);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void overlayWindow(String scenePath, int width, int height, String title, Stage parent, Modality modality){
+        try {
+            loader = new FXMLLoader();
+            loader.setLocation(ClientMainGUI.class.getResource(scenePath));
+            Parent root = loader.load();
+            Scene scene = new Scene(root, width, height);
+            Stage window = new Stage();
+            window.setTitle(title);
+            window.setScene(scene);
+            window.initModality(modality);
+            window.initOwner(parent);
+            window.setX(primaryStage.getX() + 200);
+            window.setY(primaryStage.getY() + 100);
+            window.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 }

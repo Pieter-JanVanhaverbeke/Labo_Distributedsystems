@@ -83,4 +83,6 @@ public class GameInfo {
     public void setStarted(boolean started) {
         this.started = started;
     }
+
+
 }

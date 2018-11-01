@@ -9,8 +9,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
 import static client.ClientMainGUI.*;
-
-import static client.Utils.Constants.SELECTED_BORDER_WIDTH;
+import static client.Utils.Constants.*;
 
 /**
  * Created by ruben on 1/11/18.
@@ -45,7 +44,7 @@ public class CreateGameController implements EventHandler<ActionEvent> {
     }
 
     public void back(){
-
+        setScene(LOGIN_SCENE, LOGIN_WIDTH, LOGIN_HEIGHT);
     }
 
     //zet de border van anchorpane aan/uit

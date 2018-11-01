@@ -1,5 +1,6 @@
 package shared_db_appserver_stuff;
 
+import application_server.memory_spel.Lobby;
 import exceptions.UsernameAlreadyInUseException;
 import application_server.memory_spel.Speler;
 
@@ -25,8 +26,10 @@ public interface rmi_int_appserver_db extends Remote {
 
     void changeCredentials(String username, String passwdHash) throws UsernameAlreadyInUseException, RemoteException; //verander usernamen en password, enkel dingen vervangen die niet null zijn
 
+    //returned null if geen lobby
+    Lobby getLobby();
 
-
+    void persistLobby(Lobby lobby);
 
 
 }

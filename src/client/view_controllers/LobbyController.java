@@ -47,6 +47,7 @@ public class LobbyController {
                 lobbyTileController.setCreator(gameInfo.getCreator());
                 lobbyTileController.setPlayers(Integer.toString(maxAantalSpelers));
                 lobbyTileController.setJoinedPlayers(Integer.toString(currentAantalSpelers));
+                lobbyTileController.setGameId(gameInfo.getGameId());
 
                 //set button text (join/start/unjoin/resume/watch)
                 if(currentAantalSpelers < maxAantalSpelers){

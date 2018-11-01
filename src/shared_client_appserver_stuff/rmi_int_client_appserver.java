@@ -21,8 +21,6 @@ public interface rmi_int_client_appserver extends Remote {
 
     void joinGame(String gameId, String token) throws RemoteException, NoValidTokenException, PlayerNumberExceededException;
 
-    Map<String, Game> getActiveGames(String token) throws RemoteException, NoValidTokenException;
-
     List<GameInfo> getActiveGamesList(String token) throws RemoteException, NoValidTokenException;
 
 

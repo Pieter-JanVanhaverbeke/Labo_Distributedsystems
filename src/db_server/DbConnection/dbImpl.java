@@ -1,6 +1,7 @@
 package db_server.DbConnection;
 
 import application_server.Utils.Utils;
+import application_server.memory_spel.Lobby;
 import application_server.memory_spel.Speler;
 import shared_db_appserver_stuff.rmi_int_appserver_db;
 import exceptions.UsernameAlreadyInUseException;
@@ -156,6 +157,16 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db 
             System.out.println(e.getMessage());
         }
 
+
+    }
+
+    @Override
+    public Lobby getLobby() {
+        return null;
+    }
+
+    @Override
+    public void persistLobby(Lobby lobby) {
 
     }
 

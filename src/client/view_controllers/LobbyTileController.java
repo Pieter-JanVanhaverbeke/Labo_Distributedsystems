@@ -1,9 +1,15 @@
 package client.view_controllers;
 
+import exceptions.NoValidTokenException;
+import exceptions.PlayerNumberExceededException;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 
+import java.rmi.RemoteException;
+
 import static client.Utils.Constants.*;
+import static client.ClientMainGUI.*;
+
 
 /**
  * Created by ruben on 1/11/18.
@@ -25,6 +31,8 @@ public class LobbyTileController {
     @FXML
     public Button tileKnop;
 
+    private String gameId;
+
     @FXML
     public void buttonPressed(){
         String buttonText = tileKnop.getText();
@@ -36,8 +44,15 @@ public class LobbyTileController {
                 break;
 
             case JOIN_GAME:
-
-
+                try {
+                    impl.joinGame(gameId, token);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                } catch (NoValidTokenException e) {
+                    e.printStackTrace();
+                } catch (PlayerNumberExceededException e) {
+                    e.printStackTrace();
+                }
                 break;
 
             case UNJOIN_GAME:
@@ -97,5 +112,13 @@ public class LobbyTileController {
 
     public void setPlayers(String players) {
         this.players = players;
+    }
+
+    public String getGameId() {
+        return gameId;
+    }
+
+    public void setGameId(String gameId) {
+        this.gameId = gameId;
     }
 }

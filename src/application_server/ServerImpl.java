@@ -1,7 +1,6 @@
 package application_server;
 
 import application_server.Utils.Utils;
-import application_server.memory_spel.Game;
 import application_server.memory_spel.Lobby;
 import application_server.memory_spel.Speler;
 import exceptions.*;
@@ -15,7 +14,6 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
-import java.util.Map;
 
 import static application_server.Utils.Utils.validateToken;
 
@@ -33,12 +31,12 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
             e.printStackTrace();
         }
 
-
         //haal lobby uit db als al bestaat
-        //...
-
-        //voorlopig eigen lobby maken tot db werkt
-        lobby = Lobby.getLobby();
+        lobby = impl.getLobby();
+        if(lobby == null) {
+            lobby = new Lobby();
+            impl.persistLobby(lobby);
+        }
     }
 
     //////////////////////////////// Control //////////////////////////////////////////
@@ -66,13 +64,14 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
     }
 
 
-    //TODO: DB dingen toevoegen
     //////////////////////////////// Lobby //////////////////////////////////////////
     //returned de gameId van de gemaakte game
     @Override
     public String createGame(int aantalSpelers, int bordGrootte, String token, int style) throws GameNotCreatedException, NoValidTokenException {
         String creator = validateToken(token).getUsername();
-        return lobby.createNewGame(aantalSpelers, bordGrootte, creator);
+        String gameId = lobby.createNewGame(aantalSpelers, bordGrootte, creator);
+        //TODO: DB
+        return gameId;
     }
 
     //voegt speler toe aan game spelerslijst
@@ -80,13 +79,7 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
     public void joinGame(String gameId, String token) throws NoValidTokenException, PlayerNumberExceededException {
         Speler speler = validateToken(token);
         lobby.joinGame(gameId, speler);
-    }
-
-    //niet gebruiken!
-    @Override
-    public Map<String, Game> getActiveGames(String token) throws NoValidTokenException {
-        validateToken(token);
-        return lobby.getActiveGames();
+        //TODO: DB
     }
 
     @Override
@@ -100,6 +93,8 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
     public void flipCard(String token, String gameId, int x, int y) throws NoValidTokenException, NotYourTurnException, NotEnoughSpelersException {
         Speler speler = validateToken(token);
         lobby.getActiveGames().get(gameId).flipCard(x, y, speler);
+        //TODO: DB
+
     }
 
     @Override

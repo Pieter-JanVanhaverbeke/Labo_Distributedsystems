@@ -14,17 +14,11 @@ import java.util.Map;
 import static application_server.Utils.Constants.*;
 
 public class Lobby {
-    private static Lobby lobby = null;
     private static Map<String, Game> activeGames; //gameId is key
 
-    public static Lobby getLobby(){
-        if(lobby == null)
-            lobby = new Lobby();
-        return lobby;
-    }
 
     //singleton
-    private Lobby(){
+    public Lobby(){
         activeGames = new HashMap<>();
     }
 
