@@ -1,6 +1,6 @@
 package application_server;
 
-import application_server.DbConnection.dbImpl;
+import db_server.DbConnection.dbImpl;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;

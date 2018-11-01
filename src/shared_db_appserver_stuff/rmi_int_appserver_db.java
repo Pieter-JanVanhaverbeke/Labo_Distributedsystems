@@ -20,6 +20,7 @@ public interface rmi_int_appserver_db extends Remote {
 
     List<Speler> getAllSpelers() throws  RemoteException;
 
+    //return null als speler niet bestaat
     Speler getSpeler(String username) throws RemoteException;
 
     void changeCredentials(String username, String passwdHash) throws UsernameAlreadyInUseException, RemoteException; //verander usernamen en password, enkel dingen vervangen die niet null zijn

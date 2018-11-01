@@ -148,6 +148,10 @@ public class ClientMainCLI {
                         System.out.println("Login mislukt: " + e.getMessage());
                     } catch (RemoteException e) {
                         e.printStackTrace();
+                    } catch (UserDoesNotExistException e) {
+                        e.printStackTrace();
+                    } catch (WrongPasswordException e) {
+                        e.printStackTrace();
                     }
                     break;
 

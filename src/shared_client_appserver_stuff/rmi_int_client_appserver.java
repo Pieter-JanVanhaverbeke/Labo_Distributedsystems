@@ -13,7 +13,7 @@ public interface rmi_int_client_appserver extends Remote {
     //////////////////////////////////// Control /////////////////////////////////////////
     String registrerNewClient(String username, String passwdHash) throws RemoteException, UsernameAlreadyInUseException;
 
-    String logIn(String username, String passwdHash) throws RemoteException, LoginFailedException;
+    String logIn(String username, String passwdHash) throws RemoteException, LoginFailedException, WrongPasswordException, UserDoesNotExistException;
 
     //////////////////////////////// Lobby //////////////////////////////////////////
     //returned de gameId van de gemaakte game

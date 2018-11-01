@@ -1,4 +1,4 @@
-package application_server.DbConnection;
+package db_server.DbConnection;
 
 import application_server.Utils.Utils;
 import application_server.memory_spel.Speler;
@@ -11,7 +11,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.sql.*;
 import java.util.*;
 
-import static application_server.DbConnection.dbConnection.connect;
+import static db_server.DbConnection.dbConnection.connect;
 
 public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db {
     private HashMap<String, Speler> userTokens = new HashMap<>(); //bevat de huidig uitgeleende tokens ( = aangemelde users)
@@ -27,7 +27,7 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db 
     @Override
     public String createUser(String username, String passwdHash) throws UsernameAlreadyInUseException {
         if (dbConnection.getUserSet().contains(username)) {
-            System.out.println("gebruikersnaam al gebruikt");
+            System.out.println("gebruikersnaam: " + username + " al gebruikt");
             throw new UsernameAlreadyInUseException(username);
         }
 
@@ -36,7 +36,7 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db 
         //  dbConnection.insert(username,passwdHash);
         String token = Utils.generateUserToken(username);
         Speler speler = new Speler(username);
-        userTokens.put(token, speler);
+        userTokens.put(token, speler); //wordt al op app server bijgehouden
         System.out.println("gebruiker: " + username + " aangemaakt en aangemeld!");
         return token;
     }
@@ -57,7 +57,6 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db 
 
         updateTime(username);           //setten van tijd usertoken
     }
-
 
     @Override
     public boolean validateUsertoken(Speler speler) {

@@ -14,7 +14,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
-import static application_server.DbConnection.dbConnection.getUser;
+import static db_server.DbConnection.dbConnection.getUser;
 import static io.jsonwebtoken.SignatureAlgorithm.HS512;
 
 /**

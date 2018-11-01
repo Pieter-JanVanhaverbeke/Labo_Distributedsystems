@@ -1,4 +1,4 @@
-package application_server.DbConnection;
+package db_server.DbConnection;
 
 
 import application_server.memory_spel.Speler;

@@ -1,28 +1,40 @@
 package application_server;
 
-import application_server.DbConnection.dbConnection;
 import application_server.Utils.Utils;
-import shared_client_appserver_stuff.GameInfo;
-import exceptions.*;
 import application_server.memory_spel.Game;
 import application_server.memory_spel.Lobby;
 import application_server.memory_spel.Speler;
+import exceptions.*;
+import shared_client_appserver_stuff.GameInfo;
 import shared_client_appserver_stuff.rmi_int_client_appserver;
+import shared_db_appserver_stuff.rmi_int_appserver_db;
 
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 import static application_server.Utils.Utils.validateToken;
 
 public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_appserver {
     private Lobby lobby;
+    private rmi_int_appserver_db impl;
 
     public ServerImpl() throws RemoteException {
-        // setup db connection
-        dbConnection.connect();
 
-        //haal lobby uit db
+        Registry registryServer = LocateRegistry.getRegistry("localhost", 13001);
+        try {
+            impl = (rmi_int_appserver_db) registryServer.lookup("DbServerImplService");
+            System.out.println("DB connection ok");
+        } catch (NotBoundException e) {
+            e.printStackTrace();
+        }
+
+
+        //haal lobby uit db als al bestaat
         //...
 
         //voorlopig eigen lobby maken tot db werkt
@@ -31,29 +43,30 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
 
     //////////////////////////////// Control //////////////////////////////////////////
     @Override
-    public String registrerNewClient(String username, String passwdHash) throws UsernameAlreadyInUseException {
-        if(dbConnection.getUserSet().contains(username)){
-            System.out.println("gebruikersnaam al gebruikt");
-            throw new UsernameAlreadyInUseException(username);
-        }
-
-        String token = Utils.generateUserToken(username);
-        Speler speler = new Speler(username);
-        //dbConnection.insert(username,passwdHash); //TODO: db
+    public String registrerNewClient(String username, String passwdHash) throws UsernameAlreadyInUseException, RemoteException {
+        String token = impl.createUser(username, passwdHash);
         System.out.println("gebruiker: " + username + " aangemaakt en aangemeld!");
-        return token;
-
-   }
-
-    @Override
-    public String logIn(String username, String password) {
-        //TODO: check db voor credentials
-        Speler speler = null; //TODO: = get speler op username uit db
-        String token = Utils.generateUserToken(username);
         return token;
     }
 
+    @Override
+    public String logIn(String username, String passwordHash) throws WrongPasswordException, UserDoesNotExistException, RemoteException {
 
+        Speler speler = impl.getSpeler(username);
+
+        if (speler == null) {
+            throw new UserDoesNotExistException("De gebruiker met gebruikersnaam: " + username + " bestaat niet.");
+        }
+
+        if (passwordHash.equals(speler.getPasswordHash())) {
+            return Utils.generateUserToken(username);
+        } else {
+            throw new WrongPasswordException("Het wachtwoord is verkeert.");
+        }
+    }
+
+
+    //TODO: DB dingen toevoegen
     //////////////////////////////// Lobby //////////////////////////////////////////
     //returned de gameId van de gemaakte game
     @Override

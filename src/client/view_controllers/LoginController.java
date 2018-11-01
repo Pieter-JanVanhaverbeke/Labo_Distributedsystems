@@ -1,7 +1,9 @@
 package client.view_controllers;
 
 import exceptions.LoginFailedException;
+import exceptions.UserDoesNotExistException;
 import exceptions.UsernameAlreadyInUseException;
+import exceptions.WrongPasswordException;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 
@@ -33,6 +35,10 @@ public class LoginController extends Observable {
         } catch (RemoteException e) {
             e.printStackTrace(); //TODO: error overlay tonen
         } catch (LoginFailedException e) {
+            e.printStackTrace();
+        } catch (UserDoesNotExistException e) {
+            e.printStackTrace();
+        } catch (WrongPasswordException e) {
             e.printStackTrace();
         }
     }
