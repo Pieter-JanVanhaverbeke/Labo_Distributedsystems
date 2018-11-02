@@ -2,12 +2,10 @@ package client.view_controllers;
 
 import exceptions.LoginFailedException;
 import exceptions.UserDoesNotExistException;
-import exceptions.UsernameAlreadyInUseException;
 import exceptions.WrongPasswordException;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 
-import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Observable;
 

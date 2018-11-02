@@ -1,5 +1,6 @@
 package application_server.memory_spel;
 
+import exceptions.GameAlreadyStartedException;
 import exceptions.NotEnoughSpelersException;
 import exceptions.NotYourTurnException;
 import exceptions.PlayerNumberExceededException;
@@ -7,7 +8,9 @@ import exceptions.PlayerNumberExceededException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by ruben on 19/10/18.
@@ -17,9 +20,9 @@ public class Game {
     private String gameId;
     private List<Speler> spelers;
     private Bordspel bordspel;
-    private  int spelerbeurt; //elke speler heeft index
+    private int spelerbeurt; //elke speler heeft index
     private int aantalspelers;
-    private List<Integer> puntenlijst;
+    private Map<Speler, Integer> puntenlijst;
     private String creator;
     private String createDate;
     private boolean started = false;
@@ -38,11 +41,11 @@ public class Game {
         int size = 2*bordGrootte+2;
         bordspel = new Bordspel(size, size);
         spelerbeurt = 0;
-        puntenlijst = new ArrayList<>();
+        puntenlijst = new HashMap<>();
 
         //iedere speler start met 0 punten
-        for(int i=0; i<aantalspelers;i++){
-            puntenlijst.add(0);
+        for(Speler speler: spelers){
+            puntenlijst.put(speler, 0);
         }
     }
 
@@ -51,6 +54,13 @@ public class Game {
             spelers.add(speler);
         else
             throw new PlayerNumberExceededException("Het maximum aantal spelers voor deze game is bereikt. Kan speler niet meer toevoegen.");
+    }
+
+    public void removeSpeler(Speler speler) throws GameAlreadyStartedException {
+        if(!started)
+            spelers.remove(speler);
+        else
+            throw new GameAlreadyStartedException("De Game is al begonnen, je kan geen spelers meer verwijderen.");
     }
 
     //flip kaart, eerste kaart blijft geflipt tot 2e geflipt word.
@@ -81,7 +91,7 @@ public class Game {
                         kaart1 = kaart2 = null;
                     } else {
                         //verhoog punten van speler
-                        puntenlijst.set(spelerbeurt, puntenlijst.get(spelerbeurt) + 1);  //speler die aan beurt is punt bijgeven
+                        puntenlijst.put(spelers.get(spelerbeurt), puntenlijst.get(spelerbeurt) + 1);  //speler die aan beurt is punt bijgeven
                         //check if game is gedaan, if so => schrijf punten naar spelersprofiel + delete game
                         if (bordspel.checkEindeSpel()) {
                             for (int i = 0; i < spelers.size(); i++) {
@@ -109,6 +119,10 @@ public class Game {
             result.append(speler.getUsername() + " ");
         result.append("| " + spelers.get(getSpelerbeurt()).getUsername() + " is aan de beurt.");
         return result.toString();
+    }
+
+    public int getGameScore(Speler speler){
+        return puntenlijst.get(speler);
     }
 
     public List<Speler> getSpelers() {
@@ -151,11 +165,11 @@ public class Game {
         this.aantalspelers = aantalspelers;
     }
 
-    public List<Integer> getPuntenlijst() {
+    public Map<Speler, Integer> getPuntenlijst() {
         return puntenlijst;
     }
 
-    public void setPuntenlijst(List<Integer> puntenlijst) {
+    public void setPuntenlijst(Map<Speler, Integer> puntenlijst) {
         this.puntenlijst = puntenlijst;
     }
 
@@ -179,7 +193,10 @@ public class Game {
         return started;
     }
 
+    //kan enkel maar op start zetten
     public void setStarted(boolean started) {
-        this.started = started;
+        if (started) {
+            this.started = true;
+        }
     }
 }

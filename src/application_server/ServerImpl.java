@@ -18,7 +18,7 @@ import java.util.List;
 import static application_server.Utils.Utils.validateToken;
 
 public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_appserver {
-    private Lobby lobby;
+    public static Lobby lobby;
     private rmi_int_appserver_db impl;
 
     public ServerImpl() throws RemoteException {
@@ -82,10 +82,24 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
         //TODO: DB
     }
 
+    //verwijderd speler van game spelerslijst als game nog niet gestart is
+    @Override
+    public void unJoinGame(String gameId, String token) throws NoValidTokenException, GameAlreadyStartedException {
+        Speler speler = validateToken(token);
+        lobby.unJoinGame(gameId, speler);
+        //TODO: DB
+    }
+
     @Override
     public List<GameInfo> getActiveGamesList(String token) throws NoValidTokenException {
         validateToken(token);
         return lobby.getActiveGamesList();
+    }
+
+    @Override
+    public GameInfo getGame(String token, String gameId) throws NoValidTokenException {
+        validateToken(token);
+        return new GameInfo(lobby.getGame(gameId));
     }
 
     //////////////////////////////////// Game ///////////////////////////////////////////
@@ -101,6 +115,12 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
     public int[][] getBord(String token, String gameId) throws NoValidTokenException {
         validateToken(token);
         return lobby.getGame(gameId).getBordspel().getBordRemote();
+    }
+
+    @Override
+    public void startGame(String gameId, String token) throws NoValidTokenException {
+        validateToken(token);
+        lobby.getGame(gameId).setStarted(true);
     }
 
 

@@ -22,7 +22,7 @@ import static client.Utils.Constants.LOGIN_SCENE;
 public class ClientMainGUI extends Application {
     public static rmi_int_client_appserver impl;
     public static String token;
-    public static String gameId;
+    public static String gameId; //heeft value als mag meedoen in game, anders is null
     public static String usernameLogedIn;
 
     private static Stage primaryStage;

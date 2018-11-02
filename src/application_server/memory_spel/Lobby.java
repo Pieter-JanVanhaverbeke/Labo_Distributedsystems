@@ -2,6 +2,7 @@ package application_server.memory_spel;
 
 
 import application_server.Utils.Utils;
+import exceptions.GameAlreadyStartedException;
 import shared_client_appserver_stuff.GameInfo;
 import exceptions.GameNotCreatedException;
 import exceptions.PlayerNumberExceededException;
@@ -54,6 +55,11 @@ public class Lobby {
     public void joinGame(String gameId, Speler speler) throws PlayerNumberExceededException {
         Game game = activeGames.get(gameId);
         game.addSpeler(speler);
+    }
+
+    public void unJoinGame(String gameId, Speler speler) throws GameAlreadyStartedException {
+        Game game = activeGames.get(gameId);
+        game.removeSpeler(speler);
     }
 
     public Game getGame(String gameId){

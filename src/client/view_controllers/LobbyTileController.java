@@ -1,5 +1,7 @@
 package client.view_controllers;
 
+import client.ClientMainGUI;
+import exceptions.GameAlreadyStartedException;
 import exceptions.NoValidTokenException;
 import exceptions.PlayerNumberExceededException;
 import javafx.fxml.FXML;
@@ -35,12 +37,17 @@ public class LobbyTileController {
 
     @FXML
     public void buttonPressed(){
-        String buttonText = tileKnop.getText();
+        String buttonText = tileKnop.getText(); //TODO mss niet netjes om op tekst uit gui te selecten :/
 
         switch (buttonText){
             case START_GAME:
-
-
+                try {
+                    impl.startGame(gameId, token);
+                    ClientMainGUI.gameId = gameId;
+                    setScene(OPEN_GAME, GAME_WIDTH, GAME_HEIGHT);
+                } catch (NoValidTokenException e) {
+                    e.printStackTrace();
+                }
                 break;
 
             case JOIN_GAME:
@@ -56,21 +63,24 @@ public class LobbyTileController {
                 break;
 
             case UNJOIN_GAME:
-
-
+                try {
+                    impl.unJoinGame(gameId, token);
+                } catch (NoValidTokenException e) {
+                    e.printStackTrace();
+                } catch (GameAlreadyStartedException e) {
+                    e.printStackTrace();
+                }
                 break;
 
             case RESUME_GAME:
-
-
+                ClientMainGUI.gameId = gameId;
+                setScene(OPEN_GAME, GAME_WIDTH, GAME_HEIGHT);
                 break;
 
             case WATCH_GAME:
-
-
+                ClientMainGUI.gameId = null;
+                setScene(OPEN_GAME, GAME_WIDTH, GAME_HEIGHT);
                 break;
-
-
         }
     }
 

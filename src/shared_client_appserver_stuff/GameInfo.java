@@ -11,7 +11,7 @@ import java.util.List;
 public class GameInfo {
     private String gameId;
     private int aantalSpelers;
-    private List<String> spelers; //usernames van spelers
+    private List<SpelerInfo> spelers;
     private int spelersBeurt;
     private String creator;
     private String createDate;
@@ -21,7 +21,7 @@ public class GameInfo {
         this.gameId = game.getGameId();
         this.aantalSpelers = game.getAantalspelers();
         this.spelers = new ArrayList<>();
-        game.getSpelers().forEach(e -> spelers.add(e.getUsername()));
+        game.getSpelers().forEach(e -> spelers.add(new SpelerInfo(e, gameId)));
         this.spelersBeurt = game.getSpelerbeurt();
         this.createDate = game.getCreateDate();
         this.creator = game.getCreator();
@@ -44,11 +44,11 @@ public class GameInfo {
         this.aantalSpelers = aantalSpelers;
     }
 
-    public List<String> getSpelers() {
+    public List<SpelerInfo> getSpelers() {
         return spelers;
     }
 
-    public void setSpelers(List<String> spelers) {
+    public void setSpelers(List<SpelerInfo> spelers) {
         this.spelers = spelers;
     }
 
