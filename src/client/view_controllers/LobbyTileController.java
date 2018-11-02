@@ -9,7 +9,7 @@ import javafx.scene.control.Button;
 
 import java.rmi.RemoteException;
 
-import static client.Utils.Constants.*;
+import static client.utils.Constants.*;
 import static client.ClientMainGUI.*;
 
 

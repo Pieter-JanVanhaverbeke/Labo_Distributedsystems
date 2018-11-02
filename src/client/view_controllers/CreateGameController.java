@@ -9,7 +9,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
 import static client.ClientMainGUI.*;
-import static client.Utils.Constants.*;
+import static client.utils.Constants.*;
 
 /**
  * Created by ruben on 1/11/18.

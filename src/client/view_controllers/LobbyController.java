@@ -1,8 +1,7 @@
 package client.view_controllers;
 
-import static application_server.Utils.Constants.*;
 import static client.ClientMainGUI.*;
-import static client.Utils.Constants.*;
+import static client.utils.Constants.*;
 
 import shared_client_appserver_stuff.GameInfo;
 import exceptions.NoValidTokenException;

@@ -7,7 +7,7 @@ import javafx.scene.control.TextField;
 import java.rmi.RemoteException;
 
 import static client.ClientMainGUI.*;
-import static client.Utils.Constants.*;
+import static client.utils.Constants.*;
 
 
 /**

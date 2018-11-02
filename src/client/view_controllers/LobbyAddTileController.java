@@ -1,12 +1,9 @@
 package client.view_controllers;
 
-import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-
 import static client.ClientMainGUI.setScene;
-import static client.Utils.Constants.CREATE_GAME;
-import static client.Utils.Constants.CREATE_GAME_HEIGHT;
-import static client.Utils.Constants.CREATE_GAME_WIDTH;
+import static client.utils.Constants.CREATE_GAME;
+import static client.utils.Constants.CREATE_GAME_HEIGHT;
+import static client.utils.Constants.CREATE_GAME_WIDTH;
 
 /**
  * Created by ruben on 1/11/18.

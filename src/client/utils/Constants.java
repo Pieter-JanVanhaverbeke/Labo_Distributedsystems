@@ -1,4 +1,4 @@
-package client.Utils;
+package client.utils;
 
 /**
  * Created by ruben on 28/10/18.

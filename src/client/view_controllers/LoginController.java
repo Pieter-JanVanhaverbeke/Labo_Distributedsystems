@@ -10,7 +10,7 @@ import java.rmi.RemoteException;
 import java.util.Observable;
 
 import static client.ClientMainGUI.*;
-import static client.Utils.Constants.*;
+import static client.utils.Constants.*;
 
 /**
  * Created by ruben on 28/10/18.

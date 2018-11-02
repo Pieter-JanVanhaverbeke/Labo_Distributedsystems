@@ -14,7 +14,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
-import static client.Utils.Constants.LOGIN_SCENE;
+import static client.utils.Constants.LOGIN_SCENE;
 
 /**
  * Created by ruben on 26/10/18.

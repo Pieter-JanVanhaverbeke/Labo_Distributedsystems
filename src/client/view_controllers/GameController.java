@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static client.ClientMainGUI.*;
-import static client.Utils.Constants.SELECTED_BORDER_WIDTH;
+import static client.utils.Constants.SELECTED_BORDER_WIDTH;
 
 /**
  * Created by ruben on 2/11/18.
