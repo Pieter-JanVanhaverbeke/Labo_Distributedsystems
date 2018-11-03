@@ -29,7 +29,7 @@ public interface rmi_int_client_appserver extends Remote {
     //////////////////////////////////// Game ///////////////////////////////////////////
     void flipCard(String token, String gameId, int x, int y) throws RemoteException, NoValidTokenException, NotYourTurnException, NotEnoughSpelersException;
 
-    int[][] getBord(String token, String gameId) throws RemoteException, NoValidTokenException;
-
     void startGame(String gameId, String token) throws NoValidTokenException;
+
+    GameUpdate gameUpdate(String gameId, String token) throws NoValidTokenException;
 }

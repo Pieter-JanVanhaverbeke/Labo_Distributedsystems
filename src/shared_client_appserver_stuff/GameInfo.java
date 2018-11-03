@@ -16,6 +16,9 @@ public class GameInfo {
     private String creator;
     private String createDate;
     private boolean started;
+    private int breedte;
+    private int lengte;
+    private int thema;
 
     public GameInfo(Game game){
         this.gameId = game.getGameId();
@@ -26,6 +29,9 @@ public class GameInfo {
         this.createDate = game.getCreateDate();
         this.creator = game.getCreator();
         this.started = game.isStarted();
+        this.breedte = game.getBordspel().getBreedte();
+        this.breedte = game.getBordspel().getLengte();
+        this.thema = game.getBordspel().getType();
     }
 
     public String getGameId() {
@@ -84,5 +90,27 @@ public class GameInfo {
         this.started = started;
     }
 
+    public int getBreedte() {
+        return breedte;
+    }
 
+    public void setBreedte(int breedte) {
+        this.breedte = breedte;
+    }
+
+    public int getLengte() {
+        return lengte;
+    }
+
+    public void setLengte(int lengte) {
+        this.lengte = lengte;
+    }
+
+    public int getThema() {
+        return thema;
+    }
+
+    public void setThema(int thema) {
+        this.thema = thema;
+    }
 }

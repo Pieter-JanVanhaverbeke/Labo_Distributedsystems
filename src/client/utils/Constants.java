@@ -1,5 +1,8 @@
 package client.utils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by ruben on 28/10/18.
  */
@@ -39,5 +42,22 @@ public class Constants {
 
     //create game
     public static final double SELECTED_BORDER_WIDTH = 10;
+
+    //game images
+    public static final String REVERSE_SIDE = "client/scenes/pictures/reverse.png";
+
+
+    public static final Map<Integer, Map<Integer, String>> THEMA_NUMBER = new HashMap<>();
+    public static final Map<Integer, String> PROGRAMMING_LANGUAGES = new HashMap<>();
+    public static final Map<Integer, String> THEMA2 = new HashMap<>();
+    public static final Map<Integer, String> THEMA3 = new HashMap<>();
+
+    static {
+        THEMA_NUMBER.put(0, PROGRAMMING_LANGUAGES);
+        THEMA_NUMBER.put(1, THEMA2);
+        THEMA_NUMBER.put(2, THEMA3);
+
+        //paden naar fotos toevoegen in elke map ...
+    }
 
 }

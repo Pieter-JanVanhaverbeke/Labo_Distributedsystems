@@ -7,7 +7,7 @@ import java.util.Random;
 
 public class Bordspel {
     private Kaart[][] bord;
-    private BordThema type; //layout van bordspel
+    private int type; //layout van bordspel
     private int lengte;
     private int breedte;
 
@@ -55,6 +55,14 @@ public class Bordspel {
 
     public void setBreedte(int breedte) {
         this.breedte = breedte;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
     }
 
     public boolean checkEindeSpel() {
@@ -130,9 +138,12 @@ public class Bordspel {
         int result[][] = new int[lengte][breedte];
 
         for(int i = 0; i<lengte; i++)
-            for (int j = 0; j<breedte;j++)
-                result[i][j] = bord[i][j].getSoort();
-
+            for (int j = 0; j<breedte;j++) {
+                if(bord[i][j].isFaceUp())
+                    result[i][j] = bord[i][j].getSoort();
+                else
+                    result[i][j] = -1;
+            }
         return result;
     }
 }

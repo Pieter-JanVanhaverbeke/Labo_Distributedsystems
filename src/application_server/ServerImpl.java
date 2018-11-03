@@ -1,10 +1,12 @@
 package application_server;
 
 import application_server.Utils.Utils;
+import application_server.memory_spel.Game;
 import application_server.memory_spel.Lobby;
 import application_server.memory_spel.Speler;
 import exceptions.*;
 import shared_client_appserver_stuff.GameInfo;
+import shared_client_appserver_stuff.GameUpdate;
 import shared_client_appserver_stuff.rmi_int_client_appserver;
 import shared_db_appserver_stuff.rmi_int_appserver_db;
 
@@ -112,15 +114,17 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
     }
 
     @Override
-    public int[][] getBord(String token, String gameId) throws NoValidTokenException {
-        validateToken(token);
-        return lobby.getGame(gameId).getBordspel().getBordRemote();
-    }
-
-    @Override
     public void startGame(String gameId, String token) throws NoValidTokenException {
         validateToken(token);
         lobby.getGame(gameId).setStarted(true);
+    }
+
+    //TODO: nog aanpassen dat asynchroon is!!
+    @Override
+    public GameUpdate gameUpdate(String gameId, String token) throws NoValidTokenException {
+        validateToken(token);
+        Game game = lobby.getGame(gameId);
+        return new GameUpdate(game.getSpelerbeurt(), game.getBordspel().getBordRemote());
     }
 
 
