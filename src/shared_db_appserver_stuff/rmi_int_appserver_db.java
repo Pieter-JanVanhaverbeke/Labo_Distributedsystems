@@ -27,9 +27,9 @@ public interface rmi_int_appserver_db extends Remote {
     void changeCredentials(String username, String passwdHash) throws UsernameAlreadyInUseException, RemoteException; //verander usernamen en password, enkel dingen vervangen die niet null zijn
 
     //returned null if geen lobby
-    Lobby getLobby();
+    Lobby getLobby() throws RemoteException;
 
-    void persistLobby(Lobby lobby);
+    void persistLobby(Lobby lobby) throws RemoteException;
 
 
 }
