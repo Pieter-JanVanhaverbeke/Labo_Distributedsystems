@@ -109,6 +109,9 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
     public void flipCard(String token, String gameId, int x, int y) throws NoValidTokenException, NotYourTurnException, NotEnoughSpelersException {
         Speler speler = validateToken(token);
         lobby.getActiveGames().get(gameId).flipCard(x, y, speler);
+
+        //wijziging => stuur respons naar user
+        notify();
         //TODO: DB
 
     }
@@ -124,6 +127,13 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
     public GameUpdate gameUpdate(String gameId, String token) throws NoValidTokenException {
         validateToken(token);
         Game game = lobby.getGame(gameId);
+
+        //wacht op wijziging
+        try {
+            wait();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return new GameUpdate(game.getSpelerbeurt(), game.getBordspel().getBordRemote());
     }
 

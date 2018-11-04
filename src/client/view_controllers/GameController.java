@@ -1,6 +1,10 @@
 package client.view_controllers;
 
 import exceptions.NoValidTokenException;
+import exceptions.NotEnoughSpelersException;
+import exceptions.NotYourTurnException;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -11,6 +15,7 @@ import shared_client_appserver_stuff.GameInfo;
 import shared_client_appserver_stuff.GameUpdate;
 import shared_client_appserver_stuff.SpelerInfo;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +28,7 @@ import static client.utils.Constants.THEMA_NUMBER;
 /**
  * Created by ruben on 2/11/18.
  */
-public class GameController {
+public class GameController implements EventHandler<Event> {
 
     @FXML
     public AnchorPane gameGridPane;
@@ -44,17 +49,16 @@ public class GameController {
     private List<GridPane> spelersRij;
     private GridPane gameBord;
     private Image back = new Image(REVERSE_SIDE);
-    ImageView imageView = new ImageView(back);
     private Map<Integer, String> pictures;
+    double boardwidth;
+    double boardLength;
 
 
     @FXML
     public void initialize(){
         //maten uitrekenen voor kotjes
-        double boardwidth = gameGridPane.getWidth();
-        double boardLength = gameGridPane.getHeight();
-        imageView.setFitHeight(boardLength/gameInfo.getLengte());
-        imageView.setFitWidth(boardwidth/gameInfo.getBreedte());
+        boardwidth = gameGridPane.getWidth();
+        boardLength = gameGridPane.getHeight();
 
         try {
             gameInfo = impl.getGame(token, gameId);
@@ -66,8 +70,7 @@ public class GameController {
 
             for(int i = 0; i<gameInfo.getBreedte(); i++){
                 for(int j = 0; j<gameInfo.getLengte(); j++){
-                    imageView.setImage(back);
-                    gameBord.add(imageView, j, i);
+                    gameBord.add(spitImageView(back), j, i);
                 }
             }
 
@@ -95,7 +98,35 @@ public class GameController {
                 setBorder(spelersBeurt, true);
             }
 
+            //TODO start update thread
+
         } catch (NoValidTokenException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private ImageView spitImageView(Image image){
+        ImageView imageView = new ImageView(image);
+        imageView.setFitHeight(boardLength/gameInfo.getLengte());
+        imageView.setFitWidth(boardwidth/gameInfo.getBreedte());
+        imageView.setOnMouseClicked(this::handle);
+        return imageView;
+    }
+
+    @Override
+    public void handle(Event event) {
+        try {
+            ImageView imageView = (ImageView) event.getSource();
+            int column = GridPane.getColumnIndex(imageView);
+            int row = GridPane.getRowIndex(imageView);
+            impl.flipCard(token, gameId, row, column);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        } catch (NoValidTokenException e) {
+            e.printStackTrace();
+        } catch (NotYourTurnException e) {
+            e.printStackTrace();
+        } catch (NotEnoughSpelersException e) {
             e.printStackTrace();
         }
     }
@@ -111,17 +142,14 @@ public class GameController {
         }
     }
 
-
     private void updateBord(int[][] bord){
         for(int i = 0; i<gameInfo.getBreedte(); i++){
             for(int j = 0; j<gameInfo.getLengte(); j++){
                 if(bord[j][i] == -1) {
-                    imageView.setImage(back);
-                    gameBord.add(imageView, j, i);
+                    gameBord.add(spitImageView(back), j, i);
                 }
                 else {
-                    imageView.setImage(new Image(pictures.get(bord[j][i])));
-                    gameBord.add(imageView, j, i);
+                    gameBord.add(spitImageView(new Image(pictures.get(bord[j][i]))), j, i);
                 }
             }
         }
@@ -134,6 +162,4 @@ public class GameController {
             spelersRij.get(index).setBorder(new Border(new BorderStroke(Color.BLUE, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(SELECTED_BORDER_WIDTH))));
         }
     }
-
-
 }
