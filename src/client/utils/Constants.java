@@ -21,6 +21,9 @@ public class Constants {
     public static final int GAME_HEIGHT = 1300;
     public static final int GAME_WIDTH = 700;
 
+    public static final int ERROR_HEIGHT = 500;
+    public static final int ERROR_WIDTH = 300;
+
     //FXML locations
     public static final String LOGIN_SCENE = "scenes/login.fxml";
     public static final String LOBBY_SCENE = "scenes/lobby.fxml";
@@ -29,6 +32,7 @@ public class Constants {
     public static final String LOBBY_ADD_GAME_TILE = "scenes/lobby_tile_create_game.fxml";
     public static final String CREATE_GAME = "scenes/create_game.fxml";
     public static final String OPEN_GAME = "scenes/game.fxml";
+    public static final String ERROR_SCENE = "scenes/error.fxml";
 
     //lobby
     public static final int LOBBY_COLUMN_NUMBER = 4;

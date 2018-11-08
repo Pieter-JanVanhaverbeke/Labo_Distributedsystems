@@ -13,8 +13,9 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.List;
 
-import static client.utils.Constants.LOGIN_SCENE;
+import static client.utils.Constants.*;
 
 /**
  * Created by ruben on 26/10/18.
@@ -68,12 +69,12 @@ public class ClientMainGUI extends Application {
         }
     }
 
-    public void overlayWindow(String scenePath, int width, int height, String title, Stage parent, Modality modality){
+    public Stage buildErrorWindow(String title, Stage parent, Modality modality){
         try {
             loader = new FXMLLoader();
-            loader.setLocation(ClientMainGUI.class.getResource(scenePath));
+            loader.setLocation(ClientMainGUI.class.getResource(ERROR_SCENE));
             Parent root = loader.load();
-            Scene scene = new Scene(root, width, height);
+            Scene scene = new Scene(root, ERROR_WIDTH, ERROR_HEIGHT);
             Stage window = new Stage();
             window.setTitle(title);
             window.setScene(scene);
@@ -82,9 +83,17 @@ public class ClientMainGUI extends Application {
             window.setX(primaryStage.getX() + 200);
             window.setY(primaryStage.getY() + 100);
             window.show();
+            return window;
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return null;
+    }
+
+    public void fillErrorWindow(Stage stage, String text, boolean error,  List<String> options){
+
+
+
     }
 
 
