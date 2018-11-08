@@ -39,16 +39,16 @@ public class ClientMainGUI extends Application {
     }
 
     public static void main(String[] args) {
-        launch(args);
+     //   launch(args);
 
-/*        try {
+        try {
             serverConnection();
             launch(args);
         } catch (RemoteException e) {
             e.printStackTrace();
         } catch (NotBoundException e) {
             e.printStackTrace();
-        }*/
+        }
     }
 
     private static void serverConnection() throws RemoteException, NotBoundException {

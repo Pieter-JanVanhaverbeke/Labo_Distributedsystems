@@ -10,6 +10,7 @@ import shared_client_appserver_stuff.GameUpdate;
 import shared_client_appserver_stuff.rmi_int_client_appserver;
 import shared_db_appserver_stuff.rmi_int_appserver_db;
 
+import java.io.Serializable;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -19,7 +20,7 @@ import java.util.List;
 
 import static application_server.Utils.Utils.validateToken;
 
-public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_appserver {
+public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_appserver, Serializable {
     public static Lobby lobby;
     private rmi_int_appserver_db impl;
 
@@ -58,7 +59,7 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
             throw new UserDoesNotExistException("De gebruiker met gebruikersnaam: " + username + " bestaat niet.");
         }
 
-        if (passwordHash.equals(speler.getPasswordHash())) {
+       else if (passwordHash.equals(speler.getPasswordHash())) {
             return Utils.generateUserToken(username);
         } else {
             throw new WrongPasswordException("Het wachtwoord is verkeert.");

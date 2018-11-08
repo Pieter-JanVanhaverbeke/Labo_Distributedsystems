@@ -48,6 +48,9 @@ public class LobbyTileController {
                 } catch (NoValidTokenException e) {
                     e.printStackTrace();
                 }
+                catch(RemoteException e){
+                    e.printStackTrace();
+                }
                 break;
 
             case JOIN_GAME:
@@ -68,6 +71,8 @@ public class LobbyTileController {
                 } catch (NoValidTokenException e) {
                     e.printStackTrace();
                 } catch (GameAlreadyStartedException e) {
+                    e.printStackTrace();
+                } catch (RemoteException e) {
                     e.printStackTrace();
                 }
                 break;

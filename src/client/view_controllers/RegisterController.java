@@ -29,7 +29,7 @@ public class RegisterController {
 
     @FXML
     public void createAccount(){
-        if(password.equals(password1)) {
+        if(password.getText().equals(password1.getText())) {
             try {
                 //TODO: hasing + salt
                 token = impl.registrerNewClient(username.getText(), password.getText());

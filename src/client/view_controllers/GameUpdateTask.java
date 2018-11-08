@@ -5,6 +5,8 @@ import javafx.concurrent.Task;
 import javafx.scene.layout.GridPane;
 import shared_client_appserver_stuff.GameUpdate;
 
+import java.rmi.RemoteException;
+
 import static client.ClientMainGUI.*;
 
 /**
@@ -31,6 +33,8 @@ public class GameUpdateTask extends Task {
             }
         } catch (NoValidTokenException e) {
             //TODO: exception afhandelen
+            e.printStackTrace();
+        } catch (RemoteException e) {
             e.printStackTrace();
         }
         return null;

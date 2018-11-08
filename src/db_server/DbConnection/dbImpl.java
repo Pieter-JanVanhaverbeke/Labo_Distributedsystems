@@ -7,39 +7,56 @@ import shared_db_appserver_stuff.rmi_int_appserver_db;
 import exceptions.UsernameAlreadyInUseException;
 import org.joda.time.DateTime;
 
+import java.io.Serializable;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.*;
 import java.util.*;
 
+import static application_server.ServerImpl.lobby;
 import static db_server.DbConnection.dbConnection.connect;
 
-public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db {
-    private HashMap<String, Speler> userTokens = new HashMap<>(); //bevat de huidig uitgeleende tokens ( = aangemelde users)
+public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db, Serializable {
+    private HashMap<String, Speler> userTokens;//bevat de huidig uitgeleende tokens ( = aangemelde users)
 
-
-    //  private Lobby lobby;
 
     public dbImpl() throws RemoteException {
-        // this.lobby = new Lobby();
-
+        userTokens = new HashMap<>();
     }
 
     @Override
-    public String createUser(String username, String passwdHash) throws UsernameAlreadyInUseException {
+    public String createUser(String username, String password) throws UsernameAlreadyInUseException {
+
+
         if (dbConnection.getUserSet().contains(username)) {
             System.out.println("gebruikersnaam: " + username + " al gebruikt");
             throw new UsernameAlreadyInUseException(username);
+        } else {
+            String sql = "INSERT INTO Users(username,password) VALUES(?,?)";
+            try (Connection conn = connect();
+                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setString(1, username);
+                pstmt.setString(2, password);
+                pstmt.executeUpdate();
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
+
+
+            //Wachtwoord Hashen en naar databank sturen(bij de client hashen)
+
+
+            //  dbConnection.insert(username,passwdHash);
+        /*    String token = Utils.generateUserToken(username);
+            Speler speler = new Speler(username);
+            userTokens.put(token, speler); //wordt al op app server bijgehouden
+            System.out.println("gebruiker: " + username + " aangemaakt en aangemeld!");
+            */
+            return "token";
         }
-
-        //Wachtwoord Hashen en naar databank sturen(bij de client hashen)
-
-        //  dbConnection.insert(username,passwdHash);
-        String token = Utils.generateUserToken(username);
-        Speler speler = new Speler(username);
-        userTokens.put(token, speler); //wordt al op app server bijgehouden
-        System.out.println("gebruiker: " + username + " aangemaakt en aangemeld!");
-        return token;
     }
 
     @Override
@@ -129,7 +146,7 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db 
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 int spelerId = rs.getInt("spelerId");
-                String passwordHash = rs.getString("passwordHash");
+                String passwordHash = rs.getString("password");
                 int globalScore = rs.getInt("globalScore");
 
 
@@ -137,6 +154,8 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db 
                 speler.setSpelerId(spelerId);
                 speler.setGlobalScore(globalScore);
                 speler.setPasswordHash(passwordHash);
+
+                System.out.println("gelukt");
 
                 return speler;
             }
@@ -162,12 +181,36 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db 
 
     @Override
     public Lobby getLobby() {
-        return null;
+        System.out.println("check");
+        Lobby lobby = null;
+        try {
+            Connection conn = connect();
+            Statement stmt = conn.createStatement();
+            String sql = "SELECT * FROM Lobby";
+            ResultSet rs = stmt.executeQuery(sql);
+                 while (rs.next()) {
+                      lobby = new Lobby();
+                 }
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return lobby;
     }
 
     @Override
     public void persistLobby(Lobby lobby) {
-
+        String dummy = "dummy";
+        String sql = "INSERT INTO Lobby(dummy) VALUES(?)";
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, dummy);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     private void updateTime(String username) {

@@ -10,7 +10,7 @@ public class ServerMain {
         try {
             Registry registry = LocateRegistry.createRegistry(10001);
             registry.rebind("ServerImplService", new ServerImpl());
-            registry.rebind("DatabaseImplService", new dbImpl()); //moet dit niet in db-server staan?
+          //  registry.rebind("DatabaseImplService", new dbImpl()); //moet dit niet in db-server staan?
 
 
         } catch (Exception e) {

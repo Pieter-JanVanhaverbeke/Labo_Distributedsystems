@@ -7,6 +7,7 @@ import shared_client_appserver_stuff.GameInfo;
 import exceptions.GameNotCreatedException;
 import exceptions.PlayerNumberExceededException;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,7 +15,7 @@ import java.util.Map;
 
 import static application_server.Utils.Constants.*;
 
-public class Lobby {
+public class Lobby implements Serializable{
     private static Map<String, Game> activeGames; //gameId is key
 
 

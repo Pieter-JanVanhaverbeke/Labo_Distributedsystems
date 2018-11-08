@@ -15,21 +15,21 @@ public interface rmi_int_client_appserver extends Remote {
 
     //////////////////////////////// Lobby //////////////////////////////////////////
     //returned de gameId van de gemaakte game
-    String createGame(int aantalSpelers, int bordGrootte, String token, int style) throws GameNotCreatedException, NoValidTokenException;
+    String createGame(int aantalSpelers, int bordGrootte, String token, int style) throws RemoteException, GameNotCreatedException, NoValidTokenException;
 
     void joinGame(String gameId, String token) throws RemoteException, NoValidTokenException, PlayerNumberExceededException;
 
     //verwijderd speler van game spelerslijst als game nog niet gestart is
-    void unJoinGame(String gameId, String token) throws NoValidTokenException, GameAlreadyStartedException;
+    void unJoinGame(String gameId, String token) throws RemoteException, NoValidTokenException, GameAlreadyStartedException;
 
     List<GameInfo> getActiveGamesList(String token) throws RemoteException, NoValidTokenException;
 
-    GameInfo getGame(String token, String gameId) throws NoValidTokenException;
+    GameInfo getGame(String token, String gameId) throws RemoteException, NoValidTokenException;
 
     //////////////////////////////////// Game ///////////////////////////////////////////
     void flipCard(String token, String gameId, int x, int y) throws RemoteException, NoValidTokenException, NotYourTurnException, NotEnoughSpelersException;
 
-    void startGame(String gameId, String token) throws NoValidTokenException;
+    void startGame(String gameId, String token) throws RemoteException, NoValidTokenException;
 
-    GameUpdate gameUpdate(String gameId, String token) throws NoValidTokenException;
+    GameUpdate gameUpdate(String gameId, String token) throws RemoteException, NoValidTokenException;
 }

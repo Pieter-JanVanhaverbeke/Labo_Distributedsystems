@@ -107,6 +107,8 @@ public class GameController implements EventHandler<Event> {
 
         } catch (NoValidTokenException e) {
             e.printStackTrace();
+        } catch (RemoteException e) {
+            e.printStackTrace();
         }
     }
 

@@ -8,6 +8,8 @@ import javafx.fxml.FXML;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
+import java.rmi.RemoteException;
+
 import static client.ClientMainGUI.*;
 import static client.utils.Constants.*;
 
@@ -39,6 +41,8 @@ public class CreateGameController implements EventHandler<ActionEvent> {
         } catch (GameNotCreatedException e) {
             e.printStackTrace();
         } catch (NoValidTokenException e) {
+            e.printStackTrace();
+        } catch (RemoteException e) {
             e.printStackTrace();
         }
     }

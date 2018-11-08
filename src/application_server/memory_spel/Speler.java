@@ -1,6 +1,8 @@
 package application_server.memory_spel;
 
-public class Speler {
+import java.io.Serializable;
+
+public class Speler implements Serializable {
     private int spelerId;
     private String username;
     private int globalScore;
