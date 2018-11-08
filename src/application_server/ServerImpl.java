@@ -122,7 +122,7 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
         lobby.getGame(gameId).setStarted(true);
     }
 
-    //TODO: nog aanpassen dat asynchroon is!!
+    //TODO: mss met versie nrs werken
     @Override
     public GameUpdate gameUpdate(String gameId, String token) throws NoValidTokenException {
         validateToken(token);

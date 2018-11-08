@@ -5,6 +5,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 
 import java.rmi.RemoteException;
+import java.util.Observable;
+import java.util.Observer;
 
 import static client.ClientMainGUI.*;
 import static client.utils.Constants.*;
@@ -48,4 +50,5 @@ public class RegisterController {
     public void back(){
         setScene(LOGIN_SCENE, LOGIN_WIDTH, LOGIN_HEIGHT);
     }
+
 }

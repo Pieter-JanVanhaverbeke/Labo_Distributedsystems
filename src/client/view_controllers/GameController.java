@@ -3,6 +3,7 @@ package client.view_controllers;
 import exceptions.NoValidTokenException;
 import exceptions.NotEnoughSpelersException;
 import exceptions.NotYourTurnException;
+import javafx.concurrent.Task;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -19,6 +20,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 
 import static client.ClientMainGUI.*;
 import static client.utils.Constants.REVERSE_SIDE;
@@ -50,8 +52,8 @@ public class GameController implements EventHandler<Event> {
     private GridPane gameBord;
     private Image back = new Image(REVERSE_SIDE);
     private Map<Integer, String> pictures;
-    double boardwidth;
-    double boardLength;
+    private double boardwidth;
+    private double boardLength;
 
 
     @FXML
@@ -64,7 +66,7 @@ public class GameController implements EventHandler<Event> {
             gameInfo = impl.getGame(token, gameId);
             pictures = THEMA_NUMBER.get(gameInfo.getThema());
 
-            //bord
+            //bord toevoegen
             gameBord = new GridPane();
             gameGridPane.getChildren().add(gameBord);
 
@@ -98,7 +100,10 @@ public class GameController implements EventHandler<Event> {
                 setBorder(spelersBeurt, true);
             }
 
-            //TODO start update thread
+            // start update thread voor game
+            // javaFx != thread safe => gebruik gemaakt van concurent package van javaFX
+            Task task = new GameUpdateTask(gameBord, playersListPane, this);
+            new Thread(task).start();
 
         } catch (NoValidTokenException e) {
             e.printStackTrace();
@@ -131,18 +136,9 @@ public class GameController implements EventHandler<Event> {
         }
     }
 
-    public void updateGame(){
-        try {
-            GameUpdate gameUpdate = impl.gameUpdate(gameId, token);
-            setBorder(gameUpdate.getSpelersBeurt(), true);
-            updateBord(gameUpdate.getBord());
-
-        } catch (NoValidTokenException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void updateBord(int[][] bord){
+    public void updateBord(GameUpdate gameUpdate){
+        setBorder(gameUpdate.getSpelersBeurt(), true);
+        int[][] bord = gameUpdate.getBord();
         for(int i = 0; i<gameInfo.getBreedte(); i++){
             for(int j = 0; j<gameInfo.getLengte(); j++){
                 if(bord[j][i] == -1) {
