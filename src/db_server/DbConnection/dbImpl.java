@@ -29,22 +29,30 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
 
     @Override
     public String createUser(String username, String password) throws UsernameAlreadyInUseException {
+        String time =  new DateTime().toString();       //huidige tijd dat je plaatst in DB
 
 
         if (dbConnection.getUserSet().contains(username)) {
             System.out.println("gebruikersnaam: " + username + " al gebruikt");
             throw new UsernameAlreadyInUseException(username);
         } else {
-            String sql = "INSERT INTO Users(username,password) VALUES(?,?)";
+            String sql = "INSERT INTO Users(username,password,globalScore,token,timestamptoken,lobbyid) VALUES(?,?,?,?,?,?)";
             try (Connection conn = connect();
                  PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 pstmt.setString(1, username);
                 pstmt.setString(2, password);
+                pstmt.setInt(3,0);
+                pstmt.setString(4,"token");     //nog aanpassen naar random token
+                pstmt.setString(5,time);
+                pstmt.setInt(6,1);              //naar eerste en enigste lobby zetten
                 pstmt.executeUpdate();
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
             }
 
+
+         //   Speler maarten = getSpeler("PJ");
+     //       System.out.println("token Maarten: " + validateUsertoken("Maarten"));
 
             //Wachtwoord Hashen en naar databank sturen(bij de client hashen)
 
@@ -79,24 +87,36 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
     @Override
     public boolean validateUsertoken(Speler speler) {
         String username = speler.getUsername();
-
-        try {
+        String sql = "SELECT * FROM Users WHERE username = ?";
+        try (
             Connection conn = connect();
-            Statement stmt = conn.createStatement();
-            String sql = "SELECT * FROM Users WHERE username=username;";
-            ResultSet rs = stmt.executeQuery(sql);
+            PreparedStatement pstmt  = conn.prepareStatement(sql)){
+
+                // set the values
+                pstmt.setString(1, username);
+                //
+                ResultSet rs = pstmt.executeQuery();
+
+
+
+
+          //  ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 String timestamptoken = rs.getString("timestamptoken");
 
                 DateTime tijdtoken = DateTime.parse(timestamptoken);
+                System.out.println("tijd user: " + tijdtoken.toString());
 
                 DateTime dateTime = new DateTime();
-                dateTime = dateTime.minusDays(1);
-                if(tijdtoken.compareTo(dateTime)>0){
+                dateTime = dateTime.minusDays(1);    //dateTime.plusDays(1);
+                System.out.println("tijd valid: " + dateTime.toString());
+
+                if (tijdtoken.compareTo(dateTime) > 0) {
                     return true;
-                }
-                else return false;
+                } else return false;
+
             }
+
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -181,7 +201,6 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
 
     @Override
     public Lobby getLobby() {
-        System.out.println("check");
         Lobby lobby = null;
         try {
             Connection conn = connect();
