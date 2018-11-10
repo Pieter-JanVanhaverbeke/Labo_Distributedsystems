@@ -17,7 +17,7 @@ public interface rmi_int_appserver_db extends Remote {
 
     void setUsertoken(Speler speler, String token) throws RemoteException;
 
-    boolean validateUsertoken(Speler speler) throws RemoteException;
+    //boolean validateUsertoken(Speler speler) throws RemoteException;
 
     List<Speler> getAllSpelers() throws  RemoteException;
 

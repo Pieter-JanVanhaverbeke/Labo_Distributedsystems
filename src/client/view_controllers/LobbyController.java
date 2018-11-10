@@ -3,6 +3,8 @@ package client.view_controllers;
 import static client.ClientMainGUI.*;
 import static client.utils.Constants.*;
 
+import client.ClientMainGUI;
+import exceptions.InternalException;
 import shared_client_appserver_stuff.GameInfo;
 import exceptions.NoValidTokenException;
 import javafx.fxml.FXML;
@@ -31,7 +33,7 @@ public class LobbyController {
             FXMLLoader loader = new FXMLLoader();
 
             //add existing gametiles
-            loader.setLocation(getClass().getResource(LOBBY_GAME_TILE));
+            loader.setLocation(ClientMainGUI.class.getResource(LOBBY_GAME_TILE));
             Parent tile = loader.load(); //TODO: check of niet telkens zelfde instantie in rij komt, if so -> deze lijn in for lus zetten
             LobbyTileController lobbyTileController = loader.getController();
 
@@ -70,7 +72,8 @@ public class LobbyController {
             }
 
             //add create game tile
-            loader.setLocation(getClass().getResource(LOBBY_ADD_GAME_TILE));
+            loader = new FXMLLoader();
+            loader.setLocation(ClientMainGUI.class.getResource(LOBBY_ADD_GAME_TILE));
             tile = loader.load();
             gameGrid.add(tile, i/LOBBY_COLUMN_NUMBER, i%LOBBY_COLUMN_NUMBER); //TODO: check of automatisch rijen aanmaakt als index te groot word
 
@@ -80,6 +83,16 @@ public class LobbyController {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (InternalException e) {
+            e.printStackTrace();
         }
+    }
+
+    @FXML
+    public void logout(){
+        token = null;
+        gameId = -1;
+        usernameLogedIn = null;
+        setScene(LOGIN_SCENE, LOGIN_WIDTH, LOGIN_HEIGHT);
     }
 }

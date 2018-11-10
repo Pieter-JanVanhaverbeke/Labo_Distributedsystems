@@ -16,18 +16,17 @@ import java.util.Map;
 import static application_server.Utils.Constants.*;
 
 public class Lobby implements Serializable{
-    private static Map<String, Game> activeGames; //gameId is key
+    private static Map<Integer, Game> activeGames; //gameId is key
 
-
-    //singleton
+    //singleton van maken?
     public Lobby(){
         activeGames = new HashMap<>();
     }
 
     //returned gameId
-    public String createNewGame(int aantalSpelers, int bordGrootte, String creator) throws GameNotCreatedException {
+    public int createNewGame(int aantalSpelers, int bordGrootte, String creator) throws GameNotCreatedException {
         if(aantalSpelers <= MAX_PLAYER_COUNT && aantalSpelers >= MIN_PLAYER_COUNT && bordGrootte >= MIN_BOARD_SIZE && bordGrootte <= MAX_BOARD_SIZE) {
-            String gameId = Utils.generateGameId();
+            int gameId = Utils.generateGameId();
             Game game = new Game(bordGrootte, gameId, aantalSpelers, creator);
             activeGames.put(gameId, game);
             return gameId;
@@ -35,35 +34,38 @@ public class Lobby implements Serializable{
         throw new GameNotCreatedException("aantal spelers/bordgrootte niet toegelaten.");
     }
 
-    public static void deleteGame(String gameId){
+    public static void deleteGame(int gameId){
         activeGames.remove(gameId);
     }
 
-    public Map<String, Game> getActiveGames(){
+    public Map<Integer, Game> getActiveGames(){
         return activeGames;
     }
 
     public List<GameInfo> getActiveGamesList() {
         List<GameInfo> result = new ArrayList<>();
 
-        for(String key: activeGames.keySet()){
+        if(activeGames == null)
+            return new ArrayList<>();
+
+        for(Integer key: activeGames.keySet()){
             Game game = activeGames.get(key);
             result.add(new GameInfo(game));
         }
         return result;
     }
 
-    public void joinGame(String gameId, Speler speler) throws PlayerNumberExceededException {
+    public void joinGame(int gameId, Speler speler) throws PlayerNumberExceededException {
         Game game = activeGames.get(gameId);
         game.addSpeler(speler);
     }
 
-    public void unJoinGame(String gameId, Speler speler) throws GameAlreadyStartedException {
+    public void unJoinGame(int gameId, Speler speler) throws GameAlreadyStartedException {
         Game game = activeGames.get(gameId);
         game.removeSpeler(speler);
     }
 
-    public Game getGame(String gameId){
+    public Game getGame(int gameId){
         return activeGames.get(gameId);
     }
 }

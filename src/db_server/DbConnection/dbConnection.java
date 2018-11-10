@@ -77,9 +77,6 @@ public class dbConnection {
         return userlijst;
     }
 
-        public static Speler getUser(String username){
-            return new Speler("bert");
-        }
 
 
     }

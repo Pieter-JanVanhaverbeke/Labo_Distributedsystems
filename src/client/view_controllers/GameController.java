@@ -1,5 +1,6 @@
 package client.view_controllers;
 
+import exceptions.InternalException;
 import exceptions.NoValidTokenException;
 import exceptions.NotEnoughSpelersException;
 import exceptions.NotYourTurnException;
@@ -109,6 +110,8 @@ public class GameController implements EventHandler<Event> {
             e.printStackTrace();
         } catch (RemoteException e) {
             e.printStackTrace();
+        } catch (InternalException e) {
+            e.printStackTrace();
         }
     }
 
@@ -134,6 +137,8 @@ public class GameController implements EventHandler<Event> {
         } catch (NotYourTurnException e) {
             e.printStackTrace();
         } catch (NotEnoughSpelersException e) {
+            e.printStackTrace();
+        } catch (InternalException e) {
             e.printStackTrace();
         }
     }

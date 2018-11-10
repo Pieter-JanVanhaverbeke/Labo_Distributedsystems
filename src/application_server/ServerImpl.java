@@ -22,7 +22,7 @@ import static application_server.Utils.Utils.validateToken;
 
 public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_appserver, Serializable {
     public static Lobby lobby;
-    private rmi_int_appserver_db impl;
+    public static rmi_int_appserver_db impl;
 
     public ServerImpl() throws RemoteException {
 
@@ -34,12 +34,14 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
             e.printStackTrace();
         }
 
-        //haal lobby uit db als al bestaat
+        //lobby niet in db steken, lobby bevat geen speciale info
+        /*//haal lobby uit db als al bestaat
         lobby = impl.getLobby();
         if(lobby == null) {
             lobby = new Lobby();
             impl.persistLobby(lobby);
-        }
+        }*/
+        lobby = new Lobby();
     }
 
     //////////////////////////////// Control //////////////////////////////////////////
@@ -70,103 +72,118 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
     //////////////////////////////// Lobby //////////////////////////////////////////
     //returned de gameId van de gemaakte game
     @Override
-    public String createGame(int aantalSpelers, int bordGrootte, String token, int style) throws GameNotCreatedException, NoValidTokenException {
-        String creator = validateToken(token).getUsername();
-        String gameId = lobby.createNewGame(aantalSpelers, bordGrootte, creator);
-        //TODO: DB
+    public int createGame(int aantalSpelers, int bordGrootte, String token, int style) throws GameNotCreatedException, NoValidTokenException, InternalException {
 
         //Database invoegen
         try {
+            String creator = validateToken(token).getUsername();
+            int gameId = lobby.createNewGame(aantalSpelers, bordGrootte, creator);
             impl.addGame();
+            return gameId;
         } catch (RemoteException e) {
             e.printStackTrace();
+            throw new InternalException("Fout in verbinding met DB.");
         }
-
-        return gameId;
     }
 
     //voegt speler toe aan game spelerslijst
     @Override
-    public void joinGame(String gameId, String token) throws NoValidTokenException, PlayerNumberExceededException {
-        Speler speler = validateToken(token);
-        lobby.joinGame(gameId, speler);
-
-
+    public void joinGame(int gameId, String token) throws NoValidTokenException, PlayerNumberExceededException, InternalException {
         //TODO: id als int zien?
         //Adden database
-        int gameid = Integer.parseInt(gameId);
-
         try {
-            impl.addSpelerToGame(speler.getSpelerId(),gameid);
+            Speler speler = validateToken(token);
+            lobby.joinGame(gameId, speler);
+            impl.addSpelerToGame(speler.getSpelerId(),gameId);
         } catch (RemoteException e) {
             e.printStackTrace();
+            throw new InternalException("Fout in verbinding met DB.");
         }
 
     }
 
     //verwijderd speler van game spelerslijst als game nog niet gestart is
     @Override
-    public void unJoinGame(String gameId, String token) throws NoValidTokenException, GameAlreadyStartedException {
-        Speler speler = validateToken(token);
-        lobby.unJoinGame(gameId, speler);
+    public void unJoinGame(int gameId, String token) throws NoValidTokenException, GameAlreadyStartedException, InternalException {
 
-
-
-        //TODO: id als int zien?
         //Adden database
-        int gameid = Integer.parseInt(gameId);
         try {
-            impl.addSpelerToGame(speler.getSpelerId(),gameid);
+            Speler speler = validateToken(token);
+            lobby.unJoinGame(gameId, speler);
+            impl.addSpelerToGame(speler.getSpelerId(), gameId);
         } catch (RemoteException e) {
             e.printStackTrace();
+            throw new InternalException("Fout in verbinding met DB.");
+
         }
-
-
     }
 
     @Override
-    public List<GameInfo> getActiveGamesList(String token) throws NoValidTokenException {
-        validateToken(token);
-        return lobby.getActiveGamesList();
+    public List<GameInfo> getActiveGamesList(String token) throws NoValidTokenException, InternalException {
+        try {
+            validateToken(token);
+            return lobby.getActiveGamesList();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            throw new InternalException("Fout in verbinding met DB.");
+
+        }
     }
 
     @Override
-    public GameInfo getGame(String token, String gameId) throws NoValidTokenException {
-        validateToken(token);
-        return new GameInfo(lobby.getGame(gameId));
+    public GameInfo getGame(String token, int gameId) throws NoValidTokenException, InternalException {
+        try {
+            validateToken(token);
+            return new GameInfo(lobby.getGame(gameId));
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            throw new InternalException("Fout in verbinding met DB.");
+        }
     }
 
     //////////////////////////////////// Game ///////////////////////////////////////////
     @Override
-    public void flipCard(String token, String gameId, int x, int y) throws NoValidTokenException, NotYourTurnException, NotEnoughSpelersException {
-        Speler speler = validateToken(token);
-        lobby.getActiveGames().get(gameId).flipCard(x, y, speler);
+    public void flipCard(String token, int gameId, int x, int y) throws NoValidTokenException, NotYourTurnException, NotEnoughSpelersException, InternalException {
+        try {
+            Speler speler = validateToken(token);
+            lobby.getActiveGames().get(gameId).flipCard(x, y, speler);
 
-        //wijziging => stuur respons naar user
-        notify();
-        //TODO: DB
-
+            //wijziging => stuur respons naar user
+            notify();
+            //TODO: DB
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            throw new InternalException("Fout in verbinding met DB.");
+        }
     }
 
     @Override
-    public void startGame(String gameId, String token) throws NoValidTokenException {
-        validateToken(token);
-        lobby.getGame(gameId).setStarted(true);
+    public void startGame(int gameId, String token) throws NoValidTokenException, InternalException {
+        try {
+            validateToken(token);
+            lobby.getGame(gameId).setStarted(true);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            throw new InternalException("Fout in verbinding met DB.");
+        }
     }
 
     //TODO: mss met versie nrs werken
     @Override
-    public GameUpdate gameUpdate(String gameId, String token) throws NoValidTokenException {
-        validateToken(token);
-        Game game = lobby.getGame(gameId);
-
-        //wacht op wijziging
+    public GameUpdate gameUpdate(int gameId, String token) throws NoValidTokenException, InternalException {
         try {
+            validateToken(token);
+            Game game = lobby.getGame(gameId);
+            //wacht op wijziging van server
             wait();
+            return new GameUpdate(game.getSpelerbeurt(), game.getBordspel().getBordRemote());
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            throw new InternalException("Fout in verbinding met DB.");
         } catch (InterruptedException e) {
             e.printStackTrace();
+            throw new InternalException("update mechanisme is interrupted.");
         }
-        return new GameUpdate(game.getSpelerbeurt(), game.getBordspel().getBordRemote());
     }
 
 

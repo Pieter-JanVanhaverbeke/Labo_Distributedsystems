@@ -15,21 +15,21 @@ public interface rmi_int_client_appserver extends Remote {
 
     //////////////////////////////// Lobby //////////////////////////////////////////
     //returned de gameId van de gemaakte game
-    String createGame(int aantalSpelers, int bordGrootte, String token, int style) throws RemoteException, GameNotCreatedException, NoValidTokenException;
+    int createGame(int aantalSpelers, int bordGrootte, String token, int style) throws RemoteException, GameNotCreatedException, NoValidTokenException, InternalException;
 
-    void joinGame(String gameId, String token) throws RemoteException, NoValidTokenException, PlayerNumberExceededException;
+    void joinGame(int gameId, String token) throws RemoteException, NoValidTokenException, PlayerNumberExceededException, InternalException;
 
     //verwijderd speler van game spelerslijst als game nog niet gestart is
-    void unJoinGame(String gameId, String token) throws RemoteException, NoValidTokenException, GameAlreadyStartedException;
+    void unJoinGame(int gameId, String token) throws RemoteException, NoValidTokenException, GameAlreadyStartedException, InternalException;
 
-    List<GameInfo> getActiveGamesList(String token) throws RemoteException, NoValidTokenException;
+    List<GameInfo> getActiveGamesList(String token) throws RemoteException, NoValidTokenException, InternalException;
 
-    GameInfo getGame(String token, String gameId) throws RemoteException, NoValidTokenException;
+    GameInfo getGame(String token, int gameId) throws RemoteException, NoValidTokenException, InternalException;
 
     //////////////////////////////////// Game ///////////////////////////////////////////
-    void flipCard(String token, String gameId, int x, int y) throws RemoteException, NoValidTokenException, NotYourTurnException, NotEnoughSpelersException;
+    void flipCard(String token, int gameId, int x, int y) throws RemoteException, NoValidTokenException, NotYourTurnException, NotEnoughSpelersException, InternalException;
 
-    void startGame(String gameId, String token) throws RemoteException, NoValidTokenException;
+    void startGame(int gameId, String token) throws RemoteException, NoValidTokenException, InternalException;
 
-    GameUpdate gameUpdate(String gameId, String token) throws RemoteException, NoValidTokenException;
+    GameUpdate gameUpdate(int gameId, String token) throws RemoteException, NoValidTokenException, InternalException;
 }

@@ -11,10 +11,10 @@ public class SpelerInfo {
     private String username;
     private int totalScore;
     private int gameScore;
-    private String gameId;
+    private int gameId;
 
 
-    public SpelerInfo(Speler speler, String gameId) {
+    public SpelerInfo(Speler speler, int gameId) {
         this.gameId = gameId;
         this.totalScore = speler.getGlobalScore();
         this.username = speler.getUsername();
@@ -45,11 +45,11 @@ public class SpelerInfo {
         this.gameScore = gameScore;
     }
 
-    public String getGameId() {
+    public int getGameId() {
         return gameId;
     }
 
-    public void setGameId(String gameId) {
+    public void setGameId(int gameId) {
         this.gameId = gameId;
     }
 }

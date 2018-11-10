@@ -2,14 +2,15 @@ package shared_client_appserver_stuff;
 
 import application_server.memory_spel.Game;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by ruben on 28/10/18.
  */
-public class GameInfo {
-    private String gameId;
+public class GameInfo implements Serializable {
+    private int gameId;
     private int aantalSpelers;
     private List<SpelerInfo> spelers;
     private int spelersBeurt;
@@ -34,11 +35,11 @@ public class GameInfo {
         this.thema = game.getBordspel().getType();
     }
 
-    public String getGameId() {
+    public int getGameId() {
         return gameId;
     }
 
-    public void setGameId(String gameId) {
+    public void setGameId(int gameId) {
         this.gameId = gameId;
     }
 

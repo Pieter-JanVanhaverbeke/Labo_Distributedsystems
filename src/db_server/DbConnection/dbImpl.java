@@ -84,7 +84,7 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         updateTime(username);           //setten van tijd usertoken
     }
 
-    @Override
+    /*@Override
     public boolean validateUsertoken(Speler speler) {
         String username = speler.getUsername();
         String sql = "SELECT * FROM Users WHERE username = ?";
@@ -123,7 +123,7 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         }
 
         return false; //als niets zou vinden, ook false returnen
-    }
+    }*/
 
     @Override
     public void addGame() {

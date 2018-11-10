@@ -9,13 +9,14 @@ import io.jsonwebtoken.security.SignatureException;
 import application_server.memory_spel.Speler;
 
 import javax.crypto.spec.SecretKeySpec;
+import java.rmi.RemoteException;
 import java.security.Key;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
-import static db_server.DbConnection.dbConnection.getUser;
 import static io.jsonwebtoken.SignatureAlgorithm.HS512;
+import static application_server.ServerImpl.impl;
 
 /**
  * Created by ruben on 23/10/18.
@@ -43,15 +44,15 @@ public class Utils {
 
     }
 
-    public static String generateGameId(){
-        return "Dit is een zeer random gameId: 4."; //TODO via db
+    public static int generateGameId(){
+        return 4; //TODO via db
 
     }
 
-    public static Speler validateToken(String token) throws NoValidTokenException {
+    public static Speler validateToken(String token) throws NoValidTokenException, RemoteException {
         try{
             Jws<Claims> claims = Jwts.parser().setSigningKey(JWT_KEY).parseClaimsJws(token);
-            return getUser(claims.getBody().getId());
+            return impl.getSpeler(claims.getBody().getId());
         }
         catch (SignatureException se){
             throw new NoValidTokenException("Token is niet valid!");

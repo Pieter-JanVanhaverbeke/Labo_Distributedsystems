@@ -1,5 +1,6 @@
 package client.view_controllers;
 
+import exceptions.InternalException;
 import exceptions.NoValidTokenException;
 import javafx.concurrent.Task;
 import javafx.scene.layout.GridPane;
@@ -35,6 +36,8 @@ public class GameUpdateTask extends Task {
             //TODO: exception afhandelen
             e.printStackTrace();
         } catch (RemoteException e) {
+            e.printStackTrace();
+        } catch (InternalException e) {
             e.printStackTrace();
         }
         return null;

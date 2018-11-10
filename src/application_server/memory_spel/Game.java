@@ -17,7 +17,7 @@ import java.util.Map;
  */
 public class Game {
 
-    private String gameId;
+    private int gameId;
     private List<Speler> spelers;
     private Bordspel bordspel;
     private int spelerbeurt; //elke speler heeft index
@@ -32,9 +32,9 @@ public class Game {
     // SMALL = 4X4 MED = 6X6 LARGE = 8X8
     // Steeds 8 soorten
     // bordgrootte 1=small,2=medium,3=large
-    public Game(int bordGrootte, String gameId, int aantalspelers, String creator){
+    public Game(int bordGrootte, int gameId, int aantalspelers, String creator){
         this.creator = creator;
-        this.createDate = ZonedDateTime.now(ZoneId.of("ECT")).toString();
+        this.createDate = ZonedDateTime.now(ZoneId.of(ZoneId.SHORT_IDS.get("ECT"))).toString();
         this.aantalspelers = aantalspelers;
         this.spelers = new ArrayList<>();
         this.gameId = gameId;
@@ -133,11 +133,11 @@ public class Game {
         this.spelers = spelers;
     }
 
-    public String getGameId() {
+    public int getGameId() {
         return gameId;
     }
 
-    public void setGameId(String gameId) {
+    public void setGameId(int gameId) {
         this.gameId = gameId;
     }
 

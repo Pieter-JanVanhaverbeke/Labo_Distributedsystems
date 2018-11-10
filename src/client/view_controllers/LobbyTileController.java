@@ -2,10 +2,12 @@ package client.view_controllers;
 
 import client.ClientMainGUI;
 import exceptions.GameAlreadyStartedException;
+import exceptions.InternalException;
 import exceptions.NoValidTokenException;
 import exceptions.PlayerNumberExceededException;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 
 import java.rmi.RemoteException;
 
@@ -19,21 +21,21 @@ import static client.ClientMainGUI.*;
 public class LobbyTileController {
 
     @FXML
-    public String created;
+    public Label created;
 
     @FXML
-    public String creator;
+    public Label creator;
 
     @FXML
-    public String joinedPlayers;
+    public Label joinedPlayers;
 
     @FXML
-    public String players;
+    public Label players;
 
     @FXML
     public Button tileKnop;
 
-    private String gameId;
+    private int gameId;
 
     @FXML
     public void buttonPressed(){
@@ -50,6 +52,8 @@ public class LobbyTileController {
                 }
                 catch(RemoteException e){
                     e.printStackTrace();
+                } catch (InternalException e) {
+                    e.printStackTrace();
                 }
                 break;
 
@@ -61,6 +65,8 @@ public class LobbyTileController {
                 } catch (NoValidTokenException e) {
                     e.printStackTrace();
                 } catch (PlayerNumberExceededException e) {
+                    e.printStackTrace();
+                } catch (InternalException e) {
                     e.printStackTrace();
                 }
                 break;
@@ -74,6 +80,8 @@ public class LobbyTileController {
                     e.printStackTrace();
                 } catch (RemoteException e) {
                     e.printStackTrace();
+                } catch (InternalException e) {
+                    e.printStackTrace();
                 }
                 break;
 
@@ -83,7 +91,7 @@ public class LobbyTileController {
                 break;
 
             case WATCH_GAME:
-                ClientMainGUI.gameId = null;
+                ClientMainGUI.gameId = -1;
                 setScene(OPEN_GAME, GAME_WIDTH, GAME_HEIGHT);
                 break;
         }
@@ -98,42 +106,42 @@ public class LobbyTileController {
     }
 
     public String getCreated() {
-        return created;
+        return created.getText();
     }
 
     public void setCreated(String created) {
-        this.created = created;
+        this.created.setText(created);
     }
 
     public String getCreator() {
-        return creator;
+        return creator.getText();
     }
 
     public void setCreator(String creator) {
-        this.creator = creator;
+        this.creator.setText(creator);
     }
 
     public String getJoinedPlayers() {
-        return joinedPlayers;
+        return joinedPlayers.getText();
     }
 
     public void setJoinedPlayers(String joinedPlayers) {
-        this.joinedPlayers = joinedPlayers;
+        this.joinedPlayers.setText(joinedPlayers);
     }
 
     public String getPlayers() {
-        return players;
+        return players.getText();
     }
 
     public void setPlayers(String players) {
-        this.players = players;
+        this.players.setText(players);
     }
 
-    public String getGameId() {
+    public int getGameId() {
         return gameId;
     }
 
-    public void setGameId(String gameId) {
+    public void setGameId(int gameId) {
         this.gameId = gameId;
     }
 }

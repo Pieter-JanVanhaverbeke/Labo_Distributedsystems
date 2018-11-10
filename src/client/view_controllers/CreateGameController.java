@@ -1,10 +1,13 @@
 package client.view_controllers;
 
 import exceptions.GameNotCreatedException;
+import exceptions.InternalException;
 import exceptions.NoValidTokenException;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
@@ -16,13 +19,13 @@ import static client.utils.Constants.*;
 /**
  * Created by ruben on 1/11/18.
  */
-public class CreateGameController implements EventHandler<ActionEvent> {
+public class CreateGameController implements EventHandler<MouseEvent> {
 
     @FXML
-    public int playersNumber;
+    public TextField playersNumber;
 
     @FXML
-    public int boardSize;
+    public TextField boardSize;
 
     @FXML
     public AnchorPane style1;
@@ -37,18 +40,21 @@ public class CreateGameController implements EventHandler<ActionEvent> {
 
     public void create(){
         try {
-            impl.createGame(playersNumber, boardSize, token, style);
+            impl.createGame(Integer.parseInt(playersNumber.getText()), Integer.parseInt(boardSize.getText()), token, style);
+            setScene(LOBBY_SCENE, LOBBY_WIDTH, LOBBY_HEIGHT);
         } catch (GameNotCreatedException e) {
             e.printStackTrace();
         } catch (NoValidTokenException e) {
             e.printStackTrace();
         } catch (RemoteException e) {
             e.printStackTrace();
+        } catch (InternalException e) {
+            e.printStackTrace();
         }
     }
 
     public void back(){
-        setScene(LOGIN_SCENE, LOGIN_WIDTH, LOGIN_HEIGHT);
+        setScene(LOBBY_SCENE, LOBBY_WIDTH, LOBBY_HEIGHT);
     }
 
     //zet de border van anchorpane aan/uit
@@ -62,8 +68,8 @@ public class CreateGameController implements EventHandler<ActionEvent> {
     }
 
     @Override
-    public void handle(ActionEvent actionEvent) {
-        AnchorPane anchorPane = (AnchorPane) actionEvent.getSource();
+    public void handle(MouseEvent mouseEvent) {
+        AnchorPane anchorPane = (AnchorPane) mouseEvent.getSource();
 
         if(anchorPane.equals(style1)){
             style = 0;

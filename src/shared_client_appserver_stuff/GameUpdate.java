@@ -1,9 +1,11 @@
 package shared_client_appserver_stuff;
 
+import java.io.Serializable;
+
 /**
  * Created by ruben on 3/11/18.
  */
-public class GameUpdate {
+public class GameUpdate implements Serializable {
 
     private int spelersBeurt;
     int[][] bord;
