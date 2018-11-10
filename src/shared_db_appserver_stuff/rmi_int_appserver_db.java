@@ -37,4 +37,10 @@ public interface rmi_int_appserver_db extends Remote {
 
     void removeSpelerToGame(int userid, int gameid) throws RemoteException;
 
+    void addNewBordspel(int layout, int grootte) throws RemoteException;
+
+    void addKaart(int xpos, int ypos, int bordspelid) throws RemoteException;
+
+    void flipKaart(int kaartid, boolean faceup) throws RemoteException;
+
 }

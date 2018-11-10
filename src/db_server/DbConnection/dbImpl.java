@@ -173,6 +173,53 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
     }
 
 
+    @Override
+    public void addNewBordspel(int layout, int grootte) {
+        String sql = "INSERT INTO GameSpelertable(layout,grootte) VALUES(?,?)";
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, layout);
+            pstmt.setInt(2, grootte);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+
+    @Override
+    public void addKaart(int xpos, int ypos, int bordspelid) {
+        String sql = "INSERT INTO GameSpelertable(layout,grootte,bordspelid,faceup) VALUES(?,?,?,?)";
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, xpos);
+            pstmt.setInt(2, ypos);
+            pstmt.setInt(3,bordspelid);
+            pstmt.setBoolean(4,false);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+    public void flipKaart(int kaartid, boolean faceup){
+        String sql = "UPDATE Kaart SET faceup = ? WHERE kaartid = ?";
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, kaartid);
+            pstmt.setBoolean(2,faceup);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
 
 
         //////////////////////////////////// HaalDatabase ///////////////////////////////////////////
