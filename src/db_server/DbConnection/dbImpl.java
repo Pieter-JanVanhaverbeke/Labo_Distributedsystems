@@ -125,6 +125,56 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         return false; //als niets zou vinden, ook false returnen
     }
 
+    @Override
+    public void addGame() {
+
+        Connection conn = connect();
+
+        String sql = "INSERT INTO Game(lobbyid) VALUES(?)";
+        try (
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, 1);
+            pstmt.executeUpdate();
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+    @Override
+    public void addSpelerToGame(int userid, int gameid){
+        String sql = "INSERT INTO GameSpelertable(userid,gameid) VALUES(?,?)";
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, userid);
+            pstmt.setInt(2, gameid);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+    @Override
+    public void removeSpelerToGame(int userid, int gameid){
+        String sql = "DELETE FROM GameSpelertable WHERE userid = ? AND gameid = ?";
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, userid);
+            pstmt.setInt(2, gameid);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+
         //////////////////////////////////// HaalDatabase ///////////////////////////////////////////
 
     @Override

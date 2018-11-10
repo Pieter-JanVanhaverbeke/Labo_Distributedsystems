@@ -74,6 +74,14 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
         String creator = validateToken(token).getUsername();
         String gameId = lobby.createNewGame(aantalSpelers, bordGrootte, creator);
         //TODO: DB
+
+        //Database invoegen
+        try {
+            impl.addGame();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
         return gameId;
     }
 
@@ -82,7 +90,18 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
     public void joinGame(String gameId, String token) throws NoValidTokenException, PlayerNumberExceededException {
         Speler speler = validateToken(token);
         lobby.joinGame(gameId, speler);
-        //TODO: DB
+
+
+        //TODO: id als int zien?
+        //Adden database
+        int gameid = Integer.parseInt(gameId);
+
+        try {
+            impl.addSpelerToGame(speler.getSpelerId(),gameid);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
     }
 
     //verwijderd speler van game spelerslijst als game nog niet gestart is
@@ -90,7 +109,19 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
     public void unJoinGame(String gameId, String token) throws NoValidTokenException, GameAlreadyStartedException {
         Speler speler = validateToken(token);
         lobby.unJoinGame(gameId, speler);
-        //TODO: DB
+
+
+
+        //TODO: id als int zien?
+        //Adden database
+        int gameid = Integer.parseInt(gameId);
+        try {
+            impl.addSpelerToGame(speler.getSpelerId(),gameid);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
     @Override

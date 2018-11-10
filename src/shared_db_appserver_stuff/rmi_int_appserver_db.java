@@ -31,5 +31,10 @@ public interface rmi_int_appserver_db extends Remote {
 
     void persistLobby(Lobby lobby) throws RemoteException;
 
+    void addGame() throws RemoteException;
+
+    void addSpelerToGame(int userid, int gameid) throws RemoteException;
+
+    void removeSpelerToGame(int userid, int gameid) throws RemoteException;
 
 }
