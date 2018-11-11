@@ -6,6 +6,7 @@ import exceptions.NoValidTokenException;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
@@ -37,6 +38,21 @@ public class CreateGameController implements EventHandler<MouseEvent> {
     public AnchorPane style3;
 
     private int style;
+
+    @FXML
+    public void initialize(){
+        GridPane g = (GridPane) style1.getChildren().get(0);
+        Label l = (Label) g.getChildren().get(1);
+        l.setText(THEMA1_NAME);
+
+        g = (GridPane) style2.getChildren().get(0);
+        l = (Label) g.getChildren().get(1);
+        l.setText(THEMA2_NAME);
+
+        g = (GridPane) style3.getChildren().get(0);
+        l = (Label) g.getChildren().get(1);
+        l.setText(THEMA3_NAME);
+    }
 
     public void create(){
         try {

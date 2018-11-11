@@ -5,6 +5,7 @@ import exceptions.NotEnoughSpelersException;
 import exceptions.NotYourTurnException;
 import exceptions.PlayerNumberExceededException;
 
+import java.rmi.RemoteException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -50,8 +51,10 @@ public class Game {
     }
 
     public void addSpeler(Speler speler) throws PlayerNumberExceededException {
-        if(spelers.size() < aantalspelers)
+        if(spelers.size() < aantalspelers) {
             spelers.add(speler);
+            puntenlijst.put(speler, 0);
+        }
         else
             throw new PlayerNumberExceededException("Het maximum aantal spelers voor deze game is bereikt. Kan speler niet meer toevoegen.");
     }
@@ -67,7 +70,7 @@ public class Game {
     // If gelijk => punt bij speler tellen + kaarten blijven liggen,
     // if niet gelijk => kaarten draaien terug om. if spel is gedaan
     // (alle kaarten gedraaid) => punten worden aan spelers profiel toegevoegd
-    public void flipCard(int x, int y, Speler speler) throws NotYourTurnException, NotEnoughSpelersException {
+    public void flipCard(int x, int y, Speler speler) throws NotYourTurnException, NotEnoughSpelersException, RemoteException {
         started = true;
         //check of voldoende spelers zijn
         if(spelers.size() == aantalspelers) {
@@ -113,13 +116,13 @@ public class Game {
         }
     }
 
-    public String toString(){
+    /*public String toString(){
         StringBuilder result = new StringBuilder("Spelers: ");
         for(Speler speler: spelers)
             result.append(speler.getUsername() + " ");
         result.append("| " + spelers.get(getSpelerbeurt()).getUsername() + " is aan de beurt.");
         return result.toString();
-    }
+    }*/
 
     public int getGameScore(Speler speler){
         return puntenlijst.get(speler);

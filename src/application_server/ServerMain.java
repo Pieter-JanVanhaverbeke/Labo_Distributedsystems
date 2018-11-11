@@ -1,7 +1,5 @@
 package application_server;
 
-import db_server.DbConnection.dbImpl;
-
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
@@ -10,8 +8,6 @@ public class ServerMain {
         try {
             Registry registry = LocateRegistry.createRegistry(10001);
             registry.rebind("ServerImplService", new ServerImpl());
-          //  registry.rebind("DatabaseImplService", new dbImpl()); //moet dit niet in db-server staan?
-
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -22,16 +18,5 @@ public class ServerMain {
     public static void main(String[] args) {
         ServerMain main = new ServerMain();
         main.startServer();
-
-        //TODO: db
-        /*dbConnection.connect();
-        dbConnection.selectAll();
-        Set<String> set = dbConnection.getUserSet();
-
-        Iterator iter = set.iterator();
-        while (iter.hasNext()) {
-            System.out.println(iter.next());
-        }*/
-
     }
 }

@@ -1,8 +1,7 @@
 package shared_client_appserver_stuff;
 
+import application_server.memory_spel.Lobby;
 import application_server.memory_spel.Speler;
-
-import static application_server.ServerImpl.lobby;
 
 /**
  * Created by ruben on 2/11/18.
@@ -18,7 +17,7 @@ public class SpelerInfo {
         this.gameId = gameId;
         this.totalScore = speler.getGlobalScore();
         this.username = speler.getUsername();
-        this.gameScore = lobby.getGame(gameId).getGameScore(speler);
+        this.gameScore = Lobby.getGame(gameId).getGameScore(speler);
     }
 
     public String getUsername() {

@@ -107,7 +107,7 @@
                         </GridPane>
                      </children>
                   </AnchorPane>
-                  <AnchorPane fx:id="style11" onMouseClicked="#handle" GridPane.columnIndex="1">
+                  <AnchorPane fx:id="style2" onMouseClicked="#handle" GridPane.columnIndex="1">
                      <children>
                         <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <columnConstraints>
@@ -128,7 +128,7 @@
                         </GridPane>
                      </children>
                   </AnchorPane>
-                  <AnchorPane fx:id="style12" onMouseClicked="#handle" GridPane.columnIndex="2">
+                  <AnchorPane fx:id="style3" onMouseClicked="#handle" GridPane.columnIndex="2">
                      <children>
                         <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <columnConstraints>

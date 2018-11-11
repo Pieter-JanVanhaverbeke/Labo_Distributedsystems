@@ -1,9 +1,11 @@
 package client;
 
+import client.view_controllers.ErrorController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import shared_client_appserver_stuff.rmi_int_client_appserver;
@@ -27,6 +29,7 @@ public class ClientMainGUI extends Application {
     public static String usernameLogedIn;
 
     private static Stage primaryStage;
+    public static Stage errorWindow;
     private static FXMLLoader loader;
 
     @Override
@@ -39,8 +42,6 @@ public class ClientMainGUI extends Application {
     }
 
     public static void main(String[] args) {
-     //   launch(args);
-
         try {
             serverConnection();
             launch(args);
@@ -69,32 +70,32 @@ public class ClientMainGUI extends Application {
         }
     }
 
-    public Stage buildErrorWindow(String title, Stage parent, Modality modality){
+    public static void buildErrorWindow(String title, String message, boolean error, List<Button> options, Modality modality){
         try {
+            //scene
             loader = new FXMLLoader();
             loader.setLocation(ClientMainGUI.class.getResource(ERROR_SCENE));
+            ErrorController errorController = loader.getController();
             Parent root = loader.load();
             Scene scene = new Scene(root, ERROR_WIDTH, ERROR_HEIGHT);
-            Stage window = new Stage();
-            window.setTitle(title);
-            window.setScene(scene);
-            window.initModality(modality);
-            window.initOwner(parent);
-            window.setX(primaryStage.getX() + 200);
-            window.setY(primaryStage.getY() + 100);
-            window.show();
-            return window;
+            errorWindow = new Stage();
+            errorWindow.setTitle(title);
+            errorWindow.setScene(scene);
+            errorWindow.initModality(modality);
+            errorWindow.initOwner(primaryStage);
+            errorWindow.setX(primaryStage.getX() + 200);
+            errorWindow.setY(primaryStage.getY() + 100);
+
+            //scene content
+            errorController.setError(error);
+            errorController.setMessage(message);
+            errorController.setTitle(title);
+            errorController.setOptionButtons(options);
+
+            errorWindow.show();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return null;
     }
-
-    public void fillErrorWindow(Stage stage, String text, boolean error,  List<String> options){
-
-
-
-    }
-
 
 }

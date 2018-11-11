@@ -34,11 +34,14 @@ public class LobbyController {
 
             //add existing gametiles
             loader.setLocation(ClientMainGUI.class.getResource(LOBBY_GAME_TILE));
-            Parent tile = loader.load(); //TODO: check of niet telkens zelfde instantie in rij komt, if so -> deze lijn in for lus zetten
-            LobbyTileController lobbyTileController = loader.getController();
+            Parent tile;
+            LobbyTileController lobbyTileController;
 
             int i;
             for(i = 0; i<activeGames.size(); i++){
+                tile = loader.load();
+                lobbyTileController = loader.getController();
+
                 GameInfo gameInfo = activeGames.get(i);
                 int maxAantalSpelers = gameInfo.getAantalSpelers();
                 int currentAantalSpelers = gameInfo.getSpelers().size();

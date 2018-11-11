@@ -50,11 +50,20 @@ public class Constants {
     //game images
     public static final String REVERSE_SIDE = "client/scenes/pictures/reverse.png";
 
+    //exception strings
+    public static final String USERNAME_DOES_NOT_EXIST_TITLE = "Username does not exist";
+    public static final String OK = "Ok";
+    public static final String USERNAME_DOES_NOT_EXIST_MESSAGE = "Username does not exist. Give an existing username.";
+
 
     public static final Map<Integer, Map<Integer, String>> THEMA_NUMBER = new HashMap<>();
     public static final Map<Integer, String> PROGRAMMING_LANGUAGES = new HashMap<>();
     public static final Map<Integer, String> THEMA2 = new HashMap<>();
     public static final Map<Integer, String> THEMA3 = new HashMap<>();
+
+    public static final String THEMA1_NAME = "Programeertalen";
+    public static final String THEMA2_NAME = "Pannekoek";
+    public static final String THEMA3_NAME = "Brian";
 
     static {
         THEMA_NUMBER.put(0, PROGRAMMING_LANGUAGES);

@@ -1,6 +1,6 @@
 package db_server.DbConnection;
 
-import application_server.Utils.Utils;
+import application_server.memory_spel.Game;
 import application_server.memory_spel.Lobby;
 import application_server.memory_spel.Speler;
 import shared_db_appserver_stuff.rmi_int_appserver_db;
@@ -8,15 +8,11 @@ import exceptions.UsernameAlreadyInUseException;
 import org.joda.time.DateTime;
 
 import java.io.Serializable;
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.*;
 import java.util.*;
 
-import static application_server.ServerImpl.lobby;
 import static db_server.DbConnection.dbConnection.connect;
 
 public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db, Serializable {
@@ -125,6 +121,7 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         return false; //als niets zou vinden, ook false returnen
     }*/
 
+    //TODO: PJ, geen info in game?
     @Override
     public void addGame() {
 
@@ -140,6 +137,11 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void deleteGame(int gameId){
+
     }
 
 
@@ -223,6 +225,12 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
 
 
         //////////////////////////////////// HaalDatabase ///////////////////////////////////////////
+
+    @Override //return lege lijst als geen games
+    public Map<Integer, Game> getAllGames(){ //return alle games in db met gameId = key
+
+        return null;
+    }
 
     @Override
     public List<Speler> getAllSpelers() {

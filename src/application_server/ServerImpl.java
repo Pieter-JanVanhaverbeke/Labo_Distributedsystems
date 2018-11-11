@@ -21,7 +21,6 @@ import java.util.List;
 import static application_server.Utils.Utils.validateToken;
 
 public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_appserver, Serializable {
-    public static Lobby lobby;
     public static rmi_int_appserver_db impl;
 
     public ServerImpl() throws RemoteException {
@@ -33,15 +32,6 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
         } catch (NotBoundException e) {
             e.printStackTrace();
         }
-
-        //lobby niet in db steken, lobby bevat geen speciale info
-        /*//haal lobby uit db als al bestaat
-        lobby = impl.getLobby();
-        if(lobby == null) {
-            lobby = new Lobby();
-            impl.persistLobby(lobby);
-        }*/
-        lobby = new Lobby();
     }
 
     //////////////////////////////// Control //////////////////////////////////////////
@@ -54,7 +44,6 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
 
     @Override
     public String logIn(String username, String passwordHash) throws WrongPasswordException, UserDoesNotExistException, RemoteException {
-
         Speler speler = impl.getSpeler(username);
 
         if (speler == null) {
@@ -73,12 +62,9 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
     //returned de gameId van de gemaakte game
     @Override
     public int createGame(int aantalSpelers, int bordGrootte, String token, int style) throws GameNotCreatedException, NoValidTokenException, InternalException {
-
-        //Database invoegen
         try {
             String creator = validateToken(token).getUsername();
-            int gameId = lobby.createNewGame(aantalSpelers, bordGrootte, creator);
-            impl.addGame();
+            int gameId = Lobby.createNewGame(aantalSpelers, bordGrootte, creator);
             return gameId;
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -89,28 +75,21 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
     //voegt speler toe aan game spelerslijst
     @Override
     public void joinGame(int gameId, String token) throws NoValidTokenException, PlayerNumberExceededException, InternalException {
-        //TODO: id als int zien?
-        //Adden database
         try {
             Speler speler = validateToken(token);
-            lobby.joinGame(gameId, speler);
-            impl.addSpelerToGame(speler.getSpelerId(),gameId);
+            Lobby.joinGame(gameId, speler);
         } catch (RemoteException e) {
             e.printStackTrace();
             throw new InternalException("Fout in verbinding met DB.");
         }
-
     }
 
     //verwijderd speler van game spelerslijst als game nog niet gestart is
     @Override
     public void unJoinGame(int gameId, String token) throws NoValidTokenException, GameAlreadyStartedException, InternalException {
-
-        //Adden database
         try {
             Speler speler = validateToken(token);
-            lobby.unJoinGame(gameId, speler);
-            impl.addSpelerToGame(speler.getSpelerId(), gameId);
+            Lobby.unJoinGame(gameId, speler);
         } catch (RemoteException e) {
             e.printStackTrace();
             throw new InternalException("Fout in verbinding met DB.");
@@ -122,7 +101,7 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
     public List<GameInfo> getActiveGamesList(String token) throws NoValidTokenException, InternalException {
         try {
             validateToken(token);
-            return lobby.getActiveGamesList();
+            return Lobby.getActiveGamesList();
         } catch (RemoteException e) {
             e.printStackTrace();
             throw new InternalException("Fout in verbinding met DB.");
@@ -134,7 +113,7 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
     public GameInfo getGame(String token, int gameId) throws NoValidTokenException, InternalException {
         try {
             validateToken(token);
-            return new GameInfo(lobby.getGame(gameId));
+            return new GameInfo(Lobby.getGame(gameId));
         } catch (RemoteException e) {
             e.printStackTrace();
             throw new InternalException("Fout in verbinding met DB.");
@@ -146,7 +125,7 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
     public void flipCard(String token, int gameId, int x, int y) throws NoValidTokenException, NotYourTurnException, NotEnoughSpelersException, InternalException {
         try {
             Speler speler = validateToken(token);
-            lobby.getActiveGames().get(gameId).flipCard(x, y, speler);
+            Lobby.getActiveGames().get(gameId).flipCard(x, y, speler);
 
             //wijziging => stuur respons naar user
             notify();
@@ -161,7 +140,7 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
     public void startGame(int gameId, String token) throws NoValidTokenException, InternalException {
         try {
             validateToken(token);
-            lobby.getGame(gameId).setStarted(true);
+            Lobby.getGame(gameId).setStarted(true);
         } catch (RemoteException e) {
             e.printStackTrace();
             throw new InternalException("Fout in verbinding met DB.");
@@ -173,7 +152,7 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
     public GameUpdate gameUpdate(int gameId, String token) throws NoValidTokenException, InternalException {
         try {
             validateToken(token);
-            Game game = lobby.getGame(gameId);
+            Game game = Lobby.getGame(gameId);
             //wacht op wijziging van server
             wait();
             return new GameUpdate(game.getSpelerbeurt(), game.getBordspel().getBordRemote());

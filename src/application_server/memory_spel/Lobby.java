@@ -8,41 +8,52 @@ import exceptions.GameNotCreatedException;
 import exceptions.PlayerNumberExceededException;
 
 import java.io.Serializable;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static application_server.Utils.Constants.*;
+import static application_server.ServerImpl.*;
 
 public class Lobby implements Serializable{
     private static Map<Integer, Game> activeGames; //gameId is key
 
-    //singleton van maken?
-    public Lobby(){
-        activeGames = new HashMap<>();
-    }
-
     //returned gameId
-    public int createNewGame(int aantalSpelers, int bordGrootte, String creator) throws GameNotCreatedException {
+    public static int createNewGame(int aantalSpelers, int bordGrootte, String creator) throws GameNotCreatedException, RemoteException {
+        if(activeGames == null){
+            activeGames = new HashMap<>();
+        }
+
         if(aantalSpelers <= MAX_PLAYER_COUNT && aantalSpelers >= MIN_PLAYER_COUNT && bordGrootte >= MIN_BOARD_SIZE && bordGrootte <= MAX_BOARD_SIZE) {
             int gameId = Utils.generateGameId();
             Game game = new Game(bordGrootte, gameId, aantalSpelers, creator);
             activeGames.put(gameId, game);
+            impl.addGame(); //TODO: geen args?
             return gameId;
         }
         throw new GameNotCreatedException("aantal spelers/bordgrootte niet toegelaten.");
     }
 
     public static void deleteGame(int gameId){
+        dbUpdateGames();
         activeGames.remove(gameId);
+        try {
+            impl.deleteGame(gameId);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
-    public Map<Integer, Game> getActiveGames(){
+    public static Map<Integer, Game> getActiveGames(){
+        dbUpdateGames();
         return activeGames;
     }
 
-    public List<GameInfo> getActiveGamesList() {
+    public static List<GameInfo> getActiveGamesList() {
+        //eerst nieuwe info uit db halen
+        dbUpdateGames();
         List<GameInfo> result = new ArrayList<>();
 
         if(activeGames == null)
@@ -55,17 +66,29 @@ public class Lobby implements Serializable{
         return result;
     }
 
-    public void joinGame(int gameId, Speler speler) throws PlayerNumberExceededException {
+    public static void joinGame(int gameId, Speler speler) throws PlayerNumberExceededException, RemoteException {
+        impl.addSpelerToGame(speler.getSpelerId(),gameId);
         Game game = activeGames.get(gameId);
         game.addSpeler(speler);
     }
 
-    public void unJoinGame(int gameId, Speler speler) throws GameAlreadyStartedException {
+    public static void unJoinGame(int gameId, Speler speler) throws GameAlreadyStartedException, RemoteException {
+        impl.addSpelerToGame(speler.getSpelerId(), gameId);
         Game game = activeGames.get(gameId);
         game.removeSpeler(speler);
     }
 
-    public Game getGame(int gameId){
+    public static Game getGame(int gameId){
+        //eerst nieuwe info uit db halen
+        dbUpdateGames();
         return activeGames.get(gameId);
+    }
+
+    private static void dbUpdateGames(){
+        try {
+            activeGames = impl.getAllGames();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 }
