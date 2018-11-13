@@ -5,6 +5,7 @@ import exceptions.NotEnoughSpelersException;
 import exceptions.NotYourTurnException;
 import exceptions.PlayerNumberExceededException;
 
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -16,7 +17,7 @@ import java.util.Map;
 /**
  * Created by ruben on 19/10/18.
  */
-public class Game {
+public class Game implements Serializable {
 
     private int gameId;
     private List<Speler> spelers;

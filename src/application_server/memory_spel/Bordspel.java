@@ -1,11 +1,12 @@
 package application_server.memory_spel;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-public class Bordspel {
+public class Bordspel implements Serializable {
     private Kaart[][] bord;
     private int type; //layout van bordspel
     private int lengte;

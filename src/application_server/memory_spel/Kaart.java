@@ -1,6 +1,8 @@
 package application_server.memory_spel;
 
-public class Kaart {
+import java.io.Serializable;
+
+public class Kaart implements Serializable {
     private int soort; //kaarttype
     private boolean faceUp;
 
