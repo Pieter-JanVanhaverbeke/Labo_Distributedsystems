@@ -1,8 +1,6 @@
 package db_server.DbConnection;
 
-import application_server.memory_spel.Game;
-import application_server.memory_spel.Lobby;
-import application_server.memory_spel.Speler;
+import application_server.memory_spel.*;
 import shared_db_appserver_stuff.rmi_int_appserver_db;
 import exceptions.UsernameAlreadyInUseException;
 import org.joda.time.DateTime;
@@ -141,7 +139,14 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
 
     @Override
     public void deleteGame(int gameId){
-
+        String sql = "DELETE FROM Game WHERE gameid=?";
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, gameId);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -227,12 +232,68 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         //////////////////////////////////// HaalDatabase ///////////////////////////////////////////
 
     @Override //return lege lijst als geen games
-    public Map<Integer, Game> getAllGames(){ //return alle games in db met gameId = key
+    public Map<Integer, Game> getAllGames() { //return alle games in db met gameId = key
+        Map<Integer, Game> map = new HashMap<Integer, Game>();
+        int teller = 0;
+        try {
+            Connection conn = connect();
+            Statement stmt = conn.createStatement();
+            String sql = "SELECT * FROM Game";
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {                         //voor alle games
 
-        return null;
+                int gameid = rs.getInt("gameid");
+                String creator = rs.getString("creator");
+                String createdate = rs.getString("createdate");
+                boolean started = rs.getBoolean("started");
+                int bordgrootte = rs.getInt("bordgrootte");
+                int aantalspelers = rs.getInt("aantalspelers");
+                String bordspeltypes = rs.getString("bordspeltypes");
+                String bordspelfacup = rs.getString("bordspelfacup");
+                int layout = rs.getInt("layout");
+
+                String[] valuestypes = bordspeltypes.split("\\s+");
+                String[] valuefacup = bordspelfacup.split("\\s+");
+
+
+                int size = 2*bordgrootte+2;
+                Bordspel bordspel = new Bordspel(size,size);          //size meegeven
+                Kaart bordspelkaarten[][] = new Kaart[size][size];
+
+                //alle gegevens naar kaarten brengen
+                for(int i=0; i<valuestypes.length; i++){
+
+                        Kaart kaart = new Kaart();
+                        int soort = Integer.parseInt(valuestypes[i]);
+                        boolean faceup = Boolean.valueOf(valuefacup[i]);
+                        kaart.setSoort(soort);
+                        kaart.setFaceUp(faceup);
+                        bordspelkaarten[i/4][i%4] = kaart;                  //naar matrix omzetten
+
+
+                    }
+                //alle gegevens naar bordspel steken
+                bordspel.setBord(bordspelkaarten);
+                bordspel.setType(layout);
+
+                //alles in game steken
+                Game game = new Game(bordgrootte,gameid,aantalspelers,creator);
+                game.setCreateDate(createdate);
+                game.setStarted(started);
+                game.setBordspel(bordspel);
+
+                map.put(teller,game);
+                teller++;
+
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return map;
     }
 
-    @Override
+        @Override
     public List<Speler> getAllSpelers() {
 
         List<Speler> spelerslijst = new ArrayList<Speler>();
