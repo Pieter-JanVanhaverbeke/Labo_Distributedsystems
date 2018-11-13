@@ -119,19 +119,21 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         return false; //als niets zou vinden, ook false returnen
     }*/
 
-    //TODO: PJ, geen info in game?
     @Override
-    public void addGame() {
+    public void addGame(String creator, String createdate, boolean started, int aantalspelers, int bordgrootte, int layout) {
 
         Connection conn = connect();
 
-        String sql = "INSERT INTO Game(lobbyid) VALUES(?)";
+        String sql = "INSERT INTO Game(creator,createdate,started,aantalspelers,bordgrootte,layout) VALUES(?,?,?,?,?,?)";
         try (
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, 1);
+            pstmt.setString(1, creator);
+            pstmt.setString(2,createdate);
+            pstmt.setBoolean(3,started);
+            pstmt.setInt(4,aantalspelers);
+            pstmt.setInt(5,bordgrootte);
+            pstmt.setInt(6,layout);
             pstmt.executeUpdate();
-
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -180,7 +182,7 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
     }
 
 
-    @Override
+  /*  @Override
     public void addNewBordspel(int layout, int grootte) {
         String sql = "INSERT INTO GameSpelertable(layout,grootte) VALUES(?,?)";
         try (Connection conn = connect();
@@ -194,9 +196,9 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
 
 
     }
+*/
 
-
-    @Override
+  /*  @Override
     public void addKaart(int xpos, int ypos, int bordspelid) {
         String sql = "INSERT INTO GameSpelertable(layout,grootte,bordspelid,faceup) VALUES(?,?,?,?)";
         try (Connection conn = connect();
@@ -211,9 +213,9 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         }
 
     }
+*/
 
-
-    public void flipKaart(int kaartid, boolean faceup){
+ /*   public void flipKaart(int kaartid, boolean faceup){
         String sql = "UPDATE Kaart SET faceup = ? WHERE kaartid = ?";
         try (Connection conn = connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -225,7 +227,7 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         }
     }
 
-
+*/
 
 
 
@@ -365,7 +367,7 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
 
     }
 
-    @Override
+ /*   @Override
     public Lobby getLobby() {
         Lobby lobby = null;
         try {
@@ -384,8 +386,8 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
 
         return lobby;
     }
-
-    @Override
+*/
+ /*   @Override
     public void persistLobby(Lobby lobby) {
         String dummy = "dummy";
         String sql = "INSERT INTO Lobby(dummy) VALUES(?)";
@@ -397,7 +399,7 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
             e.printStackTrace();
         }
     }
-
+*/
     private void updateTime(String username) {
         String sql = "UPDATE Users SET timestamptoken = ? WHERE username = ?";
 

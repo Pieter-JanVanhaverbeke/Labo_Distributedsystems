@@ -31,21 +31,21 @@ public interface rmi_int_appserver_db extends Remote {
     void changeCredentials(String username, String passwdHash) throws UsernameAlreadyInUseException, RemoteException; //verander usernamen en password, enkel dingen vervangen die niet null zijn
 
     //returned null if geen lobby
-    Lobby getLobby() throws RemoteException;
+  //  Lobby getLobby() throws RemoteException;
 
-    void persistLobby(Lobby lobby) throws RemoteException;
+  //  void persistLobby(Lobby lobby) throws RemoteException;
 
-    void addGame() throws RemoteException;
+    void addGame(String creator, String createdate, boolean started, int aantalspelers, int bordgrootte, int layout) throws RemoteException;
 
     void addSpelerToGame(int userid, int gameid) throws RemoteException;
 
     void removeSpelerToGame(int userid, int gameid) throws RemoteException;
 
-    void addNewBordspel(int layout, int grootte) throws RemoteException;
+  //  void addNewBordspel(int layout, int grootte) throws RemoteException;
 
-    void addKaart(int xpos, int ypos, int bordspelid) throws RemoteException;
+  //  void addKaart(int xpos, int ypos, int bordspelid) throws RemoteException;
 
-    void flipKaart(int kaartid, boolean faceup) throws RemoteException;
+ //   void flipKaart(int kaartid, boolean faceup) throws RemoteException;
 
     void deleteGame(int gameId) throws RemoteException;
 }
