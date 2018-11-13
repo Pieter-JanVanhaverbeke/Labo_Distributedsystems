@@ -29,11 +29,11 @@ public class Lobby implements Serializable{
             int gameId = Utils.generateGameId();
             Game game = new Game(bordGrootte, gameId, aantalSpelers, creator);
             activeGames.put(gameId, game);
-            
+
             String type = game.getBordspel().zetBordspelTypeOmNaarString();
             String faceup = game.getBordspel().zetBordspelOmNaarString();
 
-            impl.createGame(creator,game.getCreateDate(),true,aantalSpelers,bordGrootte,0,type,faceup); //TODO: geen args?
+            impl.createGame(creator,game.getCreateDate(),true,aantalSpelers,bordGrootte,0,type,faceup);
             return gameId;
         }
         throw new GameNotCreatedException("aantal spelers/bordgrootte niet toegelaten.");
