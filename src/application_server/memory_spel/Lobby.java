@@ -1,6 +1,4 @@
 package application_server.memory_spel;
-
-
 import application_server.Utils.Utils;
 import exceptions.GameAlreadyStartedException;
 import shared_client_appserver_stuff.GameInfo;
@@ -9,6 +7,7 @@ import exceptions.PlayerNumberExceededException;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,7 +29,11 @@ public class Lobby implements Serializable{
             int gameId = Utils.generateGameId();
             Game game = new Game(bordGrootte, gameId, aantalSpelers, creator);
             activeGames.put(gameId, game);
-            impl.addGame(); //TODO: geen args?
+            
+            String type = game.getBordspel().zetBordspelTypeOmNaarString();
+            String faceup = game.getBordspel().zetBordspelOmNaarString();
+
+            impl.createGame(creator,game.getCreateDate(),true,aantalSpelers,bordGrootte,0,type,faceup); //TODO: geen args?
             return gameId;
         }
         throw new GameNotCreatedException("aantal spelers/bordgrootte niet toegelaten.");

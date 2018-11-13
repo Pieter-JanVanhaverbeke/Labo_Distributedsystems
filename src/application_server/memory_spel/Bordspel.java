@@ -167,4 +167,21 @@ public class Bordspel {
 
         return data;
     }
+
+    public String zetBordspelTypeOmNaarString(){
+        String data= "";
+        for(int i=0; i<lengte;i++){
+            for(int j=0; j<breedte; j++){
+                    data = data + bord[i][j].getSoort();
+                }
+
+                data = data + " ";
+            }
+
+
+        //   data = data.substring(data.length()-1);  //laatste spatie verwijderen
+
+        return data;
+    }
+
 }
