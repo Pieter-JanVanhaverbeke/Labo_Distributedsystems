@@ -264,7 +264,7 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
                 int bordgrootte = rs.getInt("bordgrootte");
                 int aantalspelers = rs.getInt("aantalspelers");
                 String bordspeltypes = rs.getString("bordspeltypes");
-                String bordspelfacup = rs.getString("bordspelfacup");
+                String bordspelfacup = rs.getString("bordspelfaceup");
                 int layout = rs.getInt("layout");
 
                 String[] valuestypes = bordspeltypes.split("\\s+");
