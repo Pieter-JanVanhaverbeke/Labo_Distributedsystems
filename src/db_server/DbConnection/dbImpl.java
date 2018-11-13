@@ -123,8 +123,7 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
     public void createGame(String creator, String createdate, boolean started, int aantalspelers, int bordgrootte, int layout, String bordspeltypes, String bordspelfaceup) {
 
         Connection conn = connect();
-
-        String sql = "INSERT INTO Game(creator,createdate,started,aantalspelers,bordgrootte,layout,bordspeltypes,bordspelfaceup) VALUES(?,?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO Game(creator,createdate,started,aantalspelers,bordgrootte,layout,bordspelfaceup) VALUES(?,?,?,?,?,?,?,?)";
         try (
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, creator);
