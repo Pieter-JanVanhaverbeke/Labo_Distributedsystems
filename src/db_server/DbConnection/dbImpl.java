@@ -270,7 +270,7 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
                         boolean faceup = Boolean.valueOf(valuefacup[i]);
                         kaart.setSoort(soort);
                         kaart.setFaceUp(faceup);
-                        bordspelkaarten[i/4][i%4] = kaart;                  //naar matrix omzetten
+                        bordspelkaarten[i/size][i%size] = kaart;                  //naar matrix omzetten
 
 
                     }
