@@ -19,7 +19,11 @@ public interface rmi_int_appserver_db extends Remote {
 
     void setUsertoken(Speler speler, String token) throws RemoteException;
 
-    //boolean validateUsertoken(Speler speler) throws RemoteException;
+    void addGame(String creator, String createdate, boolean started, int aantalspelers, int bordgrootte, int layout) throws RemoteException;
+
+    void addSpelerToGame(int userid, int gameid) throws RemoteException;
+
+    void removeSpelerToGame(int userid, int gameid) throws RemoteException;
 
     Map<Integer, Game> getAllGames() throws RemoteException;
 
@@ -30,16 +34,16 @@ public interface rmi_int_appserver_db extends Remote {
 
     void changeCredentials(String username, String passwdHash) throws UsernameAlreadyInUseException, RemoteException; //verander usernamen en password, enkel dingen vervangen die niet null zijn
 
+    void deleteGame(int gameId) throws RemoteException;
+
+    void updateFaceUp(int gameid,String data)throws RemoteException;
+
     //returned null if geen lobby
   //  Lobby getLobby() throws RemoteException;
 
   //  void persistLobby(Lobby lobby) throws RemoteException;
 
-    void addGame(String creator, String createdate, boolean started, int aantalspelers, int bordgrootte, int layout) throws RemoteException;
 
-    void addSpelerToGame(int userid, int gameid) throws RemoteException;
-
-    void removeSpelerToGame(int userid, int gameid) throws RemoteException;
 
   //  void addNewBordspel(int layout, int grootte) throws RemoteException;
 
@@ -47,5 +51,6 @@ public interface rmi_int_appserver_db extends Remote {
 
  //   void flipKaart(int kaartid, boolean faceup) throws RemoteException;
 
-    void deleteGame(int gameId) throws RemoteException;
+    //boolean validateUsertoken(Speler speler) throws RemoteException;
+
 }

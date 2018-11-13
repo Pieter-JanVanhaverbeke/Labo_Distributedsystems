@@ -151,6 +151,18 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         }
     }
 
+    @Override
+    public void updateFaceUp(int gameid,String data) throws RemoteException {
+        String sql = "UPDATE  Game SET bordspelfaceup VALUES(?) WHERE gameid=?";
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1,data);
+            pstmt.setInt(2, gameid);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
 
     @Override
