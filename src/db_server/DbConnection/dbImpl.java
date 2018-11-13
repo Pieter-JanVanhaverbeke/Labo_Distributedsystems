@@ -120,11 +120,11 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
     }*/
 
     @Override
-    public void addGame(String creator, String createdate, boolean started, int aantalspelers, int bordgrootte, int layout) {
+    public void createGame(String creator, String createdate, boolean started, int aantalspelers, int bordgrootte, int layout, String bordspeltypes, String bordspelfaceup) {
 
         Connection conn = connect();
 
-        String sql = "INSERT INTO Game(creator,createdate,started,aantalspelers,bordgrootte,layout) VALUES(?,?,?,?,?,?)";
+        String sql = "INSERT INTO Game(creator,createdate,started,aantalspelers,bordgrootte,layout,bordspeltypes,bordspelfaceup) VALUES(?,?,?,?,?,?,?,?)";
         try (
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, creator);
@@ -133,6 +133,8 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
             pstmt.setInt(4,aantalspelers);
             pstmt.setInt(5,bordgrootte);
             pstmt.setInt(6,layout);
+            pstmt.setString(7,bordspeltypes);
+            pstmt.setString(8,bordspelfaceup);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -153,7 +155,7 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
 
     @Override
     public void updateFaceUp(int gameid,String data) throws RemoteException {
-        String sql = "UPDATE  Game SET bordspelfaceup VALUES(?) WHERE gameid=?";
+        String sql = "UPDATE  Game SET bordspelfaceup = ? WHERE gameid=?";
         try (Connection conn = connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1,data);

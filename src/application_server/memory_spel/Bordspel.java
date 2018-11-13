@@ -146,4 +146,25 @@ public class Bordspel {
             }
         return result;
     }
+
+
+    public String zetBordspelOmNaarString(){
+        String data= "";
+        for(int i=0; i<lengte;i++){
+            for(int j=0; j<breedte; j++){
+                if(bord[i][j].isFaceUp()){
+                    data = data + "1";
+                }
+                else{
+                    data = data + "0";
+                }
+
+                data = data + " ";
+            }
+        }
+
+     //   data = data.substring(data.length()-1);  //laatste spatie verwijderen
+
+        return data;
+    }
 }
