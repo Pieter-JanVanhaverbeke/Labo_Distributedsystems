@@ -65,66 +65,44 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         updateTime(username);           //setten van tijd usertoken
     }
 
-    /*@Override
-    public boolean validateUsertoken(Speler speler) {
-        String username = speler.getUsername();
-        String sql = "SELECT * FROM Users WHERE username = ?";
-        try (
-            Connection conn = connect();
-            PreparedStatement pstmt  = conn.prepareStatement(sql)){
-
-                // set the values
-                pstmt.setString(1, username);
-                //
-                ResultSet rs = pstmt.executeQuery();
-
-
-
-
-          //  ResultSet rs = stmt.executeQuery(sql);
-            while (rs.next()) {
-                String timestamptoken = rs.getString("timestamptoken");
-
-                DateTime tijdtoken = DateTime.parse(timestamptoken);
-                System.out.println("tijd user: " + tijdtoken.toString());
-
-                DateTime dateTime = new DateTime();
-                dateTime = dateTime.minusDays(1);    //dateTime.plusDays(1);
-                System.out.println("tijd valid: " + dateTime.toString());
-
-                if (tijdtoken.compareTo(dateTime) > 0) {
-                    return true;
-                } else return false;
-
-            }
-
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return false; //als niets zou vinden, ook false returnen
-    }*/
 
     @Override
-    public void createGame(String creator, String createdate, boolean started, int aantalspelers, int bordgrootte, int layout, String bordspeltypes, String bordspelfaceup) {
+    public int createGame(String creator, String createdate, boolean started, int aantalspelers, int bordgrootte, int layout, String bordspeltypes, String bordspelfaceup) {
+
+        int id = -1;
+        String sql = "INSERT INTO Game(creator,createdate,started,aantalspelers,bordgrootte,layout,bordspeltypes,bordspelfaceup)VALUES(?,?,?,?,?,?,?,?)";
 
         Connection conn = connect();
-        String sql = "INSERT INTO Game(creator,createdate,started,aantalspelers,bordgrootte,layout, bordspeltypes, bordspelfaceup) VALUES(?,?,?,?,?,?,?,?)";
         try (
+
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, creator);
-            pstmt.setString(2,createdate);
-            pstmt.setBoolean(3,started);
-            pstmt.setInt(4,aantalspelers);
-            pstmt.setInt(5,bordgrootte);
-            pstmt.setInt(6,layout);
-            pstmt.setString(7,bordspeltypes);
-            pstmt.setString(8,bordspelfaceup);
+            pstmt.setString(2, createdate);
+            pstmt.setBoolean(3, started);
+            pstmt.setInt(4, aantalspelers);
+            pstmt.setInt(5, bordgrootte);
+            pstmt.setInt(6, layout);
+            pstmt.setString(7, bordspeltypes);
+            pstmt.setString(8, bordspelfaceup);
             pstmt.executeUpdate();
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+
+        try (
+                PreparedStatement psmt = conn.prepareStatement("SELECT last_insert_rowid() AS NewID;")) {
+            ResultSet resultSet2 = psmt.executeQuery();
+            while(resultSet2.next()) {
+                id = resultSet2.getInt("NewID");
+            }
+        } catch (SQLException e1) {
+            e1.printStackTrace();
+        }
+
+        return id;
+
     }
 
     @Override
@@ -180,54 +158,6 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
             e.printStackTrace();
         }
     }
-
-
-  /*  @Override
-    public void addNewBordspel(int layout, int grootte) {
-        String sql = "INSERT INTO GameSpelertable(layout,grootte) VALUES(?,?)";
-        try (Connection conn = connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, layout);
-            pstmt.setInt(2, grootte);
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-
-    }
-*/
-
-  /*  @Override
-    public void addKaart(int xpos, int ypos, int bordspelid) {
-        String sql = "INSERT INTO GameSpelertable(layout,grootte,bordspelid,faceup) VALUES(?,?,?,?)";
-        try (Connection conn = connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, xpos);
-            pstmt.setInt(2, ypos);
-            pstmt.setInt(3,bordspelid);
-            pstmt.setBoolean(4,false);
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-    }
-*/
-
- /*   public void flipKaart(int kaartid, boolean faceup){
-        String sql = "UPDATE Kaart SET faceup = ? WHERE kaartid = ?";
-        try (Connection conn = connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, kaartid);
-            pstmt.setBoolean(2,faceup);
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-*/
 
 
 
@@ -294,7 +224,7 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         return map;
     }
 
-        @Override
+    @Override
     public List<Speler> getAllSpelers() {
 
         List<Speler> spelerslijst = new ArrayList<Speler>();
@@ -308,13 +238,13 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
 
                 int spelerId = rs.getInt("spelerId");
                 String username = rs.getString("username");
-                String passwordHash = rs.getString("passwordHash");
+                String password = rs.getString("password");
                 int globalScore = rs.getInt("globalScore");
 
                 Speler speler = new Speler(username);
                 speler.setSpelerId(spelerId);
                 speler.setGlobalScore(globalScore);
-                speler.setPasswordHash(passwordHash);
+                speler.setPasswordHash(password);
                 spelerslijst.add(speler);
             }
 
@@ -368,39 +298,6 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
 
     }
 
- /*   @Override
-    public Lobby getLobby() {
-        Lobby lobby = null;
-        try {
-            Connection conn = connect();
-            Statement stmt = conn.createStatement();
-            String sql = "SELECT * FROM Lobby";
-            ResultSet rs = stmt.executeQuery(sql);
-                 while (rs.next()) {
-                      lobby = new Lobby();
-                 }
-
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return lobby;
-    }
-*/
- /*   @Override
-    public void persistLobby(Lobby lobby) {
-        String dummy = "dummy";
-        String sql = "INSERT INTO Lobby(dummy) VALUES(?)";
-        try (Connection conn = connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, dummy);
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-*/
     private void updateTime(String username) {
         String sql = "UPDATE Users SET timestamptoken = ? WHERE username = ?";
 

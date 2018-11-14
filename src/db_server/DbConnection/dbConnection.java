@@ -24,38 +24,6 @@ public class dbConnection {
             return c;
         }
 
-  /*      public static void insert(String username1, String password1) {
-            String sql = "INSERT INTO Users(username,password) VALUES(?,?)";
-            // String sql = "INSERT INTO Users(username,password) VALUES(PJ,PJ)";
-
-            try (Connection conn = connect();
-                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
-                pstmt.setString(1, username1);
-                pstmt.setString(2, password1);
-                pstmt.executeUpdate();
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
-        }
-*/
-  /*  public static void selectAll(){
-        String sql = "SELECT username, password FROM Users";
-
-        try (Connection conn = connect();
-             Statement stmt  = conn.createStatement();
-             ResultSet rs    = stmt.executeQuery(sql)){
-
-            // loop through the result set
-            while (rs.next()) {
-                System.out.println(rs.getString("username") + "\t" +
-                        rs.getString("password"));
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-*/
     public static Set<String> getUserSet(){
         Set<String> userlijst = new HashSet<String>();
 

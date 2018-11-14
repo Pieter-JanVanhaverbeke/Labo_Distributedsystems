@@ -19,7 +19,7 @@ public interface rmi_int_appserver_db extends Remote {
 
     void setUsertoken(Speler speler, String token) throws RemoteException;
 
-    void createGame(String creator, String createdate, boolean started, int aantalspelers, int bordgrootte, int layout, String bordspeltypes, String bordspelfaceup) throws RemoteException;
+    int createGame(String creator, String createdate, boolean started, int aantalspelers, int bordgrootte, int layout, String bordspeltypes, String bordspelfaceup) throws RemoteException;
 
     void addSpelerToGame(int userid, int gameid) throws RemoteException;
 
