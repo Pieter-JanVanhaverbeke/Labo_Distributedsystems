@@ -340,19 +340,21 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
 
     @Override
     public Speler getSpeler(String username) {
-        try {
-            Connection conn = connect();
-            Statement stmt = conn.createStatement();
-            String sql = "SELECT * FROM Users WHERE username=username;";
-            ResultSet rs = stmt.executeQuery(sql);
-            while (rs.next()) {
-                int spelerId = rs.getInt("spelerId");
+            String sql = "SELECT * FROM Users WHERE username = ?;";
+            try (Connection conn = connect();
+                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setString(1, username);
+
+                ResultSet rs  = pstmt.executeQuery();
+
+                while (rs.next()) {
+                int spelerid = rs.getInt("spelerid");
                 String passwordHash = rs.getString("password");
                 int globalScore = rs.getInt("globalScore");
 
 
                 Speler speler = new Speler(username);
-                speler.setSpelerId(spelerId);
+                speler.setSpelerId(spelerid);
                 speler.setGlobalScore(globalScore);
                 speler.setPasswordHash(passwordHash);
 
