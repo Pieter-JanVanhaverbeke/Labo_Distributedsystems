@@ -8,6 +8,8 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -43,15 +45,22 @@ public class CreateGameController implements EventHandler<MouseEvent> {
     public void initialize(){
         GridPane g = (GridPane) style1.getChildren().get(0);
         Label l = (Label) g.getChildren().get(1);
+        ImageView img = (ImageView) g.getChildren().get(0);
         l.setText(THEMA1_NAME);
+        img.setImage(new Image(BASE_IMG_NUMBER.get(0)));
 
         g = (GridPane) style2.getChildren().get(0);
         l = (Label) g.getChildren().get(1);
+        img = (ImageView) g.getChildren().get(0);
         l.setText(THEMA2_NAME);
+        img.setImage(new Image(BASE_IMG_NUMBER.get(1)));
 
         g = (GridPane) style3.getChildren().get(0);
         l = (Label) g.getChildren().get(1);
+        img = (ImageView) g.getChildren().get(0);
         l.setText(THEMA3_NAME);
+        img.setImage(new Image(BASE_IMG_NUMBER.get(2)));
+
     }
 
     public void create(){

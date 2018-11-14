@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static application_server.ServerImpl.impl;
+
 /**
  * Created by ruben on 19/10/18.
  */
@@ -51,18 +53,22 @@ public class Game implements Serializable {
         }
     }
 
-    public void addSpeler(Speler speler) throws PlayerNumberExceededException {
+    public void addSpeler(Speler speler) throws PlayerNumberExceededException, RemoteException {
         if(spelers.size() < aantalspelers) {
             spelers.add(speler);
             puntenlijst.put(speler, 0);
+            impl.addSpelerToGame(speler.getSpelerId(),gameId);
+
         }
         else
             throw new PlayerNumberExceededException("Het maximum aantal spelers voor deze game is bereikt. Kan speler niet meer toevoegen.");
     }
 
-    public void removeSpeler(Speler speler) throws GameAlreadyStartedException {
-        if(!started)
+    public void removeSpeler(Speler speler) throws GameAlreadyStartedException, RemoteException {
+        if(!started) {
             spelers.remove(speler);
+            impl.addSpelerToGame(speler.getSpelerId(), gameId);
+        }
         else
             throw new GameAlreadyStartedException("De Game is al begonnen, je kan geen spelers meer verwijderen.");
     }
@@ -106,15 +112,13 @@ public class Game implements Serializable {
 
                         }
                     }
-
                 }
             }
             else
                 throw new NotYourTurnException("U bent niet aan beurt.");
         }
-        else{
+        else
             throw new NotEnoughSpelersException("Er zijn te weinig spelers.");
-        }
     }
 
     /*public String toString(){

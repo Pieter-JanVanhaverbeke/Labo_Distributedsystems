@@ -30,28 +30,26 @@ public class LobbyController {
     public void initialize(){
         try {
             activeGames = impl.getActiveGamesList(token);
-            FXMLLoader loader = new FXMLLoader();
 
             //add existing gametiles
-            loader.setLocation(ClientMainGUI.class.getResource(LOBBY_GAME_TILE));
-            Parent tile;
-            LobbyTileController lobbyTileController;
-
             int i;
             for(i = 0; i<activeGames.size(); i++){
-                tile = loader.load();
-                lobbyTileController = loader.getController();
+                FXMLLoader loader = new FXMLLoader();
+                loader.setLocation(ClientMainGUI.class.getResource(LOBBY_GAME_TILE));
+                Parent tile = loader.load();
+                LobbyTileController lobbyTileController = loader.getController();
 
                 GameInfo gameInfo = activeGames.get(i);
                 int maxAantalSpelers = gameInfo.getAantalSpelers();
                 int currentAantalSpelers = gameInfo.getSpelers().size();
-                boolean joined = gameInfo.getSpelers().contains(usernameLogedIn);
+                boolean joined = gameInfo.getSpelers().stream().anyMatch(e -> e.getUsername().equals(usernameLogedIn));
 
                 lobbyTileController.setCreated(gameInfo.getCreateDate());
                 lobbyTileController.setCreator(gameInfo.getCreator());
                 lobbyTileController.setPlayers(Integer.toString(maxAantalSpelers));
                 lobbyTileController.setJoinedPlayers(Integer.toString(currentAantalSpelers));
                 lobbyTileController.setGameId(gameInfo.getGameId());
+                lobbyTileController.setThemeImage(gameInfo.getThema());
 
                 //set button text (join/start/unjoin/resume/watch)
                 if(currentAantalSpelers < maxAantalSpelers){
@@ -71,14 +69,14 @@ public class LobbyController {
                         lobbyTileController.setTileKnopTekst(WATCH_GAME);
                     }
                 }
-                gameGrid.add(tile, i/LOBBY_COLUMN_NUMBER, i%LOBBY_COLUMN_NUMBER); //TODO: check of automatisch rijen aanmaakt als index te groot word
+                gameGrid.add(tile, i%LOBBY_COLUMN_NUMBER, i/LOBBY_COLUMN_NUMBER); //TODO: check of automatisch rijen aanmaakt als index te groot word
             }
 
             //add create game tile
-            loader = new FXMLLoader();
+            FXMLLoader loader = new FXMLLoader();
             loader.setLocation(ClientMainGUI.class.getResource(LOBBY_ADD_GAME_TILE));
-            tile = loader.load();
-            gameGrid.add(tile, i/LOBBY_COLUMN_NUMBER, i%LOBBY_COLUMN_NUMBER); //TODO: check of automatisch rijen aanmaakt als index te groot word
+            Parent tile = loader.load();
+            gameGrid.add(tile, i%LOBBY_COLUMN_NUMBER, i/LOBBY_COLUMN_NUMBER); //TODO: check of automatisch rijen aanmaakt als index te groot word
 
         } catch (RemoteException e) {
             e.printStackTrace();

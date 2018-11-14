@@ -25,7 +25,7 @@ import static client.utils.Constants.*;
 public class ClientMainGUI extends Application {
     public static rmi_int_client_appserver impl;
     public static String token;
-    public static int gameId; //heeft value als mag meedoen in game, anders is -1
+    public static int gameId; //heeft value geopende game
     public static String usernameLogedIn;
 
     private static Stage primaryStage;

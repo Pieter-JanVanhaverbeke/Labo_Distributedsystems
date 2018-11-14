@@ -11,6 +11,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.sql.*;
 import java.util.*;
 
+import static application_server.Utils.Utils.generateUserToken;
 import static db_server.DbConnection.dbConnection.connect;
 
 public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db, Serializable {
@@ -43,21 +44,7 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
             }
-
-
-         //   Speler maarten = getSpeler("PJ");
-     //       System.out.println("token Maarten: " + validateUsertoken("Maarten"));
-
-            //Wachtwoord Hashen en naar databank sturen(bij de client hashen)
-
-
-            //  dbConnection.insert(username,passwdHash);
-        /*    String token = Utils.generateUserToken(username);
-            Speler speler = new Speler(username);
-            userTokens.put(token, speler); //wordt al op app server bijgehouden
-            System.out.println("gebruiker: " + username + " aangemaakt en aangemeld!");
-            */
-            return "token";
+            return generateUserToken(username);
         }
     }
 
@@ -123,7 +110,7 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
     public void createGame(String creator, String createdate, boolean started, int aantalspelers, int bordgrootte, int layout, String bordspeltypes, String bordspelfaceup) {
 
         Connection conn = connect();
-        String sql = "INSERT INTO Game(creator,createdate,started,aantalspelers,bordgrootte,layout,bordspelfaceup) VALUES(?,?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO Game(creator,createdate,started,aantalspelers,bordgrootte,layout, bordspeltypes, bordspelfaceup) VALUES(?,?,?,?,?,?,?,?)";
         try (
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, creator);
@@ -284,9 +271,8 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
                         kaart.setSoort(soort);
                         kaart.setFaceUp(faceup);
                         bordspelkaarten[i/size][i%size] = kaart;                  //naar matrix omzetten
+                }
 
-
-                    }
                 //alle gegevens naar bordspel steken
                 bordspel.setBord(bordspelkaarten);
                 bordspel.setType(layout);

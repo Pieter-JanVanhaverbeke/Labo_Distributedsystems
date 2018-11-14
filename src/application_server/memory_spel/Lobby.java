@@ -20,20 +20,20 @@ public class Lobby implements Serializable{
     private static Map<Integer, Game> activeGames; //gameId is key
 
     //returned gameId
-    public static int createNewGame(int aantalSpelers, int bordGrootte, String creator) throws GameNotCreatedException, RemoteException {
+    public static int createNewGame(int aantalSpelers, int bordGrootte, String creator, int style) throws GameNotCreatedException, RemoteException {
         if(activeGames == null){
             activeGames = new HashMap<>();
         }
 
         if(aantalSpelers <= MAX_PLAYER_COUNT && aantalSpelers >= MIN_PLAYER_COUNT && bordGrootte >= MIN_BOARD_SIZE && bordGrootte <= MAX_BOARD_SIZE) {
-            int gameId = Utils.generateGameId();
+            int gameId = 3;
             Game game = new Game(bordGrootte, gameId, aantalSpelers, creator);
             activeGames.put(gameId, game);
 
             String type = game.getBordspel().zetBordspelTypeOmNaarString();
             String faceup = game.getBordspel().zetBordspelOmNaarString();
 
-            impl.createGame(creator,game.getCreateDate(),true,aantalSpelers,bordGrootte,0,type,faceup);
+            impl.createGame(creator,game.getCreateDate(),true,aantalSpelers,bordGrootte,style,type,faceup);
             return gameId;
         }
         throw new GameNotCreatedException("aantal spelers/bordgrootte niet toegelaten.");
@@ -59,24 +59,21 @@ public class Lobby implements Serializable{
         dbUpdateGames();
         List<GameInfo> result = new ArrayList<>();
 
-        if(activeGames == null)
-            return new ArrayList<>();
+        if(activeGames != null)
+            for(Integer key: activeGames.keySet()){
+                Game game = activeGames.get(key);
+                result.add(new GameInfo(game));
+            }
 
-        for(Integer key: activeGames.keySet()){
-            Game game = activeGames.get(key);
-            result.add(new GameInfo(game));
-        }
         return result;
     }
 
     public static void joinGame(int gameId, Speler speler) throws PlayerNumberExceededException, RemoteException {
-        impl.addSpelerToGame(speler.getSpelerId(),gameId);
         Game game = activeGames.get(gameId);
         game.addSpeler(speler);
     }
 
     public static void unJoinGame(int gameId, Speler speler) throws GameAlreadyStartedException, RemoteException {
-        impl.addSpelerToGame(speler.getSpelerId(), gameId);
         Game game = activeGames.get(gameId);
         game.removeSpeler(speler);
     }

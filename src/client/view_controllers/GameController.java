@@ -1,9 +1,6 @@
 package client.view_controllers;
 
-import exceptions.InternalException;
-import exceptions.NoValidTokenException;
-import exceptions.NotEnoughSpelersException;
-import exceptions.NotYourTurnException;
+import exceptions.*;
 import javafx.concurrent.Task;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -126,10 +123,15 @@ public class GameController implements EventHandler<Event> {
     @Override
     public void handle(Event event) {
         try {
-            ImageView imageView = (ImageView) event.getSource();
-            int column = GridPane.getColumnIndex(imageView);
-            int row = GridPane.getRowIndex(imageView);
-            impl.flipCard(token, gameId, row, column);
+            if(gameInfo.getSpelers().stream().anyMatch(e -> e.getUsername().equals(usernameLogedIn))) {
+                ImageView imageView = (ImageView) event.getSource();
+                int column = GridPane.getColumnIndex(imageView);
+                int row = GridPane.getRowIndex(imageView);
+                impl.flipCard(token, gameId, row, column);
+            }
+            else{
+                throw new PlayerNotInGameException("U speelt niet mee in deze game.");
+            }
         } catch (RemoteException e) {
             e.printStackTrace();
         } catch (NoValidTokenException e) {
@@ -139,6 +141,8 @@ public class GameController implements EventHandler<Event> {
         } catch (NotEnoughSpelersException e) {
             e.printStackTrace();
         } catch (InternalException e) {
+            e.printStackTrace();
+        } catch (PlayerNotInGameException e) {
             e.printStackTrace();
         }
     }

@@ -18,6 +18,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 
+import static application_server.Utils.Utils.generateUserToken;
 import static application_server.Utils.Utils.validateToken;
 
 public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_appserver, Serializable {
@@ -51,7 +52,7 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
         }
 
        else if (passwordHash.equals(speler.getPasswordHash())) {
-            return Utils.generateUserToken(username);
+            return generateUserToken(username);
         } else {
             throw new WrongPasswordException("Het wachtwoord is verkeert.");
         }
@@ -64,7 +65,7 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
     public int createGame(int aantalSpelers, int bordGrootte, String token, int style) throws GameNotCreatedException, NoValidTokenException, InternalException {
         try {
             String creator = validateToken(token).getUsername();
-            int gameId = Lobby.createNewGame(aantalSpelers, bordGrootte, creator);
+            int gameId = Lobby.createNewGame(aantalSpelers, bordGrootte, creator, style);
             return gameId;
         } catch (RemoteException e) {
             e.printStackTrace();

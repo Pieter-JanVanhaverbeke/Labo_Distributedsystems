@@ -15,7 +15,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
-import static io.jsonwebtoken.SignatureAlgorithm.HS512;
 import static application_server.ServerImpl.impl;
 
 /**
@@ -24,8 +23,7 @@ import static application_server.ServerImpl.impl;
 public class Utils {
     private static final String KEY_DATA = "PdIkEzT4E5RK-ZJAAHN@#!!EF684efkdzjlfer!(tfz<xscscdwsxqgf&éasxqspm";
     public static final Key JWT_KEY = new SecretKeySpec(KEY_DATA.getBytes(), 0, 65, SignatureAlgorithm.HS512.getJcaName());
-    private HashMap<String, Speler> userTokens = new HashMap<>(); //bevat de huidig uitgeleende tokens ( = aangemelde users)
-
+    //public static final Key JWT_KEY = new SecretKeySpec(KEY_DATA.getBytes(), 0, 16, "AES");
 
     public static String generateUserToken(String username){
         Date curDate = new Date();
@@ -39,14 +37,8 @@ public class Utils {
                 .setIssuer("Client")
                 .setIssuedAt(curDate)
                 .setExpiration(cal.getTime())
-                .signWith(HS512, JWT_KEY) //TODO
+                .signWith(SignatureAlgorithm.HS512, JWT_KEY) //TODO
                 .compact();
-
-    }
-
-    public static int generateGameId(){
-        return 4; //TODO via db
-
     }
 
     public static Speler validateToken(String token) throws NoValidTokenException, RemoteException {

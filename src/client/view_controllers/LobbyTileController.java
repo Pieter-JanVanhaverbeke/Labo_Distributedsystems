@@ -8,6 +8,8 @@ import exceptions.PlayerNumberExceededException;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 import java.rmi.RemoteException;
 
@@ -34,6 +36,9 @@ public class LobbyTileController {
 
     @FXML
     public Button tileKnop;
+
+    @FXML
+    public ImageView themeImage;
 
     private int gameId;
 
@@ -91,7 +96,7 @@ public class LobbyTileController {
                 break;
 
             case WATCH_GAME:
-                ClientMainGUI.gameId = -1;
+                ClientMainGUI.gameId = gameId;
                 setScene(OPEN_GAME, GAME_WIDTH, GAME_HEIGHT);
                 break;
         }
@@ -143,5 +148,9 @@ public class LobbyTileController {
 
     public void setGameId(int gameId) {
         this.gameId = gameId;
+    }
+
+    public void setThemeImage(int theme) {
+        themeImage.setImage(new Image(BASE_IMG_NUMBER.get(theme)));
     }
 }
