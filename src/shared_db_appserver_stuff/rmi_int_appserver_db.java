@@ -7,6 +7,7 @@ import application_server.memory_spel.Speler;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +38,11 @@ public interface rmi_int_appserver_db extends Remote {
     void deleteGame(int gameId) throws RemoteException;
 
     void updateFaceUp(int gameid,String data)throws RemoteException;
+
+    List<Integer> getAlleSpelerid (int gameid)throws RemoteException;
+
+    public Speler getSpeler(int spelerid) throws RemoteException;
+
 
     //returned null if geen lobby
   //  Lobby getLobby() throws RemoteException;

@@ -1,6 +1,7 @@
 package db_server.DbConnection;
 
 import application_server.memory_spel.*;
+import exceptions.PlayerNumberExceededException;
 import shared_db_appserver_stuff.rmi_int_appserver_db;
 import exceptions.UsernameAlreadyInUseException;
 import org.joda.time.DateTime;
@@ -213,12 +214,22 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
                 game.setStarted(started);
                 game.setBordspel(bordspel);
 
+                List<Integer> spelerids = getAlleSpelerid(gameid);
+                for(int i=0; i<spelerids.size();i++){
+                    Speler speler = getSpeler(spelerids.get(i));            //get speler met id
+                    game.addSpeler(speler);
+                }
+
                 map.put(teller,game);
                 teller++;
 
             }
 
         } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (PlayerNumberExceededException e) {
+            e.printStackTrace();
+        } catch (RemoteException e) {
             e.printStackTrace();
         }
         return map;
@@ -254,6 +265,66 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         return spelerslijst;
     }
 
+
+  /*  public List<Speler> getAllSpelers(int gameid) {
+
+        List<Speler> spelerslijst = new ArrayList<Speler>();
+
+        try {
+            Connection conn = connect();
+            Statement stmt = conn.createStatement();
+            String sql = "SELECT * FROM Users WHERE gameid = gameid";
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+
+                int spelerId = rs.getInt("spelerId");
+                String username = rs.getString("username");
+                String password = rs.getString("password");
+                int globalScore = rs.getInt("globalScore");
+
+                Speler speler = new Speler(username);
+                speler.setSpelerId(spelerId);
+                speler.setGlobalScore(globalScore);
+                speler.setPasswordHash(password);
+                spelerslijst.add(speler);
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return spelerslijst;
+    }
+*/
+
+    @Override
+    public List<Integer> getAlleSpelerid (int gameid) {
+        ArrayList<Integer> speleridlijst = new ArrayList<Integer>();
+
+
+        String sql = "SELECT userid FROM GameSpelertable WHERE gameid = ?;";
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, gameid);
+
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                int spelerid = rs.getInt("userid");
+                speleridlijst.add(spelerid);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+            return speleridlijst;
+
+    }
+        //  Map<Integer, Speler> getAlleSpelersMetGame(int gameid){
+
+
+
+   // }
+
     @Override
     public Speler getSpeler(String username) {
             String sql = "SELECT * FROM Users WHERE username = ?;";
@@ -283,6 +354,39 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         }
         return null;
     }
+
+
+    @Override
+    public Speler getSpeler(int spelerid) {
+        String sql = "SELECT * FROM Users WHERE spelerid = ?;";
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, spelerid);
+
+            ResultSet rs  = pstmt.executeQuery();
+
+            while (rs.next()) {
+                String username = rs.getString("username");
+                String passwordHash = rs.getString("password");
+                int globalScore = rs.getInt("globalScore");
+
+
+                Speler speler = new Speler(username);
+                speler.setSpelerId(spelerid);
+                speler.setGlobalScore(globalScore);
+                speler.setPasswordHash(passwordHash);
+
+                return speler;
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
+
+
+
 
     @Override
     public void changeCredentials(String username, String passwdHash) throws UsernameAlreadyInUseException {
