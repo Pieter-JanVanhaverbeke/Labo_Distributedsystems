@@ -44,6 +44,9 @@ public class GameController implements EventHandler<Event> {
     @FXML
     public Label createdOn;
 
+    @FXML
+    public AnchorPane players;
+
     private GameInfo gameInfo;
     private List<GridPane> spelersRij;
     private GridPane gameBord;
@@ -55,23 +58,10 @@ public class GameController implements EventHandler<Event> {
 
     @FXML
     public void initialize(){
-        //maten uitrekenen voor kotjes
-        boardwidth = gameGridPane.getWidth();
-        boardLength = gameGridPane.getHeight();
 
         try {
             gameInfo = impl.getGame(token, gameId);
             pictures = THEMA_NUMBER.get(gameInfo.getThema());
-
-            //bord toevoegen
-            gameBord = new GridPane();
-            gameGridPane.getChildren().add(gameBord);
-
-            for(int i = 0; i<gameInfo.getBreedte(); i++){
-                for(int j = 0; j<gameInfo.getLengte(); j++){
-                    gameBord.add(spitImageView(back), j, i);
-                }
-            }
 
             //spelers kolom
             spelersRij = new ArrayList<>();
@@ -94,6 +84,16 @@ public class GameController implements EventHandler<Event> {
                 setBorder(spelersBeurt, true);
             }
 
+            //bord toevoegen
+            gameBord = new GridPane();
+            gameGridPane.getChildren().add(gameBord);
+
+            for(int i = 0; i<gameInfo.getBreedte(); i++){
+                for(int j = 0; j<gameInfo.getLengte(); j++){
+                    gameBord.add(spitImageView(back), j, i);
+                }
+            }
+
             // start update thread voor game
             // javaFx != thread safe => gebruik gemaakt van concurent package van javaFX
             Task task = new GameUpdateTask(gameBord, playersListPane, this);
@@ -109,6 +109,12 @@ public class GameController implements EventHandler<Event> {
     }
 
     private ImageView spitImageView(Image image){
+        //maten uitrekenen voor kotjes
+        boardwidth = primaryStage.getWidth() - players.getWidth() - 50 - 350;
+        boardLength = players.getHeight() - 50 + 570; //TODO
+        /*boardwidth = gameGridPane.getWidth();
+        boardLength = gameGridPane.getHeight();*/
+
         ImageView imageView = new ImageView(image);
         imageView.setFitHeight(boardLength/gameInfo.getLengte());
         imageView.setFitWidth(boardwidth/gameInfo.getBreedte());

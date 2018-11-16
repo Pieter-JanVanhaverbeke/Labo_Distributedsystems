@@ -29,7 +29,7 @@ public class ClientMainGUI extends Application {
     public static int gameId; //heeft value geopende game
     public static String usernameLogedIn;
 
-    private static Stage primaryStage;
+    public static Stage primaryStage;
     public static Stage errorWindow;
     private static FXMLLoader loader;
 

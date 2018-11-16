@@ -88,40 +88,43 @@ public class Game implements Serializable {
         //check of voldoende spelers zijn
         if(spelers.size() == aantalspelers) {
             //check of spelerbeurt ok is
-            if (spelers.indexOf(speler) == spelerbeurt) {
-                //check if eerste kaart al is omgedraaid
-                if (kaart1 == null) {
-                    //draai eerste kaart
-                    kaart1 = bordspel.getBord()[x][y];
-                    kaart1.draaiOm();
-                } else {
-                    //draai 2e kaart
-                    kaart2 = bordspel.getBord()[x][y];
-                    kaart2.draaiOm();
-
-                    //check if soort van beide kaarten is gelijk
-                    if (kaart1.getSoort() != kaart2.getSoort()) {
-                        //draai terug alles om
+            for(Speler s: spelers) {
+                if (s.getSpelerId() == speler.getSpelerId() && spelers.indexOf(s) == spelerbeurt){
+                    //check if eerste kaart al is omgedraaid
+                    if (kaart1 == null) {
+                        //draai eerste kaart
+                        kaart1 = bordspel.getBord()[x][y];
                         kaart1.draaiOm();
-                        kaart2.draaiOm();
-                        kaart1 = kaart2 = null;
                     } else {
-                        //verhoog punten van speler
-                        puntenlijst.put(spelers.get(spelerbeurt).getSpelerId(), puntenlijst.get(spelerbeurt) + 1);  //speler die aan beurt is punt bijgeven
-                        //check if game is gedaan, if so => schrijf punten naar spelersprofiel + delete game
-                        if (bordspel.checkEindeSpel()) {
-                            for (int i = 0; i < spelers.size(); i++) {
-                                Speler speler2 = spelers.get(i);
-                                speler2.increaseGlobalScore(puntenlijst.get(i));
-                            }
-                            Lobby.deleteGame(this.gameId);
+                        //draai 2e kaart
+                        kaart2 = bordspel.getBord()[x][y];
+                        kaart2.draaiOm();
 
+                        //check if soort van beide kaarten is gelijk
+                        if (kaart1.getSoort() != kaart2.getSoort()) {
+                            //draai terug alles om
+                            kaart1.draaiOm();
+                            kaart2.draaiOm();
+                            kaart1 = kaart2 = null;
+                        } else {
+                            //verhoog punten van speler
+                            puntenlijst.put(spelers.get(spelerbeurt).getSpelerId(), puntenlijst.get(spelerbeurt) + 1);  //speler die aan beurt is punt bijgeven
+                            //check if game is gedaan, if so => schrijf punten naar spelersprofiel + delete game
+                            if (bordspel.checkEindeSpel()) {
+                                for (int i = 0; i < spelers.size(); i++) {
+                                    Speler speler2 = spelers.get(i);
+                                    speler2.increaseGlobalScore(puntenlijst.get(i));
+                                }
+                                Lobby.deleteGame(this.gameId);
+
+                            }
                         }
                     }
+                    break;
                 }
+                else
+                    throw new NotYourTurnException("U bent niet aan beurt.");
             }
-            else
-                throw new NotYourTurnException("U bent niet aan beurt.");
         }
         else
             throw new NotEnoughSpelersException("Er zijn te weinig spelers.");
