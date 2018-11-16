@@ -41,7 +41,7 @@ public interface rmi_int_appserver_db extends Remote {
 
     List<Integer> getAlleSpelerid (int gameid)throws RemoteException;
 
-    public Speler getSpeler(int spelerid) throws RemoteException;
+    Speler getSpeler(int spelerid) throws RemoteException;
 
 
     //returned null if geen lobby
