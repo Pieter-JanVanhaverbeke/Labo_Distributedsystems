@@ -3,10 +3,12 @@ package shared_client_appserver_stuff;
 import application_server.memory_spel.Lobby;
 import application_server.memory_spel.Speler;
 
+import java.io.Serializable;
+
 /**
  * Created by ruben on 2/11/18.
  */
-public class SpelerInfo {
+public class SpelerInfo implements Serializable {
     private String username;
     private int totalScore;
     private int gameScore;
@@ -17,7 +19,7 @@ public class SpelerInfo {
         this.gameId = gameId;
         this.totalScore = speler.getGlobalScore();
         this.username = speler.getUsername();
-        this.gameScore = Lobby.getGame(gameId).getGameScore(speler);
+        this.gameScore = 3; //Lobby.getGame(gameId).getGameScore(speler); //TODO
     }
 
     public String getUsername() {

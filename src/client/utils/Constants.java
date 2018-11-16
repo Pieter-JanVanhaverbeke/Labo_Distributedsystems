@@ -21,8 +21,8 @@ public class Constants {
     public static final int GAME_HEIGHT = 1300;
     public static final int GAME_WIDTH = 700;
 
-    public static final int ERROR_HEIGHT = 500;
-    public static final int ERROR_WIDTH = 300;
+    public static final int ERROR_HEIGHT = 300;
+    public static final int ERROR_WIDTH = 750;
 
     //FXML locations
     public static final String LOGIN_SCENE = "scenes/login.fxml";

@@ -2,6 +2,7 @@ package client;
 
 import client.view_controllers.ErrorController;
 import javafx.application.Application;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -75,8 +76,8 @@ public class ClientMainGUI extends Application {
             //scene
             loader = new FXMLLoader();
             loader.setLocation(ClientMainGUI.class.getResource(ERROR_SCENE));
-            ErrorController errorController = loader.getController();
             Parent root = loader.load();
+            ErrorController errorController = loader.getController();
             Scene scene = new Scene(root, ERROR_WIDTH, ERROR_HEIGHT);
             errorWindow = new Stage();
             errorWindow.setTitle(title);
