@@ -17,8 +17,7 @@ import static db_server.DbConnection.dbConnection.connect;
 
 public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db, Serializable {
     private HashMap<String, Speler> userTokens;//bevat de huidig uitgeleende tokens ( = aangemelde users)
-
-
+    
     public dbImpl() throws RemoteException {
         userTokens = new HashMap<>();
     }
