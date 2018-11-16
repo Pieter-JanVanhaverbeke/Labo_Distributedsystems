@@ -134,11 +134,12 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
 
     @Override
     public void addSpelerToGame(int userid, int gameid){
-        String sql = "INSERT INTO GameSpelertable(userid,gameid) VALUES(?,?)";
+        String sql = "INSERT INTO GameSpelertable(userid,gameid) VALUES(?,?,?)";
         try (Connection conn = connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, userid);
             pstmt.setInt(2, gameid);
+            pstmt.setInt(3, 0);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -216,6 +217,7 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
                 List<Integer> spelerids = getAlleSpelerid(gameid);
                 for(int i=0; i<spelerids.size();i++){
                     Speler speler = getSpeler(spelerids.get(i)); //get speler met id
+                    System.out.println(speler);
                     game.addSpeler(speler);
                 }
 
@@ -263,36 +265,6 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         return spelerslijst;
     }
 
-
-  /*  public List<Speler> getAllSpelers(int gameid) {
-
-        List<Speler> spelerslijst = new ArrayList<Speler>();
-
-        try {
-            Connection conn = connect();
-            Statement stmt = conn.createStatement();
-            String sql = "SELECT * FROM Users WHERE gameid = gameid";
-            ResultSet rs = stmt.executeQuery(sql);
-            while (rs.next()) {
-
-                int spelerId = rs.getInt("spelerId");
-                String username = rs.getString("username");
-                String password = rs.getString("password");
-                int globalScore = rs.getInt("globalScore");
-
-                Speler speler = new Speler(username);
-                speler.setSpelerId(spelerId);
-                speler.setGlobalScore(globalScore);
-                speler.setPasswordHash(password);
-                spelerslijst.add(speler);
-            }
-
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-        return spelerslijst;
-    }
-*/
 
     @Override
     public List<Integer> getAlleSpelerid (int gameid) {
