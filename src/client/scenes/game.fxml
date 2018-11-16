@@ -55,7 +55,7 @@
                                     <Insets left="20.0" />
                                  </VBox.margin>
                               </Label>
-                              <AnchorPane fx:id="playersListPane">
+                              <AnchorPane>
                                  <children>
                                     <GridPane fx:id="playersListPane" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                       <columnConstraints>

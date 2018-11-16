@@ -19,7 +19,7 @@ public class SpelerInfo implements Serializable {
         this.gameId = gameId;
         this.totalScore = speler.getGlobalScore();
         this.username = speler.getUsername();
-        this.gameScore = 3; //Lobby.getGame(gameId).getGameScore(speler);
+        this.gameScore = 3; //Lobby.getGame(gameId).getGameScore(speler); //TODO
     }
 
     public String getUsername() {

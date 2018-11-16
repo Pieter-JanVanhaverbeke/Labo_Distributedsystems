@@ -48,16 +48,15 @@ public class Game implements Serializable {
         spelerbeurt = 0;
         puntenlijst = new HashMap<>();
 
-        //iedere speler start met 0 punten
+        /*//iedere speler start met 0 punten
         for(Speler speler: spelers){
             puntenlijst.put(speler, 0);
-        }
+        }*/
     }
 
     public Game(int bordGrootte, int aantalspelers, String creator, int style, int gameId) {
         this(bordGrootte, aantalspelers, creator, style);
         this.gameId = gameId;
-
     }
 
     public void addSpeler(Speler speler) throws PlayerNumberExceededException, RemoteException {

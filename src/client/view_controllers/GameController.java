@@ -18,7 +18,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
 
 import static client.ClientMainGUI.*;
 import static client.utils.Constants.REVERSE_SIDE;
@@ -37,13 +36,13 @@ public class GameController implements EventHandler<Event> {
     public GridPane playersListPane;
 
     @FXML
-    public int playersCount;
+    public Label playersCount;
 
     @FXML
-    public String createdBy;
+    public Label createdBy;
 
     @FXML
-    public String createdOn;
+    public Label createdOn;
 
     private GameInfo gameInfo;
     private List<GridPane> spelersRij;
@@ -76,20 +75,17 @@ public class GameController implements EventHandler<Event> {
 
             //spelers kolom
             spelersRij = new ArrayList<>();
-            playersCount = gameInfo.getAantalSpelers();
-            createdBy = gameInfo.getCreator();
-            createdOn = gameInfo.getCreateDate();
+            playersCount.setText(Integer.toString(gameInfo.getAantalSpelers()));
+            createdBy.setText(gameInfo.getCreator());
+            createdOn.setText(gameInfo.getCreateDate());
             List<SpelerInfo> spelers = gameInfo.getSpelers();
 
             for(int i = 0; i<spelers.size(); i++){
                 SpelerInfo speler = spelers.get(i);
                 Label username = new Label(speler.getUsername());
                 Label score = new Label(Integer.toString(speler.getGameScore()));
-                GridPane g = new GridPane();
-                spelersRij.add(g);
-                g.add(username, 0, 0);
-                g.add(score, 0, 1);
-                playersListPane.add(g, i+1, 0); //i+1 want kolom title staat op 0
+                playersListPane.add(username, 0, i+1); //i+1 want kolom title staat op 0
+                playersListPane.add(score, 1, i+1); //i+1 want kolom title staat op 0
             }
 
             //zet speler aan beurt in kadertje

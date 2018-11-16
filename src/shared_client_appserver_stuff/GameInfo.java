@@ -1,10 +1,13 @@
 package shared_client_appserver_stuff;
 
 import application_server.memory_spel.Game;
+import application_server.memory_spel.Speler;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by ruben on 28/10/18.
@@ -20,18 +23,25 @@ public class GameInfo implements Serializable {
     private int breedte;
     private int lengte;
     private int thema;
+    //private Map<SpelerInfo, Integer> puntentLijst;
 
     public GameInfo(Game game){
+        //puntentLijst = new HashMap<>();
         this.gameId = game.getGameId();
         this.aantalSpelers = game.getAantalspelers();
         this.spelers = new ArrayList<>();
-        game.getSpelers().forEach(e -> spelers.add(new SpelerInfo(e, gameId)));
+        Map<Speler, Integer> punten = game.getPuntenlijst();
+        game.getSpelers().forEach(e -> {
+            SpelerInfo spelerInfo = new SpelerInfo(e, gameId);
+            spelers.add(spelerInfo);
+            //puntentLijst.put(spelerInfo, punten.get(e));
+        });
         this.spelersBeurt = game.getSpelerbeurt();
         this.createDate = game.getCreateDate();
         this.creator = game.getCreator();
         this.started = game.isStarted();
         this.breedte = game.getBordspel().getBreedte();
-        this.breedte = game.getBordspel().getLengte();
+        this.lengte = game.getBordspel().getLengte();
         this.thema = game.getBordspel().getType();
     }
 
@@ -114,4 +124,12 @@ public class GameInfo implements Serializable {
     public void setThema(int thema) {
         this.thema = thema;
     }
+
+   /* public Map<SpelerInfo, Integer> getPuntentLijst() {
+        return puntentLijst;
+    }
+
+    public void setPuntentLijst(Map<SpelerInfo, Integer> puntentLijst) {
+        this.puntentLijst = puntentLijst;
+    }*/
 }

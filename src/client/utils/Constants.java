@@ -18,8 +18,8 @@ public class Constants {
     public static final int CREATE_GAME_WIDTH = 1300;
     public static final int CREATE_GAME_HEIGHT = 700;
 
-    public static final int GAME_HEIGHT = 1300;
-    public static final int GAME_WIDTH = 700;
+    public static final int GAME_HEIGHT = 700;
+    public static final int GAME_WIDTH = 1300;
 
     public static final int ERROR_HEIGHT = 300;
     public static final int ERROR_WIDTH = 750;
