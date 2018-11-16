@@ -18,6 +18,7 @@ import static db_server.DbConnection.dbConnection.connect;
 public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db, Serializable {
     private HashMap<String, Speler> userTokens;//bevat de huidig uitgeleende tokens ( = aangemelde users)
 
+
     public dbImpl() throws RemoteException {
         userTokens = new HashMap<>();
     }
@@ -73,9 +74,7 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         String sql = "INSERT INTO Game(creator,createdate,started,aantalspelers,bordgrootte,layout,bordspeltypes,bordspelfaceup)VALUES(?,?,?,?,?,?,?,?)";
 
         Connection conn = connect();
-        try (
-
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, creator);
             pstmt.setString(2, createdate);
             pstmt.setBoolean(3, started);
@@ -90,9 +89,7 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
             e.printStackTrace();
         }
 
-
-        try (
-                PreparedStatement psmt = conn.prepareStatement("SELECT last_insert_rowid() AS NewID;")) {
+        try (PreparedStatement psmt = conn.prepareStatement("SELECT last_insert_rowid() AS NewID;")) {
             ResultSet resultSet2 = psmt.executeQuery();
             while(resultSet2.next()) {
                 id = resultSet2.getInt("NewID");
@@ -133,12 +130,12 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
 
     @Override
     public void addSpelerToGame(int userid, int gameid){
-        String sql = "INSERT INTO GameSpelertable(userid,gameid) VALUES(?,?,?)";
+        String sql = "INSERT INTO GameSpelertable(userid,gameid,spelerpunten) VALUES(?,?,?)";
         try (Connection conn = connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, userid);
             pstmt.setInt(2, gameid);
-            pstmt.setInt(3, 0);
+            pstmt.setInt(3,0);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -212,29 +209,21 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
                 game.setCreateDate(createdate);
                 game.setStarted(started);
                 game.setBordspel(bordspel);
-
-                //alle spelers toevoegen
+                List<Integer> spelerscores = getSpelerPunten(gameid);
                 List<Integer> spelerids = getAlleSpelerid(gameid);
-                // Map<Integer,Integer> spelerpunten = getSpelerPunten(gameid);
-                List<Integer> spelerpunten = getSpelerPunten(gameid);
                 for(int i=0; i<spelerids.size();i++){
                     Speler speler = getSpeler(spelerids.get(i)); //get speler met id
-                    System.out.println(speler);
-                    game.addSpeler(speler);
+                    game.getSpelers().add(speler);
 
-                    int score = spelerpunten.get(i);
+                    int score = spelerscores.get(i);
                     game.getPuntenlijst().put(speler,score);
                 }
 
-                map.put(game.getGameId(),game);         //plaatsen spel in map
+                map.put(game.getGameId(),game);
 
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (PlayerNumberExceededException e) {
-            e.printStackTrace();
-        } catch (RemoteException e) {
             e.printStackTrace();
         }
         return map;
@@ -270,6 +259,36 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         return spelerslijst;
     }
 
+
+  /*  public List<Speler> getAllSpelers(int gameid) {
+
+        List<Speler> spelerslijst = new ArrayList<Speler>();
+
+        try {
+            Connection conn = connect();
+            Statement stmt = conn.createStatement();
+            String sql = "SELECT * FROM Users WHERE gameid = gameid";
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+
+                int spelerId = rs.getInt("spelerId");
+                String username = rs.getString("username");
+                String password = rs.getString("password");
+                int globalScore = rs.getInt("globalScore");
+
+                Speler speler = new Speler(username);
+                speler.setSpelerId(spelerId);
+                speler.setGlobalScore(globalScore);
+                speler.setPasswordHash(password);
+                spelerslijst.add(speler);
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return spelerslijst;
+    }
+*/
 
     @Override
     public List<Integer> getAlleSpelerid (int gameid) {
@@ -359,28 +378,6 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         return null;
     }
 
-    @Override
-    public ArrayList<Integer> getSpelerPunten(int gameid) {
-        //   HashMap<Integer,Integer> scores = new HashMap<>();
-        ArrayList<Integer> scores = new ArrayList<>();
-        String sql = "SELECT * FROM GameSpelertable WHERE gameid = ?;";
-        try (Connection conn = connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, gameid);
-
-            ResultSet rs  = pstmt.executeQuery();
-
-            while (rs.next()) {
-                int userid = rs.getInt("userid");
-                int spelerpunten = rs.getInt("spelerpunten");
-                scores.add(spelerpunten);
-                // scores.put(userid,spelerpunten);
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-        return scores;
-    }
 
 
 
@@ -424,9 +421,6 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
 
     }
 
-
-
-
     public static Set<String> getUserSet(){
         Set<String> userlijst = new HashSet<String>();
 
@@ -448,6 +442,29 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         }
 
         return userlijst;
+    }
+
+    @Override
+    public ArrayList<Integer> getSpelerPunten(int gameid) {
+        //   HashMap<Integer,Integer> scores = new HashMap<>();
+        ArrayList<Integer> scores = new ArrayList<>();
+        String sql = "SELECT * FROM GameSpelertable WHERE gameid = ?;";
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, gameid);
+
+            ResultSet rs  = pstmt.executeQuery();
+
+            while (rs.next()) {
+                int userid = rs.getInt("userid");
+                int spelerpunten = rs.getInt("spelerpunten");
+                scores.add(spelerpunten);
+                // scores.put(userid,spelerpunten);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return scores;
     }
 
 
