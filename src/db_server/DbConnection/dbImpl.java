@@ -167,7 +167,6 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
     @Override //return lege lijst als geen games
     public Map<Integer, Game> getAllGames() { //return alle games in db met gameId = key
         Map<Integer, Game> map = new HashMap<Integer, Game>();
-        int teller = 0;
         try {
             Connection conn = connect();
             Statement stmt = conn.createStatement();
@@ -220,8 +219,7 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
                     game.addSpeler(speler);
                 }
 
-                map.put(teller,game);
-                teller++;
+                map.put(game.getGameId(),game);
 
             }
 
