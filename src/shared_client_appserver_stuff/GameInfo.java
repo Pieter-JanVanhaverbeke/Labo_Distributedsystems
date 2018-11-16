@@ -30,7 +30,6 @@ public class GameInfo implements Serializable {
         this.gameId = game.getGameId();
         this.aantalSpelers = game.getAantalspelers();
         this.spelers = new ArrayList<>();
-        Map<Speler, Integer> punten = game.getPuntenlijst();
         game.getSpelers().forEach(e -> {
             SpelerInfo spelerInfo = new SpelerInfo(e, gameId);
             spelers.add(spelerInfo);

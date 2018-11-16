@@ -26,7 +26,7 @@ public class Game implements Serializable {
     private Bordspel bordspel;
     private int spelerbeurt; //elke speler heeft index
     private int aantalspelers;
-    private Map<Speler, Integer> puntenlijst;
+    private Map<Integer, Integer> puntenlijst;
     private String creator;
     private String createDate;
     private boolean started = false;
@@ -62,7 +62,7 @@ public class Game implements Serializable {
     public void addSpeler(Speler speler) throws PlayerNumberExceededException, RemoteException {
         if(spelers.size() < aantalspelers) {
             spelers.add(speler);
-            puntenlijst.put(speler, 0);
+            puntenlijst.put(speler.getSpelerId(), 0);
             impl.addSpelerToGame(speler.getSpelerId(),gameId);
 
         }
@@ -107,7 +107,7 @@ public class Game implements Serializable {
                         kaart1 = kaart2 = null;
                     } else {
                         //verhoog punten van speler
-                        puntenlijst.put(spelers.get(spelerbeurt), puntenlijst.get(spelerbeurt) + 1);  //speler die aan beurt is punt bijgeven
+                        puntenlijst.put(spelers.get(spelerbeurt).getSpelerId(), puntenlijst.get(spelerbeurt) + 1);  //speler die aan beurt is punt bijgeven
                         //check if game is gedaan, if so => schrijf punten naar spelersprofiel + delete game
                         if (bordspel.checkEindeSpel()) {
                             for (int i = 0; i < spelers.size(); i++) {
@@ -136,7 +136,7 @@ public class Game implements Serializable {
     }*/
 
     public int getGameScore(Speler speler){
-        return puntenlijst.get(speler);
+        return puntenlijst.get(speler.getSpelerId());
     }
 
     public List<Speler> getSpelers() {
@@ -179,11 +179,11 @@ public class Game implements Serializable {
         this.aantalspelers = aantalspelers;
     }
 
-    public Map<Speler, Integer> getPuntenlijst() {
+    public Map<Integer, Integer> getPuntenlijst() {
         return puntenlijst;
     }
 
-    public void setPuntenlijst(Map<Speler, Integer> puntenlijst) {
+    public void setPuntenlijst(Map<Integer, Integer> puntenlijst) {
         this.puntenlijst = puntenlijst;
     }
 

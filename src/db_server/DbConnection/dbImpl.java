@@ -216,7 +216,7 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
                     game.getSpelers().add(speler);
 
                     int score = spelerscores.get(i);
-                    game.getPuntenlijst().put(speler,score);
+                    game.getPuntenlijst().put(speler.getSpelerId(),score);
                 }
 
                 map.put(game.getGameId(),game);
