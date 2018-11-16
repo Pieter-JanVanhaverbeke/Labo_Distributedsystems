@@ -133,7 +133,7 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
 
     @Override
     public void addSpelerToGame(int userid, int gameid){
-        String sql = "INSERT INTO GameSpelertable(userid,gameid) VALUES(?,?,?)";
+        String sql = "INSERT INTO GameSpelertable(userid,gameid,spelerpunten) VALUES(?,?,?)";
         try (Connection conn = connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, userid);
