@@ -173,10 +173,8 @@ public class Bordspel implements Serializable {
         String data= "";
         for(int i=0; i<lengte;i++){
             for(int j=0; j<breedte; j++){
-                    data = data + bord[i][j].getSoort();
+                    data = data + bord[i][j].getSoort() + " ";
                 }
-
-                data = data + " ";
             }
 
 
