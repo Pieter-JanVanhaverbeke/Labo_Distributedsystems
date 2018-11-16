@@ -38,37 +38,7 @@ public class LobbyController {
                 loader.setLocation(ClientMainGUI.class.getResource(LOBBY_GAME_TILE));
                 Parent tile = loader.load();
                 LobbyTileController lobbyTileController = loader.getController();
-
-                GameInfo gameInfo = activeGames.get(i);
-                int maxAantalSpelers = gameInfo.getAantalSpelers();
-                int currentAantalSpelers = gameInfo.getSpelers().size();
-                boolean joined = gameInfo.getSpelers().stream().anyMatch(e -> e.getUsername().equals(usernameLogedIn));
-
-                lobbyTileController.setCreated(gameInfo.getCreateDate());
-                lobbyTileController.setCreator(gameInfo.getCreator());
-                lobbyTileController.setPlayers(Integer.toString(maxAantalSpelers));
-                lobbyTileController.setJoinedPlayers(Integer.toString(currentAantalSpelers));
-                lobbyTileController.setGameId(gameInfo.getGameId());
-                lobbyTileController.setThemeImage(gameInfo.getThema());
-
-                //set button text (join/start/unjoin/resume/watch)
-                if(currentAantalSpelers < maxAantalSpelers){
-                    if(joined)
-                        lobbyTileController.setTileKnopTekst(UNJOIN_GAME);
-                    else
-                        lobbyTileController.setTileKnopTekst(JOIN_GAME);
-                }
-                else{
-                    if(joined) {
-                        if (gameInfo.isStarted())
-                            lobbyTileController.setTileKnopTekst(RESUME_GAME);
-                        else
-                            lobbyTileController.setTileKnopTekst(START_GAME);
-                    }
-                    else{
-                        lobbyTileController.setTileKnopTekst(WATCH_GAME);
-                    }
-                }
+                lobbyTileController.fillTile(activeGames.get(i));
                 gameGrid.add(tile, i%LOBBY_COLUMN_NUMBER, i/LOBBY_COLUMN_NUMBER); //TODO: check of automatisch rijen aanmaakt als index te groot word
             }
 

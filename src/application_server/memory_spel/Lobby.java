@@ -26,14 +26,9 @@ public class Lobby implements Serializable{
         }
 
         if(aantalSpelers <= MAX_PLAYER_COUNT && aantalSpelers >= MIN_PLAYER_COUNT && bordGrootte >= MIN_BOARD_SIZE && bordGrootte <= MAX_BOARD_SIZE) {
-            int gameId = 3;
-            Game game = new Game(bordGrootte, gameId, aantalSpelers, creator);
+            Game game = new Game(bordGrootte, aantalSpelers, creator, style);
+            int gameId = game.getGameId();
             activeGames.put(gameId, game);
-
-            String type = game.getBordspel().zetBordspelTypeOmNaarString();
-            String faceup = game.getBordspel().zetBordspelOmNaarString();
-
-            impl.createGame(creator,game.getCreateDate(),true,aantalSpelers,bordGrootte,style,type,faceup);
             return gameId;
         }
         throw new GameNotCreatedException("aantal spelers/bordgrootte niet toegelaten.");

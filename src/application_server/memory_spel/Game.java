@@ -32,16 +32,17 @@ public class Game implements Serializable {
     private boolean started = false;
     private Kaart kaart1 = null;
     private Kaart kaart2 = null;
+    private int theme;
 
     // SMALL = 4X4 MED = 6X6 LARGE = 8X8
     // Steeds 8 soorten
     // bordgrootte 1=small,2=medium,3=large
-    public Game(int bordGrootte, int gameId, int aantalspelers, String creator){
+    public Game(int bordGrootte, int aantalspelers, String creator, int style) throws RemoteException {
         this.creator = creator;
         this.createDate = ZonedDateTime.now(ZoneId.of(ZoneId.SHORT_IDS.get("ECT"))).toString();
         this.aantalspelers = aantalspelers;
         this.spelers = new ArrayList<>();
-        this.gameId = gameId;
+        this.theme = style;
         int size = 2*bordGrootte+2;
         bordspel = new Bordspel(size, size);
         spelerbeurt = 0;
@@ -51,6 +52,12 @@ public class Game implements Serializable {
         for(Speler speler: spelers){
             puntenlijst.put(speler, 0);
         }
+
+        String type = bordspel.zetBordspelTypeOmNaarString();
+        String faceup = bordspel.zetBordspelOmNaarString();
+
+        impl.createGame(creator, createDate,false,aantalspelers,bordGrootte,theme,type,faceup);
+
     }
 
     public void addSpeler(Speler speler) throws PlayerNumberExceededException, RemoteException {
