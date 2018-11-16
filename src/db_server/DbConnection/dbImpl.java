@@ -209,11 +209,10 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
                 bordspel.setType(layout);
 
                 //alles in game steken
-                Game game = new Game(bordgrootte,aantalspelers,creator, layout);
+                Game game = new Game(bordgrootte,aantalspelers,creator, layout, gameid);
                 game.setCreateDate(createdate);
                 game.setStarted(started);
                 game.setBordspel(bordspel);
-                game.setGameId(gameid);
 
                 List<Integer> spelerids = getAlleSpelerid(gameid);
                 for(int i=0; i<spelerids.size();i++){

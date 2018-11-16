@@ -37,7 +37,7 @@ public class Game implements Serializable {
     // SMALL = 4X4 MED = 6X6 LARGE = 8X8
     // Steeds 8 soorten
     // bordgrootte 1=small,2=medium,3=large
-    public Game(int bordGrootte, int aantalspelers, String creator, int style) throws RemoteException {
+    public Game(int bordGrootte, int aantalspelers, String creator, int style) {
         this.creator = creator;
         this.createDate = ZonedDateTime.now(ZoneId.of(ZoneId.SHORT_IDS.get("ECT"))).toString();
         this.aantalspelers = aantalspelers;
@@ -54,6 +54,12 @@ public class Game implements Serializable {
         }
     }
 
+    public Game(int bordGrootte, int aantalspelers, String creator, int style, int gameId) {
+        this(bordGrootte, aantalspelers, creator, style);
+        this.gameId = gameId;
+
+    }
+
     public void addSpeler(Speler speler) throws PlayerNumberExceededException, RemoteException {
         if(spelers.size() < aantalspelers) {
             spelers.add(speler);
@@ -68,7 +74,7 @@ public class Game implements Serializable {
     public void removeSpeler(Speler speler) throws GameAlreadyStartedException, RemoteException {
         if(!started) {
             spelers.remove(speler);
-            impl.addSpelerToGame(speler.getSpelerId(), gameId);
+            impl.removeSpelerToGame(speler.getSpelerId(), gameId);
         }
         else
             throw new GameAlreadyStartedException("De Game is al begonnen, je kan geen spelers meer verwijderen.");
