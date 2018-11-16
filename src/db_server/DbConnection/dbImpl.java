@@ -216,7 +216,7 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
 
                 List<Integer> spelerids = getAlleSpelerid(gameid);
                 for(int i=0; i<spelerids.size();i++){
-                    Speler speler = getSpeler(spelerids.get(i));            //get speler met id
+                    Speler speler = getSpeler(spelerids.get(i)); //get speler met id
                     game.addSpeler(speler);
                 }
 

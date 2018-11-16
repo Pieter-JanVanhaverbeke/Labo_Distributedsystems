@@ -52,12 +52,6 @@ public class Game implements Serializable {
         for(Speler speler: spelers){
             puntenlijst.put(speler, 0);
         }
-
-        String type = bordspel.zetBordspelTypeOmNaarString();
-        String faceup = bordspel.zetBordspelOmNaarString();
-
-        impl.createGame(creator, createDate,false,aantalspelers,bordGrootte,theme,type,faceup);
-
     }
 
     public void addSpeler(Speler speler) throws PlayerNumberExceededException, RemoteException {
