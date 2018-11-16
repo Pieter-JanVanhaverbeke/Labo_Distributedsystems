@@ -214,14 +214,20 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
                 game.setStarted(started);
                 game.setBordspel(bordspel);
 
+                //alle spelers toevoegen
                 List<Integer> spelerids = getAlleSpelerid(gameid);
+               // Map<Integer,Integer> spelerpunten = getSpelerPunten(gameid);
+                List<Integer> spelerpunten = getSpelerPunten(gameid);
                 for(int i=0; i<spelerids.size();i++){
                     Speler speler = getSpeler(spelerids.get(i)); //get speler met id
                     System.out.println(speler);
                     game.addSpeler(speler);
+
+                    int score = spelerpunten.get(i);
+                    game.getPuntenlijst().put(speler,score);
                 }
 
-                map.put(game.getGameId(),game);
+                map.put(game.getGameId(),game);         //plaatsen spel in map
 
             }
 
@@ -354,6 +360,28 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         return null;
     }
 
+    @Override
+    public ArrayList<Integer> getSpelerPunten(int gameid) {
+     //   HashMap<Integer,Integer> scores = new HashMap<>();
+        ArrayList<Integer> scores = new ArrayList<>();
+        String sql = "SELECT * FROM GameSpelertable WHERE gameid = ?;";
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, gameid);
+
+            ResultSet rs  = pstmt.executeQuery();
+
+            while (rs.next()) {
+                int userid = rs.getInt("userid");
+                int spelerpunten = rs.getInt("spelerpunten");
+                scores.add(spelerpunten);
+               // scores.put(userid,spelerpunten);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return scores;
+    }
 
 
 
