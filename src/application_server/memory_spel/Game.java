@@ -212,13 +212,7 @@ public class Game implements Serializable {
 
     //kan enkel maar op start zetten
     public void setStarted(boolean started) {
-        if (started) {
             this.started = true;
-            try {
-                impl.setStarted(true, gameId);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
         }
     }
-}
+
