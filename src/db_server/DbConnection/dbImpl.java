@@ -24,17 +24,19 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
     }
 
     @Override
-    public String createUser(String username, String password) throws UsernameAlreadyInUseException {
+    public int createUser(String username, String password) throws UsernameAlreadyInUseException {
         String time =  new DateTime().toString();       //huidige tijd dat je plaatst in DB
-
+        int id =-1;
 
         if (dbConnection.getUserSet().contains(username)) {
             System.out.println("gebruikersnaam: " + username + " al gebruikt");
             throw new UsernameAlreadyInUseException(username);
         } else {
             String sql = "INSERT INTO Users(username,password,globalScore,token,timestamptoken,lobbyid) VALUES(?,?,?,?,?,?)";
-            try (Connection conn = connect();
-                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            Connection conn = connect();
+
+            try (PreparedStatement pstmt = conn.prepareStatement(sql))
+            {
                 pstmt.setString(1, username);
                 pstmt.setString(2, password);
                 pstmt.setInt(3,0);
@@ -45,7 +47,21 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
             }
-            return generateUserToken(username);
+
+
+            try (
+                    PreparedStatement psmt = conn.prepareStatement("SELECT last_insert_rowid() AS Username;")) {
+                ResultSet resultSet2 = psmt.executeQuery();
+                while(resultSet2.next()) {
+                    id = resultSet2.getInt("NewID");
+                }
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+
+
+
+            return id;
         }
     }
 
