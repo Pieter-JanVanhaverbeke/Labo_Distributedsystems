@@ -1,10 +1,7 @@
 package client.view_controllers;
 
-import exceptions.LoginFailedException;
 import exceptions.UserDoesNotExistException;
 import exceptions.WrongPasswordException;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -34,7 +31,7 @@ public class LoginController extends Observable {
     @FXML
     public void login(){
         try {
-            token = impl.logIn(username.getText(), password.getText(), ADDRESS, PORT);
+            token = impl.logIn(username.getText(), password.getText(), ADDRESSCLIENT, PORTCLIENT);
             usernameLogedIn = username.getText();
             setScene(LOBBY_SCENE, LOBBY_WIDTH, LOBBY_HEIGHT);
         } catch (RemoteException e) {

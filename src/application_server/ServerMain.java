@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 
 public class ServerMain {
+    public static final int PORTSERVER = 10001;
+
     //clients waarnaar bord/lobby updates moet sturen
     public static Map<String, rmi_int_client_appserver_updater> clients;
 
@@ -17,7 +19,7 @@ public class ServerMain {
     private void startServer() {
         clients = new HashMap<>();
         try {
-            Registry registry = LocateRegistry.createRegistry(10001);
+            Registry registry = LocateRegistry.createRegistry(PORTSERVER);
             registry.rebind("ServerImplService", new ServerImpl());
 
         } catch (Exception e) {

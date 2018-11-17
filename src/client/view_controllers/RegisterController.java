@@ -6,8 +6,6 @@ import javafx.scene.control.TextField;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.util.Observable;
-import java.util.Observer;
 
 import static client.ClientMainGUI.*;
 import static client.utils.Constants.*;
@@ -33,7 +31,7 @@ public class RegisterController {
         if(password.getText().equals(password1.getText())) {
             try {
                 //TODO: hasing + salt
-                token = impl.registrerNewClient(username.getText(), password.getText(), ADDRESS, PORT);
+                token = impl.registrerNewClient(username.getText(), password.getText(), ADDRESSCLIENT, PORTCLIENT);
                 usernameLogedIn = username.getText();
                 setScene(LOBBY_SCENE, LOBBY_WIDTH, LOBBY_HEIGHT);
             } catch (RemoteException e) {

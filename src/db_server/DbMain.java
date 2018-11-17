@@ -11,10 +11,12 @@ import java.rmi.registry.Registry;
  * Created by ruben on 1/11/18.
  */
 public class DbMain {
+    public static final int PORTDB = 13001;
+
     //hier komt de main voor de db server
     private void startDB() {
         try {
-            Registry registry = LocateRegistry.createRegistry(13001);
+            Registry registry = LocateRegistry.createRegistry(PORTDB);
             registry.rebind("DbServerImplService", new dbImpl());
 
         } catch (Exception e) {

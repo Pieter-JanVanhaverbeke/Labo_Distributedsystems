@@ -25,9 +25,12 @@ import static application_server.Utils.Utils.validateToken;
 public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_appserver, Serializable {
     public static rmi_int_appserver_db impl;
 
+    public static final String ADDRESSDB = "localhost";
+    public static final int PORTDB = 13001;
+
     public ServerImpl() throws RemoteException {
 
-        Registry registryServer = LocateRegistry.getRegistry("localhost", 10001);
+        Registry registryServer = LocateRegistry.getRegistry(ADDRESSDB, PORTDB);
         try {
             impl = (rmi_int_appserver_db) registryServer.lookup("DbServerImplService");
             System.out.println("DB connection ok");
@@ -63,7 +66,7 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
     }
 
     @Override
-    public void logout(String clientUsername) throws RemoteException{
+    public void logout(String clientUsername) {
         clients.remove(clientUsername);
     }
 

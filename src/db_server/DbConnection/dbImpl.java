@@ -37,6 +37,7 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
 
             try (PreparedStatement pstmt = conn.prepareStatement(sql))
             {
+                //TODO paar dingen moeten hier niet meer staan?
                 pstmt.setString(1, username);
                 pstmt.setString(2, password);
                 pstmt.setInt(3,0);
