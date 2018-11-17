@@ -26,15 +26,17 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
     @Override
     public int createUser(String username, String password) throws UsernameAlreadyInUseException {
         String time =  new DateTime().toString();       //huidige tijd dat je plaatst in DB
+        int id =-1;
 
-        //TODO als overal spelerid word gebruikt (is nog niet overal het geval) => moet username nog uniek zijn?
         if (dbConnection.getUserSet().contains(username)) {
             System.out.println("gebruikersnaam: " + username + " al gebruikt");
             throw new UsernameAlreadyInUseException(username);
         } else {
             String sql = "INSERT INTO Users(username,password,globalScore,token,timestamptoken,lobbyid) VALUES(?,?,?,?,?,?)";
-            try (Connection conn = connect();
-                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            Connection conn = connect();
+
+            try (PreparedStatement pstmt = conn.prepareStatement(sql))
+            {
                 pstmt.setString(1, username);
                 pstmt.setString(2, password);
                 pstmt.setInt(3,0);
@@ -45,7 +47,18 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
             }
-            return -1; //clientId
+
+            try (
+                    PreparedStatement psmt = conn.prepareStatement("SELECT last_insert_rowid() AS Username;")) {
+                ResultSet resultSet2 = psmt.executeQuery();
+                while(resultSet2.next()) {
+                    id = resultSet2.getInt("NewID");
+                }
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+
+            return id;
         }
     }
 
@@ -185,19 +198,19 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
                 String[] valuefacup = bordspelfacup.split("\\s+");
 
 
-                int size = 2*bordgrootte+2;
-                Bordspel bordspel = new Bordspel(size,size);          //size meegeven
+                int size = 2 * bordgrootte + 2;
+                Bordspel bordspel = new Bordspel(size, size);          //size meegeven
                 Kaart bordspelkaarten[][] = new Kaart[size][size];
 
                 //alle gegevens naar kaarten brengen
-                for(int i=0; i<valuestypes.length; i++){
+                for (int i = 0; i < valuestypes.length; i++) {
 
                     Kaart kaart = new Kaart();
                     int soort = Integer.parseInt(valuestypes[i]);
                     boolean faceup = Boolean.valueOf(valuefacup[i]);
                     kaart.setSoort(soort);
                     kaart.setFaceUp(faceup);
-                    bordspelkaarten[i/size][i%size] = kaart;                  //naar matrix omzetten
+                    bordspelkaarten[i / size][i % size] = kaart;                  //naar matrix omzetten
                 }
 
                 //alle gegevens naar bordspel steken
@@ -205,21 +218,21 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
                 bordspel.setType(layout);
 
                 //alles in game steken
-                Game game = new Game(bordgrootte,aantalspelers,creator, layout, gameid);
+                Game game = new Game(bordgrootte, aantalspelers, creator, layout, gameid);
                 game.setCreateDate(createdate);
                 game.setStarted(started);
                 game.setBordspel(bordspel);
                 List<Integer> spelerscores = getSpelerPunten(gameid);
                 List<Integer> spelerids = getAlleSpelerid(gameid);
-                for(int i=0; i<spelerids.size();i++){
+                for (int i = 0; i < spelerids.size(); i++) {
                     Speler speler = getSpeler(spelerids.get(i)); //get speler met id
                     game.getSpelers().add(speler);
 
                     int score = spelerscores.get(i);
-                    game.getPuntenlijst().put(speler.getSpelerId(),score);
+                    game.getPuntenlijst().put(speler.getSpelerId(), score);
                 }
 
-                map.put(game.getGameId(),game);
+                map.put(game.getGameId(), game);
 
             }
 
@@ -227,25 +240,26 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
             e.printStackTrace();
         }
         return map;
-    }
+        }
+
 
     @Override
-    public String getFaceUp(int gameid) {
-        String faceup = "";
-        String sql = "SELECT * FROM Game WHERE gameid = ?;";
-        try (Connection conn = connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, gameid);
+    public String getFaceUp(int gameid){
+            String faceup = "";
+            String sql = "SELECT * FROM Game WHERE gameid = ?;";
+            try (Connection conn = connect();
+                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setInt(1, gameid);
 
-            ResultSet rs = pstmt.executeQuery();
+                ResultSet rs = pstmt.executeQuery();
 
-            while (rs.next()) {
-                 faceup = rs.getString("bordspelfaceup");
+                while (rs.next()) {
+                    faceup = rs.getString("bordspelfaceup");
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
 
         return faceup;
     }
@@ -461,8 +475,20 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
 
     //zet started state van game met gameId op par:b
     @Override
-    public void setStarted(boolean b, int gameId) throws RemoteException{
+    public void setStarted(boolean b, int gameId) {
+        String sql = "UPDATE Game SET started = ? WHERE gameid = ?";
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setBoolean(1, b);
+            pstmt.setInt(2, gameId);
+            pstmt.executeUpdate();
+        }
+        catch(
+                SQLException e)
 
+        {
+            e.printStackTrace();
+        }
     }
 
 
