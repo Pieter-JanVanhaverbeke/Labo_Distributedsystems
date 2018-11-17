@@ -34,6 +34,10 @@ public class Game implements Serializable {
     private Kaart kaart2 = null;
     private int theme;
 
+    private int tmpX;
+    private int tmpY;
+
+
     // SMALL = 4X4 MED = 6X6 LARGE = 8X8
     // Steeds 8 soorten
     // bordgrootte 1=small,2=medium,3=large
@@ -47,11 +51,6 @@ public class Game implements Serializable {
         bordspel = new Bordspel(size, size);
         spelerbeurt = 0;
         puntenlijst = new HashMap<>();
-
-        /*//iedere speler start met 0 punten
-        for(Speler speler: spelers){
-            puntenlijst.put(speler, 0);
-        }*/
     }
 
     public Game(int bordGrootte, int aantalspelers, String creator, int style, int gameId) {
@@ -79,55 +78,92 @@ public class Game implements Serializable {
             throw new GameAlreadyStartedException("De Game is al begonnen, je kan geen spelers meer verwijderen.");
     }
 
+    //TODO DIT IS EEN VUILBAK GEWORDEN!! feel free to clean it up ;)
     //flip kaart, eerste kaart blijft geflipt tot 2e geflipt word.
     // If gelijk => punt bij speler tellen + kaarten blijven liggen,
     // if niet gelijk => kaarten draaien terug om. if spel is gedaan
     // (alle kaarten gedraaid) => punten worden aan spelers profiel toegevoegd
-    public void flipCard(int x, int y, Speler speler) throws NotYourTurnException, NotEnoughSpelersException, RemoteException {
+    public boolean flipCard(int x, int y, Speler speler) throws NotYourTurnException, NotEnoughSpelersException, RemoteException {
         started = true;
+        boolean firstFlip = false;
         //check of voldoende spelers zijn
         if(spelers.size() == aantalspelers) {
             //check of spelerbeurt ok is
             for(Speler s: spelers) {
                 if (s.getSpelerId() == speler.getSpelerId() && spelers.indexOf(s) == spelerbeurt){
-                    //check if eerste kaart al is omgedraaid
-                    if (kaart1 == null) {
-                        //draai eerste kaart
-                        kaart1 = bordspel.getBord()[x][y];
-                        kaart1.draaiOm();
-                    } else {
-                        //draai 2e kaart
-                        kaart2 = bordspel.getBord()[x][y];
-                        kaart2.draaiOm();
-
-                        //check if soort van beide kaarten is gelijk
-                        if (kaart1.getSoort() != kaart2.getSoort()) {
-                            //draai terug alles om
+                    if(bordspel.getBordRemote()[x][y] == -1) {
+                        //check if eerste kaart al is omgedraaid
+                        if (kaart1 == null) {
+                            //draai eerste kaart
+                            kaart1 = bordspel.getBord()[x][y];
                             kaart1.draaiOm();
-                            kaart2.draaiOm();
-                            kaart1 = kaart2 = null;
+                            firstFlip = true;
+                            tmpX = x;
+                            tmpY = y;
                         } else {
-                            //verhoog punten van speler
-                            puntenlijst.put(spelers.get(spelerbeurt).getSpelerId(), puntenlijst.get(spelerbeurt) + 1);  //speler die aan beurt is punt bijgeven
-                            //check if game is gedaan, if so => schrijf punten naar spelersprofiel + delete game
-                            if (bordspel.checkEindeSpel()) {
-                                for (int i = 0; i < spelers.size(); i++) {
-                                    Speler speler2 = spelers.get(i);
-                                    speler2.increaseGlobalScore(puntenlijst.get(i));
-                                }
-                                Lobby.deleteGame(this.gameId);
+                            //draai 2e kaart
+                            kaart2 = bordspel.getBord()[x][y];
+                            kaart2.draaiOm();
 
+                            //check if soort van beide kaarten is gelijk
+                            if (kaart1.getSoort() != kaart2.getSoort()) {
+                                //draai terug alles om
+                                kaart1.draaiOm();
+                                kaart2.draaiOm();
+                                kaart1 = kaart2 = null;
+                                spelerbeurt = (spelerbeurt + 1) % aantalspelers;
+                            } else {
+                                //verhoog punten van speler
+                                int punt = puntenlijst.get(spelerbeurt) == null ? 0: puntenlijst.get(spelerbeurt).intValue();
+                                puntenlijst.put(spelers.get(spelerbeurt).getSpelerId(), punt + 1);  //speler die aan beurt is punt bijgeven
+                                //check if game is gedaan, if so => schrijf punten naar spelersprofiel + delete game
+                                if (bordspel.checkEindeSpel()) {
+                                    for (int i = 0; i < spelers.size(); i++) {
+                                        Speler speler2 = spelers.get(i);
+                                        speler2.increaseGlobalScore(puntenlijst.get(speler2.getSpelerId()));
+                                    }
+                                    //Lobby.deleteGame(this.gameId);
+
+                                }
+
+                                //pas in db zetten als paar echt gevonden is
+                                //DATABANK
+                                String faceup = impl.getFaceUp(gameId);
+
+                                //LOGICA OM UP TE DATEN NAAR DATABENK  TODO mss andere plaats zetten
+                                int bordlengte = (int) Math.sqrt(faceup.length() / 2);                //bordspelsize halen uit lengte string.
+                                int coordinaat1 = 2 * bordlengte * x + 2 * y;           //coordinaat dat moet vervangen worden in string.
+                                int coordinaat2 = 2 * bordlengte * tmpX + 2 * tmpY;           //coordinaat dat moet vervangen worden in string.
+                                char face = '0';
+
+                                StringBuilder sb = new StringBuilder(faceup);
+
+                                if (faceup.charAt(coordinaat1) == face) {
+                                    sb.setCharAt(coordinaat1, '1');
+                                }
+                                if (faceup.charAt(coordinaat2) == face) {
+                                    sb.setCharAt(coordinaat2, '1');
+                                } else {
+                                    //sb.setCharAt(coordinaat,'0');
+                                }
+                                faceup = sb.toString();
+                                impl.updateFaceUp(gameId, faceup);
+                                //TODO puntenlijst naar DB!!!
                             }
                         }
+                        break;
                     }
-                    break;
                 }
-                else
+                else {
                     throw new NotYourTurnException("U bent niet aan beurt.");
+                }
             }
         }
-        else
+        else {
             throw new NotEnoughSpelersException("Er zijn te weinig spelers.");
+        }
+
+        return firstFlip;
     }
 
     /*public String toString(){

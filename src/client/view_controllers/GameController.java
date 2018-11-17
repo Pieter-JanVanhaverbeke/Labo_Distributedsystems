@@ -1,18 +1,20 @@
 package client.view_controllers;
 
+import application_server.memory_spel.Lobby;
 import exceptions.*;
+import javafx.collections.ObservableList;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import shared_client_appserver_stuff.GameInfo;
-import shared_client_appserver_stuff.GameUpdate;
 import shared_client_appserver_stuff.SpelerInfo;
 
 import java.rmi.RemoteException;
@@ -21,9 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import static client.ClientMainGUI.*;
-import static client.utils.Constants.REVERSE_SIDE;
-import static client.utils.Constants.SELECTED_BORDER_WIDTH;
-import static client.utils.Constants.THEMA_NUMBER;
+import static client.utils.Constants.*;
 
 /**
  * Created by ruben on 2/11/18.
@@ -63,6 +63,7 @@ public class GameController implements EventHandler<Event> {
         System.exit(0);
     }
 
+
     @FXML
     public void initialize(){
 
@@ -100,7 +101,13 @@ public class GameController implements EventHandler<Event> {
 
             for(int i = 0; i<gameInfo.getBreedte(); i++){
                 for(int j = 0; j<gameInfo.getLengte(); j++){
-                    gameBord.add(spitImageView(back), j, i);
+                    int bord = gameInfo.getBord()[j][i];
+                    if(bord == -1) {
+                        gameBord.add(spitImageView(back), j, i);
+                    } else {
+                        gameBord.add(spitImageView(new Image(pictures.get(bord))), j, i);
+                    }
+
                 }
             }
 
@@ -139,7 +146,8 @@ public class GameController implements EventHandler<Event> {
                 ImageView imageView = (ImageView) event.getSource();
                 int column = GridPane.getColumnIndex(imageView);
                 int row = GridPane.getRowIndex(imageView);
-                impl.flipCard(token, gameId, row, column);
+                if(gameInfo.getBord()[row][column] == -1)
+                    updateBord(impl.flipCard(token, gameId, row, column));
             }
             else{
                 throw new PlayerNotInGameException("U speelt niet mee in deze game.");
@@ -159,17 +167,20 @@ public class GameController implements EventHandler<Event> {
         }
     }
 
-    public void updateBord(GameUpdate gameUpdate){
-        setBorder(gameUpdate.getSpelersBeurt(), true);
-        int[][] bord = gameUpdate.getBord();
-        for(int i = 0; i<gameInfo.getBreedte(); i++){
-            for(int j = 0; j<gameInfo.getLengte(); j++){
-                if(bord[j][i] == -1) {
-                    gameBord.add(spitImageView(back), j, i);
-                }
-                else {
-                    gameBord.add(spitImageView(new Image(pictures.get(bord[j][i]))), j, i);
-                }
+    public void updateBord(GameInfo gameInfo){
+        setBorder(gameInfo.getSpelersBeurt(), true);
+        int[][] bord = gameInfo.getBord();
+
+        ObservableList<Node> nodes = gameBord.getChildren();
+        for(Node node: nodes){
+            ImageView imageView = (ImageView) node;
+            int i = GridPane.getColumnIndex(node);
+            int j = GridPane.getRowIndex(node);
+            if(bord[j][i] == -1) {
+                imageView.setImage(back);
+            }
+            else {
+                imageView.setImage(new Image(pictures.get(bord[j][i])));
             }
         }
     }
@@ -179,6 +190,21 @@ public class GameController implements EventHandler<Event> {
         spelersRij.forEach(e -> e.setBorder(new Border(new BorderStroke(Color.BLUE, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(0)))));
         if(border){
             spelersRij.get(index).setBorder(new Border(new BorderStroke(Color.BLUE, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(SELECTED_BORDER_WIDTH))));
+        }
+    }
+
+    @FXML
+    public void back(){
+        setScene(LOBBY_SCENE, LOBBY_WIDTH, LOBBY_HEIGHT);
+    }
+
+    @FXML
+    public void stop(){
+        try {
+            impl.deleteGame(gameId);
+            setScene(LOBBY_SCENE, LOBBY_WIDTH, LOBBY_HEIGHT);
+        } catch (RemoteException e) {
+            e.printStackTrace();
         }
     }
 }

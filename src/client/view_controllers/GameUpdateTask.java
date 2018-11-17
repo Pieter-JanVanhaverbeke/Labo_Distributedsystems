@@ -4,7 +4,7 @@ import exceptions.InternalException;
 import exceptions.NoValidTokenException;
 import javafx.concurrent.Task;
 import javafx.scene.layout.GridPane;
-import shared_client_appserver_stuff.GameUpdate;
+import shared_client_appserver_stuff.GameInfo;
 
 import java.rmi.RemoteException;
 
@@ -27,7 +27,7 @@ public class GameUpdateTask extends Task {
 
     @Override
     protected Object call() {
-        try {
+        /*try {
             while(!isCancelled()) {
                 GameUpdate gameUpdate = impl.gameUpdate(gameId, token);
                 updateValue(gameUpdate);
@@ -39,14 +39,14 @@ public class GameUpdateTask extends Task {
             e.printStackTrace();
         } catch (InternalException e) {
             e.printStackTrace();
-        }
+        }*/
         return null;
     }
 
     @Override
     protected void updateValue(Object o) {
         super.updateValue(o);
-        gameController.updateBord((GameUpdate) o);
+        gameController.updateBord((GameInfo) o);
     }
 
 

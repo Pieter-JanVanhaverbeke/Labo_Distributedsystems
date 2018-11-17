@@ -5,7 +5,6 @@ import application_server.memory_spel.Lobby;
 import application_server.memory_spel.Speler;
 import exceptions.*;
 import shared_client_appserver_stuff.GameInfo;
-import shared_client_appserver_stuff.GameUpdate;
 import shared_client_appserver_stuff.rmi_int_client_appserver;
 import shared_client_appserver_stuff.rmi_int_client_appserver_updater;
 import shared_db_appserver_stuff.rmi_int_appserver_db;
@@ -27,6 +26,7 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
 
     public static final String ADDRESSDB = "localhost";
     public static final int PORTDB = 13001;
+
 
     public ServerImpl() throws RemoteException {
 
@@ -135,45 +135,22 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
 
     //////////////////////////////////// Game ///////////////////////////////////////////
     @Override
-    public void flipCard(String token, int gameId, int x, int y) throws NoValidTokenException, NotYourTurnException, NotEnoughSpelersException, InternalException {
+    public GameInfo flipCard(String token, int gameId, int x, int y) throws NoValidTokenException, NotYourTurnException, NotEnoughSpelersException, InternalException {
+        Game game;
+
         try {
             Speler speler = validateToken(token);
-            Lobby.getActiveGames().get(gameId).flipCard(x, y, speler);
+            game = Lobby.flipCard(gameId, x, y, speler);
 
             //wijziging => stuur respons naar user
-            notify();
-
-
-            //DATABANK
-
-            String faceup = impl.getFaceUp(gameId);
-
-            //LOGICA OM UP TE DATEN NAAR DATABENK  TODO mss andere plaats zetten
-
-            int bordlengte = (int) Math.sqrt(faceup.length()/2);                //bordspelsize halen uit lengte string.
-            int coordinaat = 2*bordlengte*x+2*y;           //coordinaat dat moet vervangen worden in string.
-            char face = '0';
-
-
-
-            StringBuilder sb = new StringBuilder(faceup);
-
-
-            if(faceup.charAt(coordinaat)==face){
-                 sb.setCharAt(coordinaat, '1');
-            }
-            else{
-                sb.setCharAt(coordinaat,'0');
-            }
-
-            faceup=sb.toString();
-
-            impl.updateFaceUp(gameId,faceup);
+            //gameUpdate(gameId);
 
         } catch (RemoteException e) {
             e.printStackTrace();
             throw new InternalException("Fout in verbinding met DB.");
         }
+
+        return new GameInfo(game);
     }
 
     @Override
@@ -189,21 +166,25 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
     }
 
     //TODO: mss met versie nrs werken
+    //TODO: wat met token geldigheid?
     @Override
-    public GameUpdate gameUpdate(int gameId, String token) throws NoValidTokenException, InternalException {
-        try {
+    public GameInfo gameUpdate(int gameId, String token) {
+        /*try {
             validateToken(token);
-            //wacht op wijziging van server
-            wait();
             Game game = Lobby.getGame(gameId);
-            return new GameUpdate(game.getSpelerbeurt(), game.getBordspel().getBordRemote());
+            new Thread(new GameUpdateTask(game)).start();
+
+        } catch (NoValidTokenException e) {
+            e.printStackTrace();
         } catch (RemoteException e) {
             e.printStackTrace();
-            throw new InternalException("Fout in verbinding met DB.");
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            throw new InternalException("update mechanisme is interrupted.");
-        }
+        }*/
+        return null;
+    }
+
+    @Override
+    public void deleteGame(int gameId) throws RemoteException{
+        Lobby.deleteGame(gameId);
     }
 
 

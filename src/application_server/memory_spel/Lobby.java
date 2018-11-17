@@ -1,9 +1,7 @@
 package application_server.memory_spel;
 import application_server.Utils.Utils;
-import exceptions.GameAlreadyStartedException;
+import exceptions.*;
 import shared_client_appserver_stuff.GameInfo;
-import exceptions.GameNotCreatedException;
-import exceptions.PlayerNumberExceededException;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
@@ -41,13 +39,12 @@ public class Lobby implements Serializable{
     }
 
     public static void deleteGame(int gameId){
-        dbUpdateGames();
-        activeGames.remove(gameId);
         try {
             impl.deleteGame(gameId);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+        dbUpdateGames();
     }
 
     public static Map<Integer, Game> getActiveGames(){
@@ -81,7 +78,7 @@ public class Lobby implements Serializable{
 
     public static Game getGame(int gameId){
         //eerst nieuwe info uit db halen
-        dbUpdateGames();
+        //dbUpdateGames(); //TODO
         return activeGames.get(gameId);
     }
 
@@ -91,5 +88,15 @@ public class Lobby implements Serializable{
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+    }
+
+    public static Game flipCard(int gameId, int x, int y, Speler speler) throws NotYourTurnException, NotEnoughSpelersException, RemoteException {
+        //omdat enkel na gevonden paar pas in db komt => activeGames niet updates vanuit db zolang 2e kaart niet gedraaid is
+        Game game = activeGames.get(gameId);
+
+        if(!game.flipCard(x, y, speler))
+            dbUpdateGames();
+        return game;
+
     }
 }

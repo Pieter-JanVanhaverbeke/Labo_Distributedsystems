@@ -65,7 +65,7 @@ public class Constants {
     public static final Map<Integer, String> THEMA3_PICTURES = new HashMap<>();
 
     public static final String THEMA1_NAME = "Programeertalen";
-    public static final String THEMA2_NAME = "Pannekoek";
+    public static final String THEMA2_NAME = "Badeendjes";
     public static final String THEMA3_NAME = "Brian";
 
     public static final String THEMA1_BASE_IMG_PATH = "client/scenes/pictures/game_tile_pictures/programming_languages/java.png";
@@ -78,6 +78,26 @@ public class Constants {
         THEMA_NUMBER.put(2, THEMA3_PICTURES);
 
         //paden naar fotos toevoegen in elke map ...
+        PROGRAMMING_LANGUAGES_PICTURES.put(0, "client/scenes/pictures/game_tile_pictures/programming_languages/java.png");
+        PROGRAMMING_LANGUAGES_PICTURES.put(1, "client/scenes/pictures/game_tile_pictures/programming_languages/c.png");
+        PROGRAMMING_LANGUAGES_PICTURES.put(2, "client/scenes/pictures/game_tile_pictures/programming_languages/cpp.png");
+        PROGRAMMING_LANGUAGES_PICTURES.put(3, "client/scenes/pictures/game_tile_pictures/programming_languages/csharp.png");
+        PROGRAMMING_LANGUAGES_PICTURES.put(4, "client/scenes/pictures/game_tile_pictures/programming_languages/fortran.jpeg");
+        PROGRAMMING_LANGUAGES_PICTURES.put(5, "client/scenes/pictures/game_tile_pictures/programming_languages/python.jpeg");
+        PROGRAMMING_LANGUAGES_PICTURES.put(6, "client/scenes/pictures/game_tile_pictures/programming_languages/js.png");
+        PROGRAMMING_LANGUAGES_PICTURES.put(7, "client/scenes/pictures/game_tile_pictures/programming_languages/cobol.png");
+
+        BADEEND_PICTURES.put(0, "client/scenes/pictures/game_tile_pictures/badeendjes/duck1.png");
+        BADEEND_PICTURES.put(1, "client/scenes/pictures/game_tile_pictures/badeendjes/duck2.png");
+        BADEEND_PICTURES.put(2, "client/scenes/pictures/game_tile_pictures/badeendjes/duck3.png");
+        BADEEND_PICTURES.put(3, "client/scenes/pictures/game_tile_pictures/badeendjes/duck4.png");
+        BADEEND_PICTURES.put(4, "client/scenes/pictures/game_tile_pictures/badeendjes/duck5.png");
+        BADEEND_PICTURES.put(5, "client/scenes/pictures/game_tile_pictures/badeendjes/duck6.png");
+        BADEEND_PICTURES.put(6, "client/scenes/pictures/game_tile_pictures/badeendjes/duck7.png");
+        BADEEND_PICTURES.put(7, "client/scenes/pictures/game_tile_pictures/badeendjes/duck8.png");
+
+
+
     }
 
     static {

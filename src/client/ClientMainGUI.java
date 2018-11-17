@@ -64,8 +64,6 @@ public class ClientMainGUI extends Application {
         Registry registryServer = LocateRegistry.getRegistry(ADDRESSSERVER, PORTSERVER);
         impl = (rmi_int_client_appserver) registryServer.lookup("ServerImplService");
         System.out.println("Server connection ok");
-
-
     }
 
     public static void setScene(String scenePath, int width, int height) {

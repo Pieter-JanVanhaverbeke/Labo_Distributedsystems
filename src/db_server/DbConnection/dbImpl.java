@@ -208,7 +208,7 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
 
                     Kaart kaart = new Kaart();
                     int soort = Integer.parseInt(valuestypes[i]);
-                    boolean faceup = Boolean.valueOf(valuefacup[i]);
+                    boolean faceup = valuefacup[i].equals("1");
                     kaart.setSoort(soort);
                     kaart.setFaceUp(faceup);
                     bordspelkaarten[i / size][i % size] = kaart;                  //naar matrix omzetten

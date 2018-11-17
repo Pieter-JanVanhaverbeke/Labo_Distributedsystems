@@ -23,6 +23,7 @@ public class GameInfo implements Serializable {
     private int breedte;
     private int lengte;
     private int thema;
+    int[][] bord;
     //private Map<SpelerInfo, Integer> puntentLijst;
 
     public GameInfo(Game game){
@@ -30,11 +31,7 @@ public class GameInfo implements Serializable {
         this.gameId = game.getGameId();
         this.aantalSpelers = game.getAantalspelers();
         this.spelers = new ArrayList<>();
-        game.getSpelers().forEach(e -> {
-            SpelerInfo spelerInfo = new SpelerInfo(e, gameId);
-            spelers.add(spelerInfo);
-            //puntentLijst.put(spelerInfo, punten.get(e));
-        });
+        game.getSpelers().forEach(e -> spelers.add(new SpelerInfo(e, gameId)));
         this.spelersBeurt = game.getSpelerbeurt();
         this.createDate = game.getCreateDate();
         this.creator = game.getCreator();
@@ -42,6 +39,7 @@ public class GameInfo implements Serializable {
         this.breedte = game.getBordspel().getBreedte();
         this.lengte = game.getBordspel().getLengte();
         this.thema = game.getBordspel().getType();
+        this.bord = game.getBordspel().getBordRemote();
     }
 
     public int getGameId() {
@@ -124,7 +122,15 @@ public class GameInfo implements Serializable {
         this.thema = thema;
     }
 
-   /* public Map<SpelerInfo, Integer> getPuntentLijst() {
+    public int[][] getBord() {
+        return bord;
+    }
+
+    public void setBord(int[][] bord) {
+        this.bord = bord;
+    }
+
+    /* public Map<SpelerInfo, Integer> getPuntentLijst() {
         return puntentLijst;
     }
 

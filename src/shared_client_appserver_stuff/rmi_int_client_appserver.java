@@ -30,9 +30,13 @@ public interface rmi_int_client_appserver extends Remote {
     GameInfo getGame(String token, int gameId) throws RemoteException, NoValidTokenException, InternalException;
 
     //////////////////////////////////// Game ///////////////////////////////////////////
-    void flipCard(String token, int gameId, int x, int y) throws RemoteException, NoValidTokenException, NotYourTurnException, NotEnoughSpelersException, InternalException;
+    GameInfo flipCard(String token, int gameId, int x, int y) throws RemoteException, NoValidTokenException, NotYourTurnException, NotEnoughSpelersException, InternalException;
 
     void startGame(int gameId, String token) throws RemoteException, NoValidTokenException, InternalException;
 
-    GameUpdate gameUpdate(int gameId, String token) throws RemoteException, NoValidTokenException, InternalException;
+    //TODO: mss met versie nrs werken
+    //TODO: wat met token geldigheid?
+    GameInfo gameUpdate(int gameId, String token) throws RemoteException;
+
+    void deleteGame(int gameId) throws RemoteException;
 }

@@ -123,12 +123,12 @@
                      </padding></AnchorPane>
                </children>
             </GridPane>
-            <Button layoutX="252.0" layoutY="608.0" mnemonicParsing="false" text="Back (pause game)" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="30.0">
+            <Button layoutX="252.0" layoutY="608.0" mnemonicParsing="false" onAction="#back" text="Back (pause game)" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="30.0">
                <font>
                   <Font size="22.0" />
                </font>
             </Button>
-            <Button layoutX="613.0" layoutY="608.0" mnemonicParsing="false" text="Stop Game" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="30.0">
+            <Button layoutX="613.0" layoutY="608.0" mnemonicParsing="false" onAction="#stop" text="Stop Game" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="30.0">
                <font>
                   <Font size="22.0" />
                </font>
