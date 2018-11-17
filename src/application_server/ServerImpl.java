@@ -136,10 +136,10 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
 
             String faceup = impl.getFaceUp(gameId);
 
-
             //LOGICA OM UP TE DATEN NAAR DATABENK  TODO mss andere plaats zetten
 
-            int coordinaat = 8*x+2*y;           //coordinaat dat moet vervangen worden in string.
+            int bordlengte = (int) Math.sqrt(faceup.length()/2);                //bordspelsize halen uit lengte string.
+            int coordinaat = 2*bordlengte*x+2*y;           //coordinaat dat moet vervangen worden in string.
             char face = '0';
 
 
