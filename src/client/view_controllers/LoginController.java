@@ -2,6 +2,7 @@ package client.view_controllers;
 
 import exceptions.UserDoesNotExistException;
 import exceptions.WrongPasswordException;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -54,4 +55,15 @@ public class LoginController extends Observable {
     public void register(){
         setScene(REGISTER_SCENE, LOGIN_WIDTH, LOGIN_HEIGHT);
     }
+
+
+    @FXML
+    public void exit(){
+        Platform.exit();
+        System.exit(0);
+    }
+
 }
+
+
+

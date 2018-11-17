@@ -1,6 +1,7 @@
 package client.view_controllers;
 
 import exceptions.*;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -55,6 +56,12 @@ public class GameController implements EventHandler<Event> {
     private double boardwidth;
     private double boardLength;
 
+
+    @FXML
+    public void exit(){
+        Platform.exit();
+        System.exit(0);
+    }
 
     @FXML
     public void initialize(){

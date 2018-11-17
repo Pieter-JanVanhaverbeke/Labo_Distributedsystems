@@ -16,7 +16,7 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<VBox prefHeight="700.0" prefWidth="1300.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.view_controllers.LobbyController">
+<VBox prefHeight="700.0" prefWidth="1300.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.view_controllers.LobbyController">
    <children>
       <MenuBar VBox.vgrow="NEVER">
          <menus>
@@ -24,7 +24,7 @@
                <items>
                   <MenuItem mnemonicParsing="false" text="Preferences…" />
                   <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem mnemonicParsing="false" text="Quit" />
+                  <MenuItem mnemonicParsing="false" onAction="#exit" text="Quit" />
                </items>
             </Menu>
             <Menu mnemonicParsing="false" text="Help">

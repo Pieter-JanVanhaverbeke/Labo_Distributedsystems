@@ -5,6 +5,7 @@ import static client.utils.Constants.*;
 
 import client.ClientMainGUI;
 import exceptions.InternalException;
+import javafx.application.Platform;
 import shared_client_appserver_stuff.GameInfo;
 import exceptions.NoValidTokenException;
 import javafx.fxml.FXML;
@@ -71,4 +72,11 @@ public class LobbyController {
             e.printStackTrace();
         }
     }
+
+    @FXML
+    public void exit(){
+        Platform.exit();
+        System.exit(0);
+    }
+
 }
