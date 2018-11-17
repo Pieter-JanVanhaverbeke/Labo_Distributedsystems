@@ -14,6 +14,8 @@ public interface rmi_int_client_appserver extends Remote {
 
     String logIn(String username, String passwordHash, String address, int port) throws WrongPasswordException, UserDoesNotExistException, RemoteException, NotBoundException;
 
+    void logout(String clientId) throws RemoteException;
+
     //////////////////////////////// Lobby //////////////////////////////////////////
     //returned de gameId van de gemaakte game
     int createGame(int aantalSpelers, int bordGrootte, String token, int style) throws RemoteException, GameNotCreatedException, NoValidTokenException, InternalException;

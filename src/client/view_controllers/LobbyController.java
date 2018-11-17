@@ -61,9 +61,14 @@ public class LobbyController {
 
     @FXML
     public void logout(){
-        token = null;
-        gameId = -1;
-        usernameLogedIn = null;
-        setScene(LOGIN_SCENE, LOGIN_WIDTH, LOGIN_HEIGHT);
+        try {
+            impl.logout(usernameLogedIn);
+            token = null;
+            gameId = -1;
+            usernameLogedIn = null;
+            setScene(LOGIN_SCENE, LOGIN_WIDTH, LOGIN_HEIGHT);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 }

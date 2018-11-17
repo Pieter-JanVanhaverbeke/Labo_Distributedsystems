@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class ServerMain {
     //clients waarnaar bord/lobby updates moet sturen
-    public static Map<Integer, rmi_int_client_appserver_updater> clients;
+    public static Map<String, rmi_int_client_appserver_updater> clients;
 
 
     private void startServer() {

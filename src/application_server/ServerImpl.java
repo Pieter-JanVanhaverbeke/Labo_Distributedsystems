@@ -1,6 +1,5 @@
 package application_server;
 
-import application_server.Utils.Utils;
 import application_server.memory_spel.Game;
 import application_server.memory_spel.Lobby;
 import application_server.memory_spel.Speler;
@@ -42,7 +41,7 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
     public String registrerNewClient(String username, String passwdHash, String address, int port) throws UsernameAlreadyInUseException, RemoteException, NotBoundException {
         int clientId = impl.createUser(username, passwdHash);
         System.out.println("gebruiker: " + username + " aangemaakt en aangemeld!");
-        clients.put(clientId, (rmi_int_client_appserver_updater) LocateRegistry.getRegistry(address, port).lookup("ClientUpdaterImplService"));
+        clients.put(username, (rmi_int_client_appserver_updater) LocateRegistry.getRegistry(address, port).lookup("ClientUpdaterImplService"));
         return generateUserToken(username);
     }
 
@@ -56,11 +55,16 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
 
        else if (passwordHash.equals(speler.getPasswordHash())) {
             //client toevoegen voor updates naar te sturen
-            clients.put(speler.getSpelerId(), (rmi_int_client_appserver_updater) LocateRegistry.getRegistry(address, port).lookup("ClientUpdaterImplService"));
+            clients.put(username, (rmi_int_client_appserver_updater) LocateRegistry.getRegistry(address, port).lookup("ClientUpdaterImplService"));
             return generateUserToken(username);
         } else {
             throw new WrongPasswordException("Het wachtwoord is verkeert.");
         }
+    }
+
+    @Override
+    public void logout(String clientUsername) throws RemoteException{
+        clients.remove(clientUsername);
     }
 
 
