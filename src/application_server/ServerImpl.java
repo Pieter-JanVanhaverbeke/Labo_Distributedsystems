@@ -130,7 +130,34 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
 
             //wijziging => stuur respons naar user
             notify();
-            //TODO: DB
+
+
+            //DATABANK
+
+            String faceup = impl.getFaceUp(gameId);
+
+
+            //LOGICA OM UP TE DATEN NAAR DATABENK  TODO mss andere plaats zetten
+
+            int coordinaat = 8*x+2*y;           //coordinaat dat moet vervangen worden in string.
+            char face = '0';
+
+
+
+            StringBuilder sb = new StringBuilder(faceup);
+
+
+            if(faceup.charAt(coordinaat)==face){
+                 sb.setCharAt(coordinaat, '1');
+            }
+            else{
+                sb.setCharAt(coordinaat,'0');
+            }
+
+            faceup=sb.toString();
+
+            impl.updateFaceUp(gameId,faceup);
+
         } catch (RemoteException e) {
             e.printStackTrace();
             throw new InternalException("Fout in verbinding met DB.");

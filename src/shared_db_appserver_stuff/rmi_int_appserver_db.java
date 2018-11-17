@@ -39,6 +39,8 @@ public interface rmi_int_appserver_db extends Remote {
 
     void updateFaceUp(int gameid,String data)throws RemoteException;
 
+    String getFaceUp(int gameid)throws RemoteException;
+
     List<Integer> getAlleSpelerid (int gameid)throws RemoteException;
 
     Speler getSpeler(int spelerid) throws RemoteException;
