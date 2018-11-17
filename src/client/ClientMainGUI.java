@@ -1,5 +1,6 @@
 package client;
 
+import application_server.ServerImpl;
 import client.view_controllers.ErrorController;
 import javafx.application.Application;
 import javafx.fxml.FXML;
@@ -33,6 +34,9 @@ public class ClientMainGUI extends Application {
     public static Stage errorWindow;
     private static FXMLLoader loader;
 
+    public static final String ADDRESS = "locahost";
+    public static final int PORT = 10001;
+
     @Override
     public void start(Stage primaryStage) {
         ClientMainGUI.primaryStage = primaryStage;
@@ -54,9 +58,14 @@ public class ClientMainGUI extends Application {
     }
 
     private static void serverConnection() throws RemoteException, NotBoundException {
-        Registry registryServer = LocateRegistry.getRegistry("localhost", 10001);
+        Registry registry = LocateRegistry.createRegistry(10001);
+        registry.rebind("ServerImplService", new ClientUpdaterImpl());
+
+        Registry registryServer = LocateRegistry.getRegistry(ADDRESS, PORT);
         impl = (rmi_int_client_appserver) registryServer.lookup("ServerImplService");
         System.out.println("Server connection ok");
+
+
     }
 
     public static void setScene(String scenePath, int width, int height) {

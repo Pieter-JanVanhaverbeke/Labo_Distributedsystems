@@ -24,10 +24,10 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
     }
 
     @Override
-    public String createUser(String username, String password) throws UsernameAlreadyInUseException {
+    public int createUser(String username, String password) throws UsernameAlreadyInUseException {
         String time =  new DateTime().toString();       //huidige tijd dat je plaatst in DB
 
-
+        //TODO als overal spelerid word gebruikt (is nog niet overal het geval) => moet username nog uniek zijn?
         if (dbConnection.getUserSet().contains(username)) {
             System.out.println("gebruikersnaam: " + username + " al gebruikt");
             throw new UsernameAlreadyInUseException(username);
@@ -45,7 +45,7 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
             }
-            return generateUserToken(username);
+            return -1; //clientId
         }
     }
 
@@ -461,7 +461,7 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
 
     //zet started state van game met gameId op par:b
     @Override
-    public void setStarted(boolean b, int gameId) {
+    public void setStarted(boolean b, int gameId) throws RemoteException{
 
     }
 

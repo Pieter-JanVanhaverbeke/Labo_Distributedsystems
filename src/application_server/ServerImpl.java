@@ -8,6 +8,7 @@ import exceptions.*;
 import shared_client_appserver_stuff.GameInfo;
 import shared_client_appserver_stuff.GameUpdate;
 import shared_client_appserver_stuff.rmi_int_client_appserver;
+import shared_client_appserver_stuff.rmi_int_client_appserver_updater;
 import shared_db_appserver_stuff.rmi_int_appserver_db;
 
 import java.io.Serializable;
@@ -18,6 +19,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 
+import static application_server.ServerMain.clients;
 import static application_server.Utils.Utils.generateUserToken;
 import static application_server.Utils.Utils.validateToken;
 
@@ -26,7 +28,7 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
 
     public ServerImpl() throws RemoteException {
 
-        Registry registryServer = LocateRegistry.getRegistry("localhost", 13001);
+        Registry registryServer = LocateRegistry.getRegistry("localhost", 10001);
         try {
             impl = (rmi_int_appserver_db) registryServer.lookup("DbServerImplService");
             System.out.println("DB connection ok");
@@ -37,14 +39,15 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
 
     //////////////////////////////// Control //////////////////////////////////////////
     @Override
-    public String registrerNewClient(String username, String passwdHash) throws UsernameAlreadyInUseException, RemoteException {
-        String token = impl.createUser(username, passwdHash);
+    public String registrerNewClient(String username, String passwdHash, String address, int port) throws UsernameAlreadyInUseException, RemoteException, NotBoundException {
+        int clientId = impl.createUser(username, passwdHash);
         System.out.println("gebruiker: " + username + " aangemaakt en aangemeld!");
-        return token;
+        clients.put(clientId, (rmi_int_client_appserver_updater) LocateRegistry.getRegistry(address, port).lookup("ClientUpdaterImplService"));
+        return generateUserToken(username);
     }
 
     @Override
-    public String logIn(String username, String passwordHash) throws WrongPasswordException, UserDoesNotExistException, RemoteException {
+    public String logIn(String username, String passwordHash, String address, int port) throws WrongPasswordException, UserDoesNotExistException, RemoteException, NotBoundException {
         Speler speler = impl.getSpeler(username);
 
         if (speler == null) {
@@ -52,6 +55,8 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
         }
 
        else if (passwordHash.equals(speler.getPasswordHash())) {
+            //client toevoegen voor updates naar te sturen
+            clients.put(speler.getSpelerId(), (rmi_int_client_appserver_updater) LocateRegistry.getRegistry(address, port).lookup("ClientUpdaterImplService"));
             return generateUserToken(username);
         } else {
             throw new WrongPasswordException("Het wachtwoord is verkeert.");
@@ -169,6 +174,7 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
         try {
             validateToken(token);
             Lobby.getGame(gameId).setStarted(true);
+            impl.setStarted(true, gameId);
         } catch (RemoteException e) {
             e.printStackTrace();
             throw new InternalException("Fout in verbinding met DB.");
@@ -180,9 +186,9 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
     public GameUpdate gameUpdate(int gameId, String token) throws NoValidTokenException, InternalException {
         try {
             validateToken(token);
-            Game game = Lobby.getGame(gameId);
             //wacht op wijziging van server
             wait();
+            Game game = Lobby.getGame(gameId);
             return new GameUpdate(game.getSpelerbeurt(), game.getBordspel().getBordRemote());
         } catch (RemoteException e) {
             e.printStackTrace();

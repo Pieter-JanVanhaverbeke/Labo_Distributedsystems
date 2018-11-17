@@ -16,7 +16,7 @@ import java.util.Map;
  */
 public interface rmi_int_appserver_db extends Remote {
 
-    String createUser(String username, String passwdHash) throws UsernameAlreadyInUseException, RemoteException;
+    int createUser(String username, String passwdHash) throws UsernameAlreadyInUseException, RemoteException;
 
     void setUsertoken(Speler speler, String token) throws RemoteException;
 
@@ -47,7 +47,7 @@ public interface rmi_int_appserver_db extends Remote {
 
     ArrayList<Integer> getSpelerPunten(int gameid) throws RemoteException;
 
-    void setStarted(boolean b, int gameId);
+    void setStarted(boolean b, int gameId) throws RemoteException;
 
     //returned null if geen lobby
   //  Lobby getLobby() throws RemoteException;

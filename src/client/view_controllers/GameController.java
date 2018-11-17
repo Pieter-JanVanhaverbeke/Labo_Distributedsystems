@@ -74,14 +74,17 @@ public class GameController implements EventHandler<Event> {
                 SpelerInfo speler = spelers.get(i);
                 Label username = new Label(speler.getUsername());
                 Label score = new Label(Integer.toString(speler.getGameScore()));
-                playersListPane.add(username, 0, i+1); //i+1 want kolom title staat op 0
-                playersListPane.add(score, 1, i+1); //i+1 want kolom title staat op 0
+                GridPane gridPane = new GridPane();
+                gridPane.add(username, 0, 0); //i+1 want kolom title staat op 0
+                gridPane.add(score, 1, 0); //i+1 want kolom title staat op 0
+                playersListPane.add(gridPane, 0, i+1);
+                spelersRij.add(gridPane);
             }
 
             //zet speler aan beurt in kadertje
             if(gameInfo.isStarted()){
                 int spelersBeurt = gameInfo.getSpelersBeurt();
-                setBorder(spelersBeurt, true);
+                setBorder(spelersBeurt, true); //+1 want eerste index is kolom title
             }
 
             //bord toevoegen
