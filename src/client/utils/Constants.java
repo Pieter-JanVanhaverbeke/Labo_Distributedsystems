@@ -61,7 +61,7 @@ public class Constants {
     public static final Map<Integer, String> BASE_IMG_NUMBER = new HashMap<>();
 
     public static final Map<Integer, String> PROGRAMMING_LANGUAGES_PICTURES = new HashMap<>();
-    public static final Map<Integer, String> THEMA2_PICTURES = new HashMap<>();
+    public static final Map<Integer, String> BADEEND_PICTURES = new HashMap<>();
     public static final Map<Integer, String> THEMA3_PICTURES = new HashMap<>();
 
     public static final String THEMA1_NAME = "Programeertalen";
@@ -69,12 +69,12 @@ public class Constants {
     public static final String THEMA3_NAME = "Brian";
 
     public static final String THEMA1_BASE_IMG_PATH = "client/scenes/pictures/game_tile_pictures/programming_languages/java.png";
-    public static final String THEMA2_BASE_IMG_PATH = "client/scenes/pictures/game_tile_pictures/programming_languages/cpp.png";
+    public static final String THEMA2_BASE_IMG_PATH = "client/scenes/pictures/game_tile_pictures/badeendjes/duck6.png";
     public static final String THEMA3_BASE_IMG_PATH = "client/scenes/pictures/game_tile_pictures/programming_languages/c.png";
 
     static {
         THEMA_NUMBER.put(0, PROGRAMMING_LANGUAGES_PICTURES);
-        THEMA_NUMBER.put(1, THEMA2_PICTURES);
+        THEMA_NUMBER.put(1, BADEEND_PICTURES);
         THEMA_NUMBER.put(2, THEMA3_PICTURES);
 
         //paden naar fotos toevoegen in elke map ...
