@@ -41,7 +41,7 @@ public class Constants {
     public static final String JOIN_GAME = "JOIN";
     public static final String START_GAME = "START";
     public static final String RESUME_GAME = "RESUME";
-    public static final String UNJOIN_GAME = "UNJOIN";
+    public static final String UNJOIN_GAME = "LEAVE";
     public static final String WATCH_GAME = "WATCH";
 
     //create game
