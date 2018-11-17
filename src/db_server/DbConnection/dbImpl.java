@@ -459,5 +459,11 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         return scores;
     }
 
+    //zet started state van game met gameId op par:b
+    @Override
+    public void setStarted(boolean b, int gameId) {
+
+    }
+
 
 }
