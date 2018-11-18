@@ -103,9 +103,9 @@ public class GameController implements EventHandler<Event> {
                 for(int j = 0; j<gameInfo.getLengte(); j++){
                     int bord = gameInfo.getBord()[j][i];
                     if(bord == -1) {
-                        gameBord.add(spitImageView(back), j, i);
+                        gameBord.add(spitImageView(back), i, j);
                     } else {
-                        gameBord.add(spitImageView(new Image(pictures.get(bord))), j, i);
+                        gameBord.add(spitImageView(new Image(pictures.get(bord))), i, j);
                     }
 
                 }
