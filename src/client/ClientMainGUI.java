@@ -34,8 +34,8 @@ public class ClientMainGUI extends Application {
     public static Stage errorWindow;
     private static FXMLLoader loader;
 
-    public static final String ADDRESSSERVER = "localhost";
-    public static final int PORTSERVER = 10001;
+    private static final String ADDRESSSERVER = "localhost";
+    private static final int PORTSERVER = 10001;
 
     public static GameController gameController;
 
