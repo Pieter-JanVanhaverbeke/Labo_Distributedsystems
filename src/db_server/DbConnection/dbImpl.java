@@ -85,7 +85,7 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
     public int createGame(String creator, String createdate, boolean started, int aantalspelers, int bordgrootte, int layout, String bordspeltypes, String bordspelfaceup) {
 
         int id = -1;
-        String sql = "INSERT INTO Game(creator,createdate,started,aantalspelers,bordgrootte,layout,bordspeltypes,bordspelfaceup)VALUES(?,?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO Game(creator,createdate,started,aantalspelers,bordgrootte,layout,bordspeltypes,bordspelfaceup,spelersbeurt)VALUES(?,?,?,?,?,?,?,?,?)";
 
         Connection conn = connect();
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -97,6 +97,7 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
             pstmt.setInt(6, layout);
             pstmt.setString(7, bordspeltypes);
             pstmt.setString(8, bordspelfaceup);
+            pstmt.setInt(9,0);
             pstmt.executeUpdate();
 
         } catch (SQLException e) {
@@ -208,6 +209,20 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         }
     }
 
+    public void updateSpelersbeurt(int gameid, int spelersbeurt){
+        String sql = "UPDATE Game SET spelersbeurt = ? WHERE gameid = ?;";
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            System.out.println("gameid van spel: " + gameid);
+            System.out.println("spelerbeurt: " + spelersbeurt);
+            pstmt.setInt(1, spelersbeurt);
+            pstmt.setInt(2, gameid);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 
 
     //////////////////////////////////// HaalDatabase ///////////////////////////////////////////
@@ -231,6 +246,7 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
                 String bordspeltypes = rs.getString("bordspeltypes");
                 String bordspelfacup = rs.getString("bordspelfaceup");
                 int layout = rs.getInt("layout");
+                int spelersbeurt = rs.getInt("spelersbeurt");
 
                 String[] valuestypes = bordspeltypes.split("\\s+");
                 String[] valuefacup = bordspelfacup.split("\\s+");
@@ -260,6 +276,7 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
                 game.setCreateDate(createdate);
                 game.setStarted(started);
                 game.setBordspel(bordspel);
+                game.setSpelerbeurt(spelersbeurt);
                 List<Integer> spelerscores = getSpelerPunten(gameid);
                 List<Integer> spelerids = getAlleSpelerid(gameid);
                 for (int i = 0; i < spelerids.size(); i++) {

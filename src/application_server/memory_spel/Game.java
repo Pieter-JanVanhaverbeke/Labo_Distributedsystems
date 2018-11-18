@@ -30,12 +30,14 @@ public class Game implements Serializable {
     private int spelerbeurt; //elke speler heeft index
     private int aantalspelers;
     private Map<Integer, Integer> puntenlijst;
+    Map<Integer,Integer> spelersvolgorde;
     private String creator;
     private String createDate;
     private boolean started = false;
     private Kaart kaart1 = null;
     private Kaart kaart2 = null;
     private int theme;
+    private Speler huidigespeler = null;
 
     private int tmpX;
     private int tmpY;
@@ -54,6 +56,7 @@ public class Game implements Serializable {
         bordspel = new Bordspel(size, size);
         spelerbeurt = 0;
         puntenlijst = new HashMap<>();
+       // spelersvolgorde = new HashMap<>();
     }
 
     public Game(int bordGrootte, int aantalspelers, String creator, int style, int gameId) {
@@ -87,6 +90,7 @@ public class Game implements Serializable {
     public boolean flipCard(int x, int y, Speler speler) throws NotYourTurnException, NotEnoughSpelersException, RemoteException {
         started = true;
         boolean firstFlip = false;
+        huidigespeler = spelers.get(spelerbeurt);
 
         //check of voldoende spelers zijn
         if (spelers.size() != aantalspelers) {
@@ -98,8 +102,10 @@ public class Game implements Serializable {
         if(s.size() != 1) //if verkeert => logic is verkeert => doe niets??
             return firstFlip;
 
+
         //check of spelerbeurt ok is
-        if (spelers.indexOf(s.get(0)) != spelerbeurt){
+     //   if (spelers.indexOf(s.get(0)) != spelerbeurt){
+        if (huidigespeler.getSpelerId()!=speler.getSpelerId()){
             throw new NotYourTurnException("U bent niet aan beurt.");
         }
 
@@ -124,8 +130,10 @@ public class Game implements Serializable {
                     //draai terug alles om
                     kaart1.draaiOm();
                     kaart2.draaiOm();
-                    kaart1 = kaart2 = null;
-                    spelerbeurt = (spelerbeurt + 1) % aantalspelers;
+                    kaart1 = null;
+                    kaart2 = null;
+                    spelerbeurt = (spelerbeurt+1) % aantalspelers;
+                    impl.updateSpelersbeurt(gameId,spelerbeurt);
                 } else {
                     //speler die aan beurt is punt bijgeven
                     int spelerId = spelers.get(spelerbeurt).getSpelerId();
@@ -142,6 +150,8 @@ public class Game implements Serializable {
 
                     }
                     schrijfGoedeZetNaarDB(x, y);
+                    kaart1 = null;
+                    kaart2 = null;
                 }
             }
         }
@@ -274,5 +284,13 @@ public class Game implements Serializable {
     public void setStarted(boolean started) {
             this.started = true;
         }
+
+    public Speler getHuidigespeler() {
+        return huidigespeler;
     }
+
+    public void setHuidigespeler(Speler huidigespeler) {
+        this.huidigespeler = huidigespeler;
+    }
+}
 

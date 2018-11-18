@@ -53,6 +53,8 @@ public interface rmi_int_appserver_db extends Remote {
 
     void updateGlobalScore(int spelerid, int punten) throws RemoteException;
 
+    void updateSpelersbeurt(int gameid, int spelersberut) throws RemoteException;
+
     //returned null if geen lobby
   //  Lobby getLobby() throws RemoteException;
 
