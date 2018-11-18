@@ -1,6 +1,7 @@
 package client.view_controllers;
 
 import application_server.memory_spel.Lobby;
+import application_server.memory_spel.Speler;
 import exceptions.*;
 import javafx.collections.ObservableList;
 import javafx.application.Platform;
@@ -181,7 +182,8 @@ public class GameController implements EventHandler<Event> {
         int[][] bord = gameInfo.getBord();
 
         //set score
-        //Label score = new Label(Integer.toString(speler.getGameScore()));
+        for(SpelerInfo spelerInfo: gameInfo.getSpelers())
+            scores.get(spelerInfo.getUsername()).setText(Integer.toString(spelerInfo.getGameScore()));
 
         ObservableList<Node> nodes = gameBord.getChildren();
         for(Node node: nodes){

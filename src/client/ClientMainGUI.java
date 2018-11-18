@@ -31,7 +31,7 @@ public class ClientMainGUI extends Application {
     public static String usernameLogedIn;
 
     public static Stage primaryStage;
-    public static Stage errorWindow;
+    public static Stage errorWindow;             geert  
     private static FXMLLoader loader;
 
     private static final String ADDRESSSERVER = "localhost";
