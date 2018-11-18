@@ -62,9 +62,14 @@ public class GameController implements EventHandler<Event> {
 
     @FXML
     public void exit(){
-        gameController = null;
-        Platform.exit(); //TODO als game sluit => alles sluiten?? eerste afmelden!!
-        System.exit(0);
+        try {
+            impl.unRegisterWatcher(token, gameId);
+            gameController = null;
+            Platform.exit(); //TODO als game sluit => alles sluiten?? eerste afmelden!!
+            System.exit(0);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -117,11 +122,7 @@ public class GameController implements EventHandler<Event> {
 
                 }
             }
-
-/*            // start update thread voor game
-            // javaFx != thread safe => gebruik gemaakt van concurent package van javaFX
-            Task task = new GameUpdateTask(gameBord, playersListPane, this);
-            new Thread(task).start();*/
+            impl.registerWatcher(token, gameId);
 
         } catch (NoValidTokenException e) {
             e.printStackTrace();
@@ -209,13 +210,19 @@ public class GameController implements EventHandler<Event> {
 
     @FXML
     public void back(){
-        gameController = null;
-        setScene(LOBBY_SCENE, LOBBY_WIDTH, LOBBY_HEIGHT);
+        try {
+            impl.unRegisterWatcher(token, gameId);
+            gameController = null;
+            setScene(LOBBY_SCENE, LOBBY_WIDTH, LOBBY_HEIGHT);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
     public void stop(){
         try {
+            impl.unRegisterWatcher(token, gameId);
             impl.deleteGame(gameId);
             gameController = null;
             setScene(LOBBY_SCENE, LOBBY_WIDTH, LOBBY_HEIGHT);

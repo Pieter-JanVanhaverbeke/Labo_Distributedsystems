@@ -14,9 +14,11 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.List;
 
 import static application_server.ServerMain.clients;
+import static application_server.ServerMain.gameUpdateSubscribers;
 import static application_server.Utils.Utils.generateUserToken;
 import static application_server.Utils.Utils.validateToken;
 
@@ -133,6 +135,43 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
             e.printStackTrace();
             throw new InternalException("Fout in verbinding met DB.");
         }
+    }
+
+    @Override
+    public void registerWatcher(String token, int gameId){
+        try {
+            Speler speler = validateToken(token);
+            if(clients.containsKey(speler.getUsername())){
+               List<String> lijst = gameUpdateSubscribers.get(gameId);
+               if(lijst == null) {
+                   lijst = new ArrayList<>();
+                   gameUpdateSubscribers.put(gameId, lijst);
+               }
+               lijst.add(speler.getUsername());
+            }
+
+        } catch (NoValidTokenException e) {
+            e.printStackTrace();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public void unRegisterWatcher(String token, int gameId){
+        try {
+            Speler speler = validateToken(token);
+            List<String> lijst = gameUpdateSubscribers.get(gameId);
+            if(lijst != null)
+                lijst.remove(speler.getUsername());
+
+        } catch (NoValidTokenException e) {
+            e.printStackTrace();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
     }
 
     //////////////////////////////////// Game ///////////////////////////////////////////

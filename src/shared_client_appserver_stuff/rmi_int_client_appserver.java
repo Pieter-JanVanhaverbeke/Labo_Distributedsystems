@@ -29,6 +29,10 @@ public interface rmi_int_client_appserver extends Remote {
 
     GameInfo getGame(String token, int gameId) throws RemoteException, NoValidTokenException, InternalException;
 
+    void registerWatcher(String token, int gameId) throws RemoteException;
+
+    void unRegisterWatcher(String token, int gameId) throws RemoteException;
+
     //////////////////////////////////// Game ///////////////////////////////////////////
     void flipCard(String token, int gameId, int x, int y) throws RemoteException, NoValidTokenException, NotYourTurnException, NotEnoughSpelersException, InternalException;
 

@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
 import static application_server.ServerImpl.impl;
 import static application_server.ServerMain.clients;
+import static application_server.ServerMain.gameUpdateSubscribers;
 
 /**
  * Created by ruben on 19/10/18.
@@ -30,7 +31,6 @@ public class Game implements Serializable {
     private int spelerbeurt; //elke speler heeft index
     private int aantalspelers;
     private Map<Integer, Integer> puntenlijst;
-    Map<Integer,Integer> spelersvolgorde;
     private String creator;
     private String createDate;
     private boolean started = false;
@@ -198,8 +198,8 @@ public class Game implements Serializable {
     private GameInfo updateClients() {
         try {
             GameInfo gameInfo = new GameInfo(this);
-            for(Speler speler: spelers)
-                clients.get(speler.getUsername()).updateBord(gameInfo);
+            for(String username: gameUpdateSubscribers.get(gameId))
+                clients.get(username).updateBord(gameInfo);
 
         } catch (RemoteException e) {
             e.printStackTrace();
