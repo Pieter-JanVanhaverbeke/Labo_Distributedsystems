@@ -62,20 +62,20 @@ public class Constants {
 
     public static final Map<Integer, String> PROGRAMMING_LANGUAGES_PICTURES = new HashMap<>();
     public static final Map<Integer, String> BADEEND_PICTURES = new HashMap<>();
-    public static final Map<Integer, String> THEMA3_PICTURES = new HashMap<>();
+    public static final Map<Integer, String> SIMSON_PICTURES = new HashMap<>();
 
     public static final String THEMA1_NAME = "Programeertalen";
     public static final String THEMA2_NAME = "Badeendjes";
-    public static final String THEMA3_NAME = "Brian";
+    public static final String THEMA3_NAME = "Simsons";
 
     public static final String THEMA1_BASE_IMG_PATH = "client/scenes/pictures/game_tile_pictures/programming_languages/java.png";
     public static final String THEMA2_BASE_IMG_PATH = "client/scenes/pictures/game_tile_pictures/badeendjes/duck6.png";
-    public static final String THEMA3_BASE_IMG_PATH = "client/scenes/pictures/game_tile_pictures/programming_languages/c.png";
+    public static final String THEMA3_BASE_IMG_PATH = "client/scenes/pictures/game_tile_pictures/simpsons/Homer_Simpson.png";
 
     static {
         THEMA_NUMBER.put(0, PROGRAMMING_LANGUAGES_PICTURES);
         THEMA_NUMBER.put(1, BADEEND_PICTURES);
-        THEMA_NUMBER.put(2, THEMA3_PICTURES);
+        THEMA_NUMBER.put(2, SIMSON_PICTURES);
 
         //paden naar fotos toevoegen in elke map ...
         PROGRAMMING_LANGUAGES_PICTURES.put(0, "client/scenes/pictures/game_tile_pictures/programming_languages/java.png");
@@ -96,6 +96,14 @@ public class Constants {
         BADEEND_PICTURES.put(6, "client/scenes/pictures/game_tile_pictures/badeendjes/duck7.png");
         BADEEND_PICTURES.put(7, "client/scenes/pictures/game_tile_pictures/badeendjes/duck8.png");
 
+        SIMSON_PICTURES.put(0, "client/scenes/pictures/game_tile_pictures/simpsons/Bart_Simpson.png");
+        SIMSON_PICTURES.put(1, "client/scenes/pictures/game_tile_pictures/simpsons/Homer_Simpson.png");
+        SIMSON_PICTURES.put(2, "client/scenes/pictures/game_tile_pictures/simpsons/Krustytheclown.png");
+        SIMSON_PICTURES.put(3, "client/scenes/pictures/game_tile_pictures/simpsons/Lisa_Simpson.png");
+        SIMSON_PICTURES.put(4, "client/scenes/pictures/game_tile_pictures/simpsons/Maggie_Simpson.png");
+        SIMSON_PICTURES.put(5, "client/scenes/pictures/game_tile_pictures/simpsons/Marge_Simpson.png");
+        SIMSON_PICTURES.put(6, "client/scenes/pictures/game_tile_pictures/simpsons/Abraham_Simpson.png");
+        SIMSON_PICTURES.put(7, "client/scenes/pictures/game_tile_pictures/simpsons/SantasLittleHelper.png");
 
 
     }
