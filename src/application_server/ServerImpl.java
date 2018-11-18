@@ -42,15 +42,15 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
 
     //////////////////////////////// Control //////////////////////////////////////////
     @Override
-    public String registrerNewClient(String username, String passwdHash, rmi_int_client_appserver_updater clientUpdater) throws UsernameAlreadyInUseException, RemoteException, NotBoundException {
-        int clientId = impl.createUser(username, passwdHash);
+    public String registrerNewClient(String username, byte[] passwdHash, byte[] salt, rmi_int_client_appserver_updater clientUpdater) throws UsernameAlreadyInUseException, RemoteException, NotBoundException {
+        int clientId = impl.createUser(username, new String(passwdHash), new String(salt));
         System.out.println("gebruiker: " + username + " aangemaakt en aangemeld!");
         clients.put(username, clientUpdater);
         return generateUserToken(username);
     }
 
     @Override
-    public String logIn(String username, String passwordHash, rmi_int_client_appserver_updater clientUpdater) throws WrongPasswordException, UserDoesNotExistException, RemoteException, NotBoundException {
+    public String logIn(String username, byte[] passwordHash, rmi_int_client_appserver_updater clientUpdater) throws WrongPasswordException, UserDoesNotExistException, RemoteException, NotBoundException {
         Speler speler = impl.getSpeler(username);
 
         if (speler == null) {
@@ -69,6 +69,11 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
     @Override
     public void logout(String clientUsername) {
         clients.remove(clientUsername);
+    }
+
+    @Override
+    public byte[] getSalt(String username) throws UserDoesNotExistException{
+        return impl.getSalt(username).getBytes();
     }
 
 

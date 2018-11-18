@@ -2,6 +2,7 @@ package db_server.DbConnection;
 
 import application_server.memory_spel.*;
 import exceptions.PlayerNumberExceededException;
+import exceptions.UserDoesNotExistException;
 import shared_db_appserver_stuff.rmi_int_appserver_db;
 import exceptions.UsernameAlreadyInUseException;
 import org.joda.time.DateTime;
@@ -12,7 +13,6 @@ import java.rmi.server.UnicastRemoteObject;
 import java.sql.*;
 import java.util.*;
 
-import static application_server.Utils.Utils.generateUserToken;
 import static db_server.DbConnection.dbConnection.connect;
 
 public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db, Serializable {
@@ -23,8 +23,9 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         userTokens = new HashMap<>();
     }
 
+    //TODO salt in db steken
     @Override
-    public int createUser(String username, String password) throws UsernameAlreadyInUseException {
+    public int createUser(String username, String passwordHash, String salt) throws UsernameAlreadyInUseException {
         String time =  new DateTime().toString();       //huidige tijd dat je plaatst in DB
         int id =-1;
 
@@ -39,7 +40,7 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
             {
                 //TODO paar dingen moeten hier niet meer staan?
                 pstmt.setString(1, username);
-                pstmt.setString(2, password);
+                pstmt.setString(2, passwordHash);
                 pstmt.setInt(3,0);
                 pstmt.setString(4,"token");     //nog aanpassen naar random token
                 pstmt.setString(5,time);
@@ -61,6 +62,13 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
 
             return id;
         }
+    }
+
+    @Override
+    public String getSalt(String username) throws UserDoesNotExistException {
+
+        //if user niet bestaat => throw UserDoesNotExistException
+        return null;
     }
 
     @Override

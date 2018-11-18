@@ -2,6 +2,7 @@ package shared_db_appserver_stuff;
 
 import application_server.memory_spel.Game;
 import application_server.memory_spel.Lobby;
+import exceptions.UserDoesNotExistException;
 import exceptions.UsernameAlreadyInUseException;
 import application_server.memory_spel.Speler;
 
@@ -16,7 +17,9 @@ import java.util.Map;
  */
 public interface rmi_int_appserver_db extends Remote {
 
-    int createUser(String username, String passwdHash) throws UsernameAlreadyInUseException, RemoteException;
+    int createUser(String username, String s, String s1) throws UsernameAlreadyInUseException, RemoteException;
+
+    String getSalt(String username) throws UserDoesNotExistException;
 
     void setUsertoken(Speler speler, String token) throws RemoteException;
 
