@@ -117,18 +117,29 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
     }
 
     @Override
-    public void deleteGame(int gameId){
+    public void deleteGame(int gameId) {
         String sql = "DELETE FROM Game WHERE gameid=?";
-        try (Connection conn = connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        Connection conn = connect();
+        try (
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, gameId);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        String sql2 = "DELETE FROM GameSpelertable WHERE gameid=?";
+        try (
+                PreparedStatement pstmt = conn.prepareStatement(sql2)) {
+            pstmt.setInt(1, gameId);
+            pstmt.executeUpdate();
+        } catch (SQLException e1) {
+            e1.printStackTrace();
+        }
+
     }
 
-    @Override
+        @Override
     public void updateFaceUp(int gameid,String data){
         String sql = "UPDATE  Game SET bordspelfaceup = ? WHERE gameid=?";
         try (Connection conn = connect();
