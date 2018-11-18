@@ -171,6 +171,19 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         }
     }
 
+    public void updatePunten(int gameid, int userid, int punten){
+        String sql = "UPDATE GameSpelertable SET spelerpunten = ? WHERE gameid = ? AND userid = ?";
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, punten);
+            pstmt.setInt(2, gameid);
+            pstmt.setInt(3,userid);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 
 
     //////////////////////////////////// HaalDatabase ///////////////////////////////////////////

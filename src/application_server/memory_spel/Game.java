@@ -149,6 +149,13 @@ public class Game implements Serializable {
                                 faceup = sb.toString();
                                 impl.updateFaceUp(gameId, faceup);
                                 //TODO puntenlijst naar DB!!!
+
+                                //Schrijven punten naar DB
+                                for(int i=0; i<aantalspelers;i++){
+                                    int spelerid = spelers.get(i).getSpelerId();
+                                    impl.updatePunten(gameId,spelerid,puntenlijst.get(spelerid));
+                                }
+
                             }
                         }
                         break;
