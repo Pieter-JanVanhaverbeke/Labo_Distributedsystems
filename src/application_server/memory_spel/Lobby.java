@@ -90,13 +90,11 @@ public class Lobby implements Serializable{
         }
     }
 
-    public static Game flipCard(int gameId, int x, int y, Speler speler) throws NotYourTurnException, NotEnoughSpelersException, RemoteException {
+    public static void flipCard(int gameId, int x, int y, Speler speler) throws NotYourTurnException, NotEnoughSpelersException, RemoteException {
         //omdat enkel na gevonden paar pas in db komt => activeGames niet updates vanuit db zolang 2e kaart niet gedraaid is
         Game game = activeGames.get(gameId);
 
         if(!game.flipCard(x, y, speler))
             dbUpdateGames();
-        return game;
-
     }
 }

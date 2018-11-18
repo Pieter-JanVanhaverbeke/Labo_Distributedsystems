@@ -4,6 +4,7 @@ import exceptions.GameAlreadyStartedException;
 import exceptions.NotEnoughSpelersException;
 import exceptions.NotYourTurnException;
 import exceptions.PlayerNumberExceededException;
+import shared_client_appserver_stuff.GameInfo;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
@@ -13,8 +14,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static application_server.ServerImpl.impl;
+import static application_server.ServerMain.clients;
 
 /**
  * Created by ruben on 19/10/18.
@@ -33,7 +36,6 @@ public class Game implements Serializable {
     private Kaart kaart1 = null;
     private Kaart kaart2 = null;
     private int theme;
-    boolean firstFlip = true;
 
     private int tmpX;
     private int tmpY;
@@ -82,66 +84,72 @@ public class Game implements Serializable {
     // If gelijk => punt bij speler tellen + kaarten blijven liggen,
     // if niet gelijk => kaarten draaien terug om. if spel is gedaan
     // (alle kaarten gedraaid) => punten worden aan spelers profiel toegevoegd
-    public  boolean flipCard (int x, int y, Speler speler) throws NotYourTurnException, NotEnoughSpelersException, RemoteException {
-
+    public boolean flipCard(int x, int y, Speler speler) throws NotYourTurnException, NotEnoughSpelersException, RemoteException {
+        started = true;
+        boolean firstFlip = false;
 
         //check of voldoende spelers zijn
         if (spelers.size() != aantalspelers) {
             throw new NotEnoughSpelersException("Er zijn te weinig spelers.");
-        } else if (speler.getSpelerId() == spelerbeurt) {                       //AANPASSEN NAAR SPELERBEURT
+        }
+
+        //get speler uit spelerslijst
+        List<Speler> s = spelers.stream().filter(e -> e.getSpelerId() == speler.getSpelerId()).collect(Collectors.toList());
+        if(s.size() != 1) //if verkeert => logic is verkeert => doe niets??
+            return firstFlip;
+
+        //check of spelerbeurt ok is
+        if (spelers.indexOf(s.get(0)) != spelerbeurt){
             throw new NotYourTurnException("U bent niet aan beurt.");
         }
-        //ALLES OK
-        else {
-            if (bordspel.getBordRemote()[x][y] == -1) {
-                //check if eerste kaart al is omgedraaid
-                if (firstFlip) {
-                    //draai eerste kaart
-                    kaart1 = bordspel.getBord()[x][y];
+
+        //alles ok => kaart draaien
+        if(bordspel.getBordRemote()[x][y] == -1) {
+            //check if eerste kaart al is omgedraaid
+            if (kaart1 == null) {
+                //draai eerste kaart
+                kaart1 = bordspel.getBord()[x][y];
+                kaart1.draaiOm();
+                firstFlip = true;
+                tmpX = x;
+                tmpY = y;
+            } else {
+                //draai 2e kaart
+                kaart2 = bordspel.getBord()[x][y];
+                kaart2.draaiOm();
+                //TODO CLIENTS EVEN 2de KAART LATEN TONEN
+
+                //check if soort van beide kaarten is gelijk
+                if (kaart1.getSoort() != kaart2.getSoort()) {
+                    //draai terug alles om
                     kaart1.draaiOm();
-                    firstFlip = true;
-                    tmpX = x;
-                    tmpY = y;
-                    firstFlip = false;
-                } else {
-                    //draai 2e kaart
-                    kaart2 = bordspel.getBord()[x][y];
                     kaart2.draaiOm();
-                    //TODO CLIENTS EVEN 2de KAART LATEN TONEN
+                    kaart1 = kaart2 = null;
+                    spelerbeurt = (spelerbeurt + 1) % aantalspelers;
+                } else {
+                    //speler die aan beurt is punt bijgeven
+                    int spelerId = spelers.get(spelerbeurt).getSpelerId();
+                    puntenlijst.merge(spelerId, 1, Integer::sum);
 
-                    //check if soort van beide kaarten is gelijk
-                    if (kaart1.getSoort() != kaart2.getSoort()) {
-                        //draai terug alles om
-                        kaart1.draaiOm();
-                        kaart2.draaiOm();
-                        kaart1 = kaart2 = null;
-                        spelerbeurt = (spelerbeurt + 1) % aantalspelers;
-                    } else {
-                        //speler die aan beurt is punt bijgeven
-                        int spelerId = spelers.get(spelerbeurt).getSpelerId() ;
-                        puntenlijst.merge(spelerId, 1, Integer::sum);
-
-
-                        //check if game is gedaan, if so => schrijf punten naar spelersprofiel + delete game
-                        if (bordspel.checkEindeSpel()) {
-                            for (int i = 0; i < spelers.size(); i++) {
-                                Speler speler2 = spelers.get(i);
-                                int spelerid2 = speler2.getSpelerId();
-                                speler2.increaseGlobalScore(puntenlijst.get(spelerid2));
-                                impl.updateGlobalScore(speler2.getSpelerId(), puntenlijst.get(spelerid2));   //UPDATEN PUNTEN DB
-                            }
+                    //check if game is gedaan, if so => schrijf punten naar spelersprofiel + delete game
+                    if (bordspel.checkEindeSpel()) {
+                        for (int i = 0; i < spelers.size(); i++) {
+                            Speler speler2 = spelers.get(i);
+                            int spelerid2 = speler2.getSpelerId();
+                            speler2.increaseGlobalScore(puntenlijst.get(spelerid2));
+                            impl.updateGlobalScore(spelerid2, puntenlijst.get(spelerid2));   //UPDATEN PUNTEN DB
                         }
-                        schrijfGoedeZetNaarDB(x,y);             //schrijf welke kaartjes naar DB
 
                     }
-                    firstFlip = false;
+                    schrijfGoedeZetNaarDB(x, y);
                 }
             }
         }
 
+
+        updateClients();
         return firstFlip;
     }
-
 
     public void schrijfGoedeZetNaarDB(int x, int y) throws RemoteException{
         //pas in db zetten als paar echt gevonden is
@@ -173,6 +181,21 @@ public class Game implements Serializable {
             impl.updatePunten(gameId, spelerid, puntenlijst.get(spelerid));
         }
 
+    }
+
+
+    //TODO: mss met versie nrs werken
+    //TODO: wat met token geldigheid?
+    private GameInfo updateClients() {
+        try {
+            GameInfo gameInfo = new GameInfo(this);
+            for(Speler speler: spelers)
+                clients.get(speler.getUsername()).updateBord(gameInfo);
+
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public int getGameScore(Speler speler){
@@ -252,5 +275,4 @@ public class Game implements Serializable {
             this.started = true;
         }
     }
-
 

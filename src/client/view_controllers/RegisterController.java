@@ -1,5 +1,6 @@
 package client.view_controllers;
 
+import client.ClientUpdaterImpl;
 import exceptions.UsernameAlreadyInUseException;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
@@ -31,7 +32,7 @@ public class RegisterController {
         if(password.getText().equals(password1.getText())) {
             try {
                 //TODO: hasing + salt
-                token = impl.registrerNewClient(username.getText(), password.getText(), ADDRESSCLIENT, PORTCLIENT);
+                token = impl.registrerNewClient(username.getText(), password.getText(), new ClientUpdaterImpl());
                 usernameLogedIn = username.getText();
                 setScene(LOBBY_SCENE, LOBBY_WIDTH, LOBBY_HEIGHT);
             } catch (RemoteException e) {

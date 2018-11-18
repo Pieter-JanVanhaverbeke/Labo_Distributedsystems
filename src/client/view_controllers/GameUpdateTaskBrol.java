@@ -1,3 +1,4 @@
+/*
 package client.view_controllers;
 
 import exceptions.InternalException;
@@ -10,10 +11,12 @@ import java.rmi.RemoteException;
 
 import static client.ClientMainGUI.*;
 
+*/
 /**
  * Created by ruben on 7/11/18.
- */
-public class GameUpdateTask extends Task {
+ *//*
+
+public class GameUpdateTaskBrol extends Task {
     private GridPane gameBord;
     private GridPane playersListPane;
     private GameController gameController;
@@ -27,7 +30,8 @@ public class GameUpdateTask extends Task {
 
     @Override
     protected Object call() {
-        /*try {
+        */
+/*try {
             while(!isCancelled()) {
                 GameUpdate gameUpdate = impl.gameUpdate(gameId, token);
                 updateValue(gameUpdate);
@@ -39,7 +43,8 @@ public class GameUpdateTask extends Task {
             e.printStackTrace();
         } catch (InternalException e) {
             e.printStackTrace();
-        }*/
+        }*//*
+
         return null;
     }
 
@@ -51,3 +56,4 @@ public class GameUpdateTask extends Task {
 
 
 }
+*/

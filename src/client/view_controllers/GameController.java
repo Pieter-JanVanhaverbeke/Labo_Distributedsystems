@@ -19,6 +19,7 @@ import shared_client_appserver_stuff.SpelerInfo;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -55,17 +56,21 @@ public class GameController implements EventHandler<Event> {
     private Map<Integer, String> pictures;
     private double boardwidth;
     private double boardLength;
+    private Map<String, Label> scores;
 
 
     @FXML
     public void exit(){
-        Platform.exit();
+        gameController = null;
+        Platform.exit(); //TODO als game sluit => alles sluiten?? eerste afmelden!!
         System.exit(0);
     }
 
 
     @FXML
     public void initialize(){
+        gameController = this;
+        scores = new HashMap<>();
 
         try {
             gameInfo = impl.getGame(token, gameId);
@@ -83,6 +88,7 @@ public class GameController implements EventHandler<Event> {
                 Label username = new Label(speler.getUsername());
                 Label score = new Label(Integer.toString(speler.getGameScore()));
                 GridPane gridPane = new GridPane();
+                scores.put(speler.getUsername(), score);
                 gridPane.add(username, 0, 0); //i+1 want kolom title staat op 0
                 gridPane.add(score, 1, 0); //i+1 want kolom title staat op 0
                 playersListPane.add(gridPane, 0, i+1);
@@ -111,10 +117,10 @@ public class GameController implements EventHandler<Event> {
                 }
             }
 
-            // start update thread voor game
+/*            // start update thread voor game
             // javaFx != thread safe => gebruik gemaakt van concurent package van javaFX
             Task task = new GameUpdateTask(gameBord, playersListPane, this);
-            new Thread(task).start();
+            new Thread(task).start();*/
 
         } catch (NoValidTokenException e) {
             e.printStackTrace();
@@ -147,7 +153,7 @@ public class GameController implements EventHandler<Event> {
                 int column = GridPane.getColumnIndex(imageView);
                 int row = GridPane.getRowIndex(imageView);
                 if(gameInfo.getBord()[row][column] == -1)
-                    updateBord(impl.flipCard(token, gameId, row, column));
+                    impl.flipCard(token, gameId, row, column);
             }
             else{
                 throw new PlayerNotInGameException("U speelt niet mee in deze game.");
@@ -168,8 +174,14 @@ public class GameController implements EventHandler<Event> {
     }
 
     public void updateBord(GameInfo gameInfo){
+        if(gameInfo.getGameId() != gameId)
+            return;
+
         setBorder(gameInfo.getSpelersBeurt(), true);
         int[][] bord = gameInfo.getBord();
+
+        //set score
+        //Label score = new Label(Integer.toString(speler.getGameScore()));
 
         ObservableList<Node> nodes = gameBord.getChildren();
         for(Node node: nodes){
@@ -195,6 +207,7 @@ public class GameController implements EventHandler<Event> {
 
     @FXML
     public void back(){
+        gameController = null;
         setScene(LOBBY_SCENE, LOBBY_WIDTH, LOBBY_HEIGHT);
     }
 
@@ -202,6 +215,7 @@ public class GameController implements EventHandler<Event> {
     public void stop(){
         try {
             impl.deleteGame(gameId);
+            gameController = null;
             setScene(LOBBY_SCENE, LOBBY_WIDTH, LOBBY_HEIGHT);
         } catch (RemoteException e) {
             e.printStackTrace();

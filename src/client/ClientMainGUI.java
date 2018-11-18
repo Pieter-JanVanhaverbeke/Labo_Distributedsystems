@@ -1,6 +1,7 @@
 package client;
 
 import client.view_controllers.ErrorController;
+import client.view_controllers.GameController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -23,6 +24,7 @@ import static client.utils.Constants.*;
  * Created by ruben on 26/10/18.
  */
 public class ClientMainGUI extends Application {
+    //TODO logout on exit!!!
     public static rmi_int_client_appserver impl;
     public static String token;
     public static int gameId; //heeft value geopende game
@@ -33,9 +35,9 @@ public class ClientMainGUI extends Application {
     private static FXMLLoader loader;
 
     public static final String ADDRESSSERVER = "localhost";
-    public static final String ADDRESSCLIENT = "localhost";
     public static final int PORTSERVER = 10001;
-    public static final int PORTCLIENT = 11001;
+
+    public static GameController gameController;
 
     @Override
     public void start(Stage primaryStage) {
@@ -58,9 +60,6 @@ public class ClientMainGUI extends Application {
     }
 
     private static void serverConnection() throws RemoteException, NotBoundException {
-        Registry registry = LocateRegistry.createRegistry(PORTCLIENT);
-        registry.rebind("ClientUpdaterImplService", new ClientUpdaterImpl());
-
         Registry registryServer = LocateRegistry.getRegistry(ADDRESSSERVER, PORTSERVER);
         impl = (rmi_int_client_appserver) registryServer.lookup("ServerImplService");
         System.out.println("Server connection ok");

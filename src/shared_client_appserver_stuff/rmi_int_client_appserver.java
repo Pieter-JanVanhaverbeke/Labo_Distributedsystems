@@ -10,9 +10,9 @@ import java.util.List;
 public interface rmi_int_client_appserver extends Remote {
 
     //////////////////////////////// Control //////////////////////////////////////////
-    String registrerNewClient(String username, String passwdHash, String address, int port) throws UsernameAlreadyInUseException, RemoteException, NotBoundException;
+    String registrerNewClient(String username, String passwdHash, rmi_int_client_appserver_updater clientUpdater) throws UsernameAlreadyInUseException, RemoteException, NotBoundException;
 
-    String logIn(String username, String passwordHash, String address, int port) throws WrongPasswordException, UserDoesNotExistException, RemoteException, NotBoundException;
+    String logIn(String username, String passwordHash, rmi_int_client_appserver_updater clientUpdater) throws WrongPasswordException, UserDoesNotExistException, RemoteException, NotBoundException;
 
     void logout(String clientId) throws RemoteException;
 
@@ -30,13 +30,9 @@ public interface rmi_int_client_appserver extends Remote {
     GameInfo getGame(String token, int gameId) throws RemoteException, NoValidTokenException, InternalException;
 
     //////////////////////////////////// Game ///////////////////////////////////////////
-    GameInfo flipCard(String token, int gameId, int x, int y) throws RemoteException, NoValidTokenException, NotYourTurnException, NotEnoughSpelersException, InternalException;
+    void flipCard(String token, int gameId, int x, int y) throws RemoteException, NoValidTokenException, NotYourTurnException, NotEnoughSpelersException, InternalException;
 
     void startGame(int gameId, String token) throws RemoteException, NoValidTokenException, InternalException;
-
-    //TODO: mss met versie nrs werken
-    //TODO: wat met token geldigheid?
-    GameInfo gameUpdate(int gameId, String token) throws RemoteException;
 
     void deleteGame(int gameId) throws RemoteException;
 }

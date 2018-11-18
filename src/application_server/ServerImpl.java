@@ -1,6 +1,5 @@
 package application_server;
 
-import application_server.memory_spel.Game;
 import application_server.memory_spel.Lobby;
 import application_server.memory_spel.Speler;
 import exceptions.*;
@@ -41,15 +40,15 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
 
     //////////////////////////////// Control //////////////////////////////////////////
     @Override
-    public String registrerNewClient(String username, String passwdHash, String address, int port) throws UsernameAlreadyInUseException, RemoteException, NotBoundException {
+    public String registrerNewClient(String username, String passwdHash, rmi_int_client_appserver_updater clientUpdater) throws UsernameAlreadyInUseException, RemoteException, NotBoundException {
         int clientId = impl.createUser(username, passwdHash);
         System.out.println("gebruiker: " + username + " aangemaakt en aangemeld!");
-        clients.put(username, (rmi_int_client_appserver_updater) LocateRegistry.getRegistry(address, port).lookup("ClientUpdaterImplService"));
+        clients.put(username, clientUpdater);
         return generateUserToken(username);
     }
 
     @Override
-    public String logIn(String username, String passwordHash, String address, int port) throws WrongPasswordException, UserDoesNotExistException, RemoteException, NotBoundException {
+    public String logIn(String username, String passwordHash, rmi_int_client_appserver_updater clientUpdater) throws WrongPasswordException, UserDoesNotExistException, RemoteException, NotBoundException {
         Speler speler = impl.getSpeler(username);
 
         if (speler == null) {
@@ -58,7 +57,7 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
 
        else if (passwordHash.equals(speler.getPasswordHash())) {
             //client toevoegen voor updates naar te sturen
-            clients.put(username, (rmi_int_client_appserver_updater) LocateRegistry.getRegistry(address, port).lookup("ClientUpdaterImplService"));
+            clients.put(username, clientUpdater);
             return generateUserToken(username);
         } else {
             throw new WrongPasswordException("Het wachtwoord is verkeert.");
@@ -91,6 +90,7 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
         try {
             Speler speler = validateToken(token);
             Lobby.joinGame(gameId, speler);
+            //voeg toe aan gameClients zodat updates krijgt van server
         } catch (RemoteException e) {
             e.printStackTrace();
             throw new InternalException("Fout in verbinding met DB.");
@@ -135,22 +135,15 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
 
     //////////////////////////////////// Game ///////////////////////////////////////////
     @Override
-    public GameInfo flipCard(String token, int gameId, int x, int y) throws NoValidTokenException, NotYourTurnException, NotEnoughSpelersException, InternalException {
-        Game game;
-
+    public void flipCard(String token, int gameId, int x, int y) throws NoValidTokenException, NotYourTurnException, NotEnoughSpelersException, InternalException {
         try {
             Speler speler = validateToken(token);
-            game = Lobby.flipCard(gameId, x, y, speler);
-
-            //wijziging => stuur respons naar user
-            //gameUpdate(gameId);
+            Lobby.flipCard(gameId, x, y, speler);
 
         } catch (RemoteException e) {
             e.printStackTrace();
             throw new InternalException("Fout in verbinding met DB.");
         }
-
-        return new GameInfo(game);
     }
 
     @Override
@@ -165,22 +158,6 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
         }
     }
 
-    //TODO: mss met versie nrs werken
-    //TODO: wat met token geldigheid?
-    @Override
-    public GameInfo gameUpdate(int gameId, String token) {
-        /*try {
-            validateToken(token);
-            Game game = Lobby.getGame(gameId);
-            new Thread(new GameUpdateTask(game)).start();
-
-        } catch (NoValidTokenException e) {
-            e.printStackTrace();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }*/
-        return null;
-    }
 
     @Override
     public void deleteGame(int gameId) throws RemoteException{

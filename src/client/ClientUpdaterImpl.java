@@ -1,12 +1,14 @@
 package client;
 
+import javafx.application.Platform;
 import shared_client_appserver_stuff.GameInfo;
 import shared_client_appserver_stuff.rmi_int_client_appserver_updater;
 
 import java.io.Serializable;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+
+import static client.ClientMainGUI.gameController;
 
 
 /**
@@ -19,9 +21,10 @@ public class ClientUpdaterImpl extends UnicastRemoteObject implements rmi_int_cl
     }
 
     @Override
-    public void updateBord(GameInfo gameUpdate) throws RemoteException {
-        /*if(task != null) {
-            //new Thread(task).start();
-        }*/
+    public void updateBord(GameInfo gameInfo) {
+        Platform.runLater(() -> {
+            if(gameController != null)
+                gameController.updateBord(gameInfo);
+        });
     }
 }
