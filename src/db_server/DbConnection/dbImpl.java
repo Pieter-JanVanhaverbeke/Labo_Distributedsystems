@@ -196,6 +196,19 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
     }
 
 
+    public void updateGlobalScore(int spelerid, int punten){
+        String sql = "UPDATE Users SET globalScore = ? WHERE spelerid = ?;";
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, punten);
+            pstmt.setInt(2, spelerid);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 
     //////////////////////////////////// HaalDatabase ///////////////////////////////////////////
 

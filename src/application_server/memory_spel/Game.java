@@ -120,7 +120,9 @@ public class Game implements Serializable {
                                 if (bordspel.checkEindeSpel()) {
                                     for (int i = 0; i < spelers.size(); i++) {
                                         Speler speler2 = spelers.get(i);
-                                        speler2.increaseGlobalScore(puntenlijst.get(speler2.getSpelerId()));
+                                        int spelerid2 = speler2.getSpelerId();
+                                        speler2.increaseGlobalScore(puntenlijst.get(spelerid2));
+                                        impl.updateGlobalScore(speler2.getSpelerId(),puntenlijst.get(spelerid2));   //UPDATEN PUNTEN DB
                                     }
                                     //Lobby.deleteGame(this.gameId);
 
@@ -148,7 +150,6 @@ public class Game implements Serializable {
                                 }
                                 faceup = sb.toString();
                                 impl.updateFaceUp(gameId, faceup);
-                                //TODO puntenlijst naar DB!!!
 
                                 //Schrijven punten naar DB
                                 for(int i=0; i<aantalspelers;i++){
