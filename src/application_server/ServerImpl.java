@@ -77,6 +77,7 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
         try {
             String creator = validateToken(token).getUsername();
             int gameId = Lobby.createNewGame(aantalSpelers, bordGrootte, creator, style);
+            updateClients();
             return gameId;
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -90,7 +91,7 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
         try {
             Speler speler = validateToken(token);
             Lobby.joinGame(gameId, speler);
-            //voeg toe aan gameClients zodat updates krijgt van server
+            updateClients();
         } catch (RemoteException e) {
             e.printStackTrace();
             throw new InternalException("Fout in verbinding met DB.");
@@ -103,6 +104,7 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
         try {
             Speler speler = validateToken(token);
             Lobby.unJoinGame(gameId, speler);
+            updateClients();
         } catch (RemoteException e) {
             e.printStackTrace();
             throw new InternalException("Fout in verbinding met DB.");
@@ -152,6 +154,7 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
             validateToken(token);
             Lobby.getGame(gameId).setStarted(true);
             impl.setStarted(true, gameId);
+            updateClients();
         } catch (RemoteException e) {
             e.printStackTrace();
             throw new InternalException("Fout in verbinding met DB.");
@@ -162,6 +165,13 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
     @Override
     public void deleteGame(int gameId) throws RemoteException{
         Lobby.deleteGame(gameId);
+        updateClients();
+    }
+
+    private void updateClients() throws RemoteException {
+        for(rmi_int_client_appserver_updater updater: clients.values()){
+            updater.updateLobby(Lobby.getActiveGamesList());
+        }
     }
 
 

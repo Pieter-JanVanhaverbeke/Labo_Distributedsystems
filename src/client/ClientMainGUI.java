@@ -2,6 +2,7 @@ package client;
 
 import client.view_controllers.ErrorController;
 import client.view_controllers.GameController;
+import client.view_controllers.LobbyController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -31,13 +32,14 @@ public class ClientMainGUI extends Application {
     public static String usernameLogedIn;
 
     public static Stage primaryStage;
-    public static Stage errorWindow;             geert  
+    public static Stage errorWindow;
     private static FXMLLoader loader;
 
     private static final String ADDRESSSERVER = "localhost";
     private static final int PORTSERVER = 10001;
 
     public static GameController gameController;
+    public static LobbyController lobbyController;
 
     @Override
     public void start(Stage primaryStage) {
@@ -67,6 +69,9 @@ public class ClientMainGUI extends Application {
 
     public static void setScene(String scenePath, int width, int height) {
         try {
+            lobbyController = null;
+            gameController = null;
+
             loader = new FXMLLoader();
             loader.setLocation(ClientMainGUI.class.getResource(scenePath));
             Parent root = loader.load();

@@ -5,6 +5,7 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -41,11 +42,16 @@
                   <Font size="22.0" />
                </font>
             </TextField>
-            <TextField fx:id="password" layoutX="307.0" layoutY="174.0" prefHeight="40.0" prefWidth="400.0" promptText="New Password" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="200.0" AnchorPane.topAnchor="180.0">
+            <PasswordField fx:id="password" layoutX="307.0" layoutY="174.0" prefHeight="40.0" prefWidth="400.0" promptText="New Password" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="200.0" AnchorPane.topAnchor="180.0">
                <font>
                   <Font size="22.0" />
                </font>
-            </TextField>
+            </PasswordField>
+            <PasswordField fx:id="password1" layoutX="317.0" layoutY="184.0" prefHeight="40.0" prefWidth="400.0" promptText="Confirm Password" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="200.0" AnchorPane.topAnchor="240.0">
+               <font>
+                  <Font size="22.0" />
+               </font>
+            </PasswordField>
             <Button layoutX="307.0" layoutY="242.0" mnemonicParsing="false" onAction="#createAccount" prefHeight="40.0" prefWidth="200.0" text="Create Account" AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="300.0" AnchorPane.topAnchor="300.0">
                <font>
                   <Font size="22.0" />
@@ -56,11 +62,6 @@
                   <Font size="22.0" />
                </font>
             </Button>
-            <TextField fx:id="password1" layoutX="317.0" layoutY="184.0" prefHeight="40.0" prefWidth="400.0" promptText="Confirm Password" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="200.0" AnchorPane.topAnchor="240.0">
-               <font>
-                  <Font size="22.0" />
-               </font>
-            </TextField>
          </children>
       </AnchorPane>
    </children>

@@ -17,7 +17,6 @@ import java.rmi.RemoteException;
 import static client.utils.Constants.*;
 import static client.ClientMainGUI.*;
 
-
 /**
  * Created by ruben on 1/11/18.
  */

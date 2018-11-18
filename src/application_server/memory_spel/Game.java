@@ -156,7 +156,6 @@ public class Game implements Serializable {
             }
         }
 
-
         updateClients();
         return firstFlip;
     }
@@ -282,7 +281,7 @@ public class Game implements Serializable {
 
     //kan enkel maar op start zetten
     public void setStarted(boolean started) {
-            this.started = true;
+            this.started = started;
         }
 
     public Speler getHuidigespeler() {

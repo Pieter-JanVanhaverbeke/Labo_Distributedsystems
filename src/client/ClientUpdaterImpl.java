@@ -7,8 +7,10 @@ import shared_client_appserver_stuff.rmi_int_client_appserver_updater;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.List;
 
 import static client.ClientMainGUI.gameController;
+import static client.ClientMainGUI.lobbyController;
 
 
 /**
@@ -25,6 +27,13 @@ public class ClientUpdaterImpl extends UnicastRemoteObject implements rmi_int_cl
         Platform.runLater(() -> {
             if(gameController != null)
                 gameController.updateBord(gameInfo);
+        });
+    }
+
+    public void updateLobby(List<GameInfo> activeGames){
+        Platform.runLater(() -> {
+            if(lobbyController != null)
+                lobbyController.updateLobby(activeGames);
         });
     }
 }
