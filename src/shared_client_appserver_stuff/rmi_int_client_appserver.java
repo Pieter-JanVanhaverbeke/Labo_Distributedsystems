@@ -16,7 +16,7 @@ public interface rmi_int_client_appserver extends Remote {
 
     void logout(String clientId) throws RemoteException;
 
-    byte[] getSalt(String username) throws UserDoesNotExistException;
+    byte[] getSalt(String username) throws RemoteException,UserDoesNotExistException;
 
     //////////////////////////////// Lobby //////////////////////////////////////////
     //returned de gameId van de gemaakte game

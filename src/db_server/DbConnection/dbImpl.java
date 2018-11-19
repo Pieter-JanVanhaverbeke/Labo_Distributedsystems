@@ -23,28 +23,24 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         userTokens = new HashMap<>();
     }
 
-    //TODO salt in db steken
+
     @Override
     public int createUser(String username, String passwordHash, String salt) throws UsernameAlreadyInUseException {
-        String time =  new DateTime().toString();       //huidige tijd dat je plaatst in DB
         int id =-1;
 
         if (dbConnection.getUserSet().contains(username)) {
             System.out.println("gebruikersnaam: " + username + " al gebruikt");
             throw new UsernameAlreadyInUseException(username);
         } else {
-            String sql = "INSERT INTO Users(username,password,globalScore,token,timestamptoken,lobbyid) VALUES(?,?,?,?,?,?)";
+            String sql = "INSERT INTO Users(username,password,globalScore,salt) VALUES(?,?,?,?)";
             Connection conn = connect();
 
             try (PreparedStatement pstmt = conn.prepareStatement(sql))
             {
-                //TODO paar dingen moeten hier niet meer staan?
                 pstmt.setString(1, username);
                 pstmt.setString(2, passwordHash);
                 pstmt.setInt(3,0);
-                pstmt.setString(4,"token");     //nog aanpassen naar random token
-                pstmt.setString(5,time);
-                pstmt.setInt(6,1);              //naar eerste en enigste lobby zetten
+                pstmt.setString(4,salt);
                 pstmt.executeUpdate();
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
@@ -66,9 +62,27 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
 
     @Override
     public String getSalt(String username) throws UserDoesNotExistException {
+        String salt = "";
+        String sql = "SELECT * FROM Users WHERE username = ?;";
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, username);
+
+            ResultSet rs  = pstmt.executeQuery();
+
+            while (rs.next()) {
+                salt = rs.getString("salt");
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
 
         //if user niet bestaat => throw UserDoesNotExistException
-        return null;
+        if(salt.equals("")){
+            throw new UserDoesNotExistException("user does not exist");
+        }
+
+        return salt;
     }
 
     @Override

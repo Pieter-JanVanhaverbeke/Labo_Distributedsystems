@@ -19,7 +19,7 @@ public interface rmi_int_appserver_db extends Remote {
 
     int createUser(String username, String s, String s1) throws UsernameAlreadyInUseException, RemoteException;
 
-    String getSalt(String username) throws UserDoesNotExistException;
+    String getSalt(String username) throws RemoteException, UserDoesNotExistException;
 
     void setUsertoken(Speler speler, String token) throws RemoteException;
 
