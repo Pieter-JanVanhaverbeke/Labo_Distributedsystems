@@ -1,5 +1,6 @@
 package client.view_controllers;
 
+import application_server.Utils.Bycrypt.BCrypt;
 import client.ClientUpdaterImpl;
 import exceptions.UsernameAlreadyInUseException;
 import javafx.fxml.FXML;
@@ -11,6 +12,7 @@ import java.rmi.RemoteException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Arrays;
 
 import static client.ClientMainGUI.*;
 import static client.utils.Constants.*;
@@ -36,13 +38,10 @@ public class RegisterController {
         if(password.getText().equals(password1.getText())) {
             try {
                 //hash + salt
-                SecureRandom random = new SecureRandom();
-                byte salt[] = new byte[20];
-                random.nextBytes(salt);
+               // SecureRandom random = new SecureRandom();
+                String salt = BCrypt.gensalt();
 
-                MessageDigest digest = MessageDigest.getInstance("SHA-256");
-                digest.update(salt);
-                byte[] encodedhash = digest.digest(password.getText().getBytes(StandardCharsets.UTF_8));
+                String encodedhash =  BCrypt.hashpw(password.getText(), salt);
 
                 token = impl.registrerNewClient(username.getText(), encodedhash, salt, new ClientUpdaterImpl());
                 usernameLogedIn = username.getText();
@@ -52,8 +51,6 @@ public class RegisterController {
             } catch (UsernameAlreadyInUseException e) {
                 e.printStackTrace();
             } catch (NotBoundException e) {
-                e.printStackTrace();
-            } catch (NoSuchAlgorithmException e) {
                 e.printStackTrace();
             }
         }

@@ -1,5 +1,6 @@
 package application_server;
 
+import application_server.Utils.Bycrypt.BCrypt;
 import application_server.memory_spel.Lobby;
 import application_server.memory_spel.Speler;
 import exceptions.*;
@@ -9,12 +10,14 @@ import shared_client_appserver_stuff.rmi_int_client_appserver_updater;
 import shared_db_appserver_stuff.rmi_int_appserver_db;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static application_server.ServerMain.clients;
@@ -42,38 +45,42 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
 
     //////////////////////////////// Control //////////////////////////////////////////
     @Override
-    public String registrerNewClient(String username, byte[] passwdHash, byte[] salt, rmi_int_client_appserver_updater clientUpdater) throws UsernameAlreadyInUseException, RemoteException, NotBoundException {
-        int clientId = impl.createUser(username, new String(passwdHash), new String(salt));
+    public String registrerNewClient(String username, String passwdHash, String salt, rmi_int_client_appserver_updater clientUpdater) throws UsernameAlreadyInUseException, RemoteException, NotBoundException {
+        int clientId = impl.createUser(username, passwdHash, salt);
         System.out.println("gebruiker: " + username + " aangemaakt en aangemeld!");
         clients.put(username, clientUpdater);
         return generateUserToken(username);
     }
 
     @Override
-    public String logIn(String username, byte[] passwordHash, rmi_int_client_appserver_updater clientUpdater) throws WrongPasswordException, UserDoesNotExistException, RemoteException, NotBoundException {
+    public String logIn(String username, String passwordHash, rmi_int_client_appserver_updater clientUpdater) throws WrongPasswordException, UserDoesNotExistException, RemoteException, NotBoundException {
         Speler speler = impl.getSpeler(username);
 
         if (speler == null) {
             throw new UserDoesNotExistException("De gebruiker met gebruikersnaam: " + username + " bestaat niet.");
-        }
-
-       else if (passwordHash.equals(speler.getPasswordHash())) {
-            //client toevoegen voor updates naar te sturen
-            clients.put(username, clientUpdater);
-            return generateUserToken(username);
         } else {
-            throw new WrongPasswordException("Het wachtwoord is verkeert.");
+                if (passwordHash.equals(speler.getPasswordHash())) {
+                    //client toevoegen voor updates naar te sturen
+                    clients.put(username, clientUpdater);
+                    return generateUserToken(username);
+                } else {
+                    throw new WrongPasswordException("Het wachtwoord is verkeert.");
+                }
         }
     }
-
     @Override
     public void logout(String clientUsername) {
         clients.remove(clientUsername);
     }
 
     @Override
-    public byte[] getSalt(String username) throws UserDoesNotExistException{
-        return impl.getSalt(username).getBytes();
+    public String getSalt(String username) throws UserDoesNotExistException{
+        try {
+            return impl.getSalt(username);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 

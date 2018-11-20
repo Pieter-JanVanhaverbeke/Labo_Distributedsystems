@@ -47,7 +47,7 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
             }
 
             try (
-                    PreparedStatement psmt = conn.prepareStatement("SELECT last_insert_rowid() AS Username;")) {
+                    PreparedStatement psmt = conn.prepareStatement("SELECT last_insert_rowid() AS NewID;")) {
                 ResultSet resultSet2 = psmt.executeQuery();
                 while(resultSet2.next()) {
                     id = resultSet2.getInt("NewID");

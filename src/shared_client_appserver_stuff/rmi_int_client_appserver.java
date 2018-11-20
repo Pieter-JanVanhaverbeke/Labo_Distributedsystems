@@ -10,13 +10,13 @@ import java.util.List;
 public interface rmi_int_client_appserver extends Remote {
 
     //////////////////////////////// Control //////////////////////////////////////////
-    String registrerNewClient(String username, byte[] passwdHash, byte[] salt, rmi_int_client_appserver_updater clientUpdater) throws UsernameAlreadyInUseException, RemoteException, NotBoundException;
+    String registrerNewClient(String username, String passwdHash, String salt, rmi_int_client_appserver_updater clientUpdater) throws UsernameAlreadyInUseException, RemoteException, NotBoundException;
 
-    String logIn(String username, byte[] passwordHash, rmi_int_client_appserver_updater clientUpdater) throws WrongPasswordException, UserDoesNotExistException, RemoteException, NotBoundException;
+    String logIn(String username, String passwordHash, rmi_int_client_appserver_updater clientUpdater) throws WrongPasswordException, UserDoesNotExistException, RemoteException, NotBoundException;
 
     void logout(String clientId) throws RemoteException;
 
-    byte[] getSalt(String username) throws RemoteException,UserDoesNotExistException;
+    String getSalt(String username) throws RemoteException,UserDoesNotExistException;
 
     //////////////////////////////// Lobby //////////////////////////////////////////
     //returned de gameId van de gemaakte game

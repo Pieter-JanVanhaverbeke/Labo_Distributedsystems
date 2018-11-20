@@ -1,5 +1,6 @@
 package client.view_controllers;
 
+import application_server.Utils.Bycrypt.BCrypt;
 import client.ClientUpdaterImpl;
 import exceptions.UserDoesNotExistException;
 import exceptions.WrongPasswordException;
@@ -38,11 +39,8 @@ public class LoginController extends Observable {
     public void login(){
         try {
             //hash + salt
-            byte[] salt = impl.getSalt(username.getText());
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            digest.update(salt);
-            byte[] passwdHash = digest.digest(password.getText().getBytes(StandardCharsets.UTF_8));
-
+            String salt = impl.getSalt(username.getText());
+            String passwdHash = BCrypt.hashpw(password.getText(),salt);
 
             token = impl.logIn(username.getText(), passwdHash, new ClientUpdaterImpl());
             usernameLogedIn = username.getText();
@@ -59,8 +57,6 @@ public class LoginController extends Observable {
         } catch (WrongPasswordException e) {
             e.printStackTrace();
         } catch (NotBoundException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
     }
