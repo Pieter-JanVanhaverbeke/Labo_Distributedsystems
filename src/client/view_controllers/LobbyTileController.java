@@ -49,7 +49,7 @@ public class LobbyTileController {
         switch (buttonText){
             case START_GAME:
                 try {
-                    impl.startGame(gameId, token);
+                    serverImpl.startGame(gameId, token);
                     ClientMainGUI.gameId = gameId;
                     setScene(OPEN_GAME, GAME_WIDTH, GAME_HEIGHT);
                 } catch (NoValidTokenException e) {
@@ -64,7 +64,7 @@ public class LobbyTileController {
 
             case JOIN_GAME:
                 try {
-                    impl.joinGame(gameId, token);
+                    serverImpl.joinGame(gameId, token);
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 } catch (NoValidTokenException e) {
@@ -78,7 +78,7 @@ public class LobbyTileController {
 
             case UNJOIN_GAME:
                 try {
-                    impl.unJoinGame(gameId, token);
+                    serverImpl.unJoinGame(gameId, token);
                 } catch (NoValidTokenException e) {
                     e.printStackTrace();
                 } catch (GameAlreadyStartedException e) {
@@ -102,7 +102,7 @@ public class LobbyTileController {
         }
 
         try {
-            GameInfo gameInfo = impl.getGame(token, gameId);
+            GameInfo gameInfo = serverImpl.getGame(token, gameId);
             fillTile(gameInfo);
         } catch (RemoteException e) {
             e.printStackTrace();

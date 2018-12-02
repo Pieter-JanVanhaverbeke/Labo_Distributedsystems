@@ -3,7 +3,6 @@ package client.view_controllers;
 import exceptions.GameNotCreatedException;
 import exceptions.InternalException;
 import exceptions.NoValidTokenException;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -65,7 +64,7 @@ public class CreateGameController implements EventHandler<MouseEvent> {
 
     public void create(){
         try {
-            impl.createGame(Integer.parseInt(playersNumber.getText()), Integer.parseInt(boardSize.getText()), token, style);
+            serverImpl.createGame(Integer.parseInt(playersNumber.getText()), Integer.parseInt(boardSize.getText()), token, style);
             setScene(LOBBY_SCENE, LOBBY_WIDTH, LOBBY_HEIGHT);
         } catch (GameNotCreatedException e) {
             e.printStackTrace();

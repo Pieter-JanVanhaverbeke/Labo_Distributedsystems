@@ -3,6 +3,7 @@ package client;
 import client.view_controllers.ErrorController;
 import client.view_controllers.GameController;
 import client.view_controllers.LobbyController;
+import dispatcher.DispatcherImpl;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -11,6 +12,8 @@ import javafx.scene.control.Button;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import shared_client_appserver_stuff.rmi_int_client_appserver;
+import shared_dispatcher_appserver_client_stuff.rmi_int_dispatcher_appserver_client;
+import shared_dispatcher_client_stuff.RegisterClientRespons;
 
 import java.io.IOException;
 import java.rmi.NotBoundException;
@@ -26,7 +29,8 @@ import static client.utils.Constants.*;
  */
 public class ClientMainGUI extends Application {
     //TODO logout on exit!!!
-    public static rmi_int_client_appserver impl;
+    public static rmi_int_client_appserver serverImpl;
+    public static rmi_int_dispatcher_appserver_client dispatcherImpl;
     public static String token;
     public static int gameId; //heeft value geopende game
     public static String usernameLogedIn;
@@ -35,8 +39,12 @@ public class ClientMainGUI extends Application {
     public static Stage errorWindow;
     private static FXMLLoader loader;
 
-    private static final String ADDRESSSERVER = "localhost";
-    private static final int PORTSERVER = 10001;
+    private static final String ADDRESS_CLIENT = "localhost";
+    private static int clientId;
+    private static final String ADDRESS_DISPATCHER = "localhost";
+    private static final int PORT_DISPATCHER = 12345;
+    private static String ADDRESS_SERVER = "localhost";
+    private static int PORT_SERVER = 10001;
 
     public static GameController gameController;
     public static LobbyController lobbyController;
@@ -62,8 +70,16 @@ public class ClientMainGUI extends Application {
     }
 
     private static void serverConnection() throws RemoteException, NotBoundException {
-        Registry registryServer = LocateRegistry.getRegistry(ADDRESSSERVER, PORTSERVER);
-        impl = (rmi_int_client_appserver) registryServer.lookup("ServerImplService");
+        //registreer bij de dispatcher en krijg een appserver toegewezen
+        Registry registryDispatcher = LocateRegistry.getRegistry(ADDRESS_DISPATCHER, PORT_DISPATCHER);
+        dispatcherImpl = (rmi_int_dispatcher_appserver_client) registryDispatcher.lookup("DispatcherImplService");
+        RegisterClientRespons respons = dispatcherImpl.registerClient(ADDRESS_CLIENT, new DispatcherClientUpdaterImpl());
+        clientId = respons.getId();
+        setAddressServer(respons.getServerInfo().getIpAddress());
+        setPortServer(respons.getServerInfo().getPortNumber());
+
+        Registry registryServer = LocateRegistry.getRegistry(ADDRESS_SERVER, PORT_SERVER);
+        serverImpl = (rmi_int_client_appserver) registryServer.lookup("ServerImplService");
         System.out.println("Server connection ok");
     }
 
@@ -110,4 +126,11 @@ public class ClientMainGUI extends Application {
         }
     }
 
+    public static synchronized void setAddressServer(String addressServer) {
+        ADDRESS_SERVER = addressServer;
+    }
+
+    public static synchronized void setPortServer(int portServer) {
+        PORT_SERVER = portServer;
+    }
 }

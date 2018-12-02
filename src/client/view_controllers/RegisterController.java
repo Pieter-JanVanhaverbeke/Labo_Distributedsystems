@@ -6,13 +6,8 @@ import exceptions.UsernameAlreadyInUseException;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 
-import java.nio.charset.StandardCharsets;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.util.Arrays;
 
 import static client.ClientMainGUI.*;
 import static client.utils.Constants.*;
@@ -43,7 +38,7 @@ public class RegisterController {
 
                 String encodedhash =  BCrypt.hashpw(password.getText(), salt);
 
-                token = impl.registrerNewClient(username.getText(), encodedhash, salt, new ClientUpdaterImpl());
+                token = serverImpl.registrerNewClient(username.getText(), encodedhash, salt, new ClientUpdaterImpl());
                 usernameLogedIn = username.getText();
                 setScene(LOBBY_SCENE, LOBBY_WIDTH, LOBBY_HEIGHT);
             } catch (RemoteException e) {

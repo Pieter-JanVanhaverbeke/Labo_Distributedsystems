@@ -10,12 +10,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 
-import java.nio.charset.StandardCharsets;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
@@ -39,10 +35,10 @@ public class LoginController extends Observable {
     public void login(){
         try {
             //hash + salt
-            String salt = impl.getSalt(username.getText());
+            String salt = serverImpl.getSalt(username.getText());
             String passwdHash = BCrypt.hashpw(password.getText(),salt);
 
-            token = impl.logIn(username.getText(), passwdHash, new ClientUpdaterImpl());
+            token = serverImpl.logIn(username.getText(), passwdHash, new ClientUpdaterImpl());
             usernameLogedIn = username.getText();
             setScene(LOBBY_SCENE, LOBBY_WIDTH, LOBBY_HEIGHT);
         } catch (RemoteException e) {

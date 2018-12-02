@@ -1,11 +1,8 @@
 package client.view_controllers;
 
-import application_server.memory_spel.Lobby;
-import application_server.memory_spel.Speler;
 import exceptions.*;
 import javafx.collections.ObservableList;
 import javafx.application.Platform;
-import javafx.concurrent.Task;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -63,7 +60,7 @@ public class GameController implements EventHandler<Event> {
     @FXML
     public void exit(){
         try {
-            impl.unRegisterWatcher(token, gameId);
+            serverImpl.unRegisterWatcher(token, gameId);
             gameController = null;
             Platform.exit(); //TODO als game sluit => alles sluiten?? eerste afmelden!!
             System.exit(0);
@@ -79,7 +76,7 @@ public class GameController implements EventHandler<Event> {
         scores = new HashMap<>();
 
         try {
-            gameInfo = impl.getGame(token, gameId);
+            gameInfo = serverImpl.getGame(token, gameId);
             pictures = THEMA_NUMBER.get(gameInfo.getThema());
 
             //spelers kolom
@@ -122,7 +119,7 @@ public class GameController implements EventHandler<Event> {
 
                 }
             }
-            impl.registerWatcher(token, gameId);
+            serverImpl.registerWatcher(token, gameId);
 
         } catch (NoValidTokenException e) {
             e.printStackTrace();
@@ -155,7 +152,7 @@ public class GameController implements EventHandler<Event> {
                 int column = GridPane.getColumnIndex(imageView);
                 int row = GridPane.getRowIndex(imageView);
                 if(gameInfo.getBord()[row][column] == -1)
-                    impl.flipCard(token, gameId, row, column);
+                    serverImpl.flipCard(token, gameId, row, column);
             }
             else{
                 throw new PlayerNotInGameException("U speelt niet mee in deze game.");
@@ -211,7 +208,7 @@ public class GameController implements EventHandler<Event> {
     @FXML
     public void back(){
         try {
-            impl.unRegisterWatcher(token, gameId);
+            serverImpl.unRegisterWatcher(token, gameId);
             gameController = null;
             setScene(LOBBY_SCENE, LOBBY_WIDTH, LOBBY_HEIGHT);
         } catch (RemoteException e) {
@@ -222,8 +219,8 @@ public class GameController implements EventHandler<Event> {
     @FXML
     public void stop(){
         try {
-            impl.unRegisterWatcher(token, gameId);
-            impl.deleteGame(gameId);
+            serverImpl.unRegisterWatcher(token, gameId);
+            serverImpl.deleteGame(gameId);
             gameController = null;
             setScene(LOBBY_SCENE, LOBBY_WIDTH, LOBBY_HEIGHT);
         } catch (RemoteException e) {

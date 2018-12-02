@@ -15,9 +15,7 @@ import javafx.scene.layout.GridPane;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by ruben on 28/10/18.
@@ -32,7 +30,7 @@ public class LobbyController {
     public void initialize() {
         lobbyController = this;
         try {
-            List<GameInfo> activeGames = impl.getActiveGamesList(token);
+            List<GameInfo> activeGames = serverImpl.getActiveGamesList(token);
             updateLobby(activeGames);
 
         } catch (RemoteException e) {
@@ -78,7 +76,7 @@ public class LobbyController {
     @FXML
     public void logout() {
         try {
-            impl.logout(usernameLogedIn);
+            serverImpl.logout(usernameLogedIn);
             token = null;
             gameId = -1;
             usernameLogedIn = null;
