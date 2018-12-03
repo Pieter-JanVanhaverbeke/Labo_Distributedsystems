@@ -2,10 +2,12 @@ package dispatcher;
 
 import shared_dispatcher_client_stuff.rmi_int_dispatcher_client_updater;
 
+import java.io.Serializable;
+
 /**
  * Created by ruben on 2/12/18.
  */
-public class ClientInfo {
+public class ClientInfo implements Serializable {
 
     private String ipAddress;
     private int id;

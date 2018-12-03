@@ -1,9 +1,11 @@
 package shared_dispatcher_client_stuff;
 
+import java.io.Serializable;
+
 /**
  * Created by ruben on 2/12/18.
  */
-public class RegisterClientRespons {
+public class RegisterClientRespons implements Serializable {
     private ServerInfo serverInfo;
     private int id;
 

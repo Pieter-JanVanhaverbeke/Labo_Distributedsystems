@@ -8,6 +8,7 @@ import shated_dispatcher_appserver_stuff.rmi_int_dispatcher_appserver_updater;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -20,7 +21,7 @@ import java.util.Map;
  * Created by ruben on 2/12/18 in Ertvelde, Belgium. It's 14°C and cloudy. I am wearing a black sweater.
  * The people outside have no idea of what's happing inside this house.
  * They don't know that in this very spot, I am writing world changing software.
- * Software that coult change the world we all live in.
+ * Software that could change the world we all live in.
  * Do you think the world is ready for this?
  * Should I keep this project a secret?
  * The world doesn't know me yet,
@@ -28,7 +29,7 @@ import java.util.Map;
  *
  * Mind my words...
  */
-public class DispatcherImpl extends UnicastRemoteObject implements rmi_int_dispatcher_appserver_client {
+public class DispatcherImpl extends UnicastRemoteObject implements rmi_int_dispatcher_appserver_client, Serializable {
 
     private int aantalgames;
     private List<ServerInfo> serverlijst;

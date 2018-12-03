@@ -2,10 +2,12 @@ package shared_dispatcher_client_stuff;
 
 import shated_dispatcher_appserver_stuff.rmi_int_dispatcher_appserver_updater;
 
+import java.io.Serializable;
+
 /**
  * Created by ruben on 2/12/18.
  */
-public class ServerInfo {
+public class ServerInfo implements Serializable {
 
     private String ipAddress;
     private int portNumber;
