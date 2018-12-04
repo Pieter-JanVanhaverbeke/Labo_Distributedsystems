@@ -1,13 +1,10 @@
 package shared_client_appserver_stuff;
 
-import application_server.memory_spel.Game;
-import application_server.memory_spel.Speler;
+import shared_dispatcher_appserver_stuff.memory_spel.Game;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by ruben on 28/10/18.
@@ -25,8 +22,10 @@ public class GameInfo implements Serializable {
     private int thema;
     int[][] bord;
     //private Map<SpelerInfo, Integer> puntentLijst;
+    private String ipAddress;
+    private int port;
 
-    public GameInfo(Game game){
+    public GameInfo(Game game, String ipAddress, int port){
         //puntentLijst = new HashMap<>();
         this.gameId = game.getGameId();
         this.aantalSpelers = game.getAantalspelers();
@@ -40,6 +39,8 @@ public class GameInfo implements Serializable {
         this.lengte = game.getBordspel().getLengte();
         this.thema = game.getBordspel().getType();
         this.bord = game.getBordspel().getBordRemote();
+        this.ipAddress = ipAddress;
+        this.port = port;
     }
 
     public int getGameId() {
@@ -128,6 +129,22 @@ public class GameInfo implements Serializable {
 
     public void setBord(int[][] bord) {
         this.bord = bord;
+    }
+
+    public String getIpAddress() {
+        return ipAddress;
+    }
+
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
     }
 
     /* public Map<SpelerInfo, Integer> getPuntentLijst() {

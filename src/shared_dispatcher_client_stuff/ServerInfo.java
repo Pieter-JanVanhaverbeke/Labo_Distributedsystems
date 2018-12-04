@@ -1,6 +1,6 @@
 package shared_dispatcher_client_stuff;
 
-import shated_dispatcher_appserver_stuff.rmi_int_dispatcher_appserver_updater;
+import shared_dispatcher_appserver_stuff.rmi_int_dispatcher_appserver_updater;
 
 import java.io.Serializable;
 

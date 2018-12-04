@@ -11,11 +11,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static client.ClientMainGUI.dispatcherImpl;
 
 public class ServerMain {
-    private static final int PORT_SERVER = 10001;
-    private static final String ADDRESS_SERVER = "localhost";
+    public static rmi_int_dispatcher_appserver_client dispatcherImpl;
+
+    protected static final int PORT_SERVER = 10001;
+    public static final String ADDRESS_SERVER = "localhost";
     private static int serverId;
     private static final String ADDRESS_DISPATCHER = "localhost";
     private static final int PORT_DISPATCHER = 12345;

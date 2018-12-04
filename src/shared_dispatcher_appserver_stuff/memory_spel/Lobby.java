@@ -1,20 +1,20 @@
-package application_server.memory_spel;
-import application_server.Utils.Utils;
+package shared_dispatcher_appserver_stuff.memory_spel;
 import exceptions.*;
 import shared_client_appserver_stuff.GameInfo;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static application_server.ServerImpl.impl;
+import static application_server.ServerMain.ADDRESS_SERVER;
 import static application_server.Utils.Constants.*;
-import static application_server.ServerImpl.*;
+import static client.ClientMainGUI.PORT_SERVER;
 
-public class Lobby implements Serializable{
+public abstract class Lobby implements Serializable{
     private static Map<Integer, Game> activeGames; //gameId is key
 
     //returned gameId
@@ -60,7 +60,7 @@ public class Lobby implements Serializable{
         if(activeGames != null)
             for(Integer key: activeGames.keySet()){
                 Game game = activeGames.get(key);
-                result.add(new GameInfo(game));
+                result.add(new GameInfo(game, ADDRESS_SERVER, PORT_SERVER));
             }
 
         return result;

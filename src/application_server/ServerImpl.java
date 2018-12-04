@@ -1,8 +1,7 @@
 package application_server;
 
-import application_server.Utils.Bycrypt.BCrypt;
-import application_server.memory_spel.Lobby;
-import application_server.memory_spel.Speler;
+import shared_dispatcher_appserver_stuff.memory_spel.Lobby;
+import shared_dispatcher_appserver_stuff.memory_spel.Speler;
 import exceptions.*;
 import shared_client_appserver_stuff.GameInfo;
 import shared_client_appserver_stuff.rmi_int_client_appserver;
@@ -10,18 +9,15 @@ import shared_client_appserver_stuff.rmi_int_client_appserver_updater;
 import shared_db_appserver_stuff.rmi_int_appserver_db;
 
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import static application_server.ServerMain.clients;
-import static application_server.ServerMain.gameUpdateSubscribers;
+import static application_server.ServerMain.*;
 import static application_server.Utils.Utils.generateUserToken;
 import static application_server.Utils.Utils.validateToken;
 
@@ -142,7 +138,7 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
     public GameInfo getGame(String token, int gameId) throws NoValidTokenException, InternalException {
         try {
             validateToken(token);
-            return new GameInfo(Lobby.getGame(gameId));
+            return new GameInfo(Lobby.getGame(gameId), ADDRESS_SERVER, PORT_SERVER);
         } catch (RemoteException e) {
             e.printStackTrace();
             throw new InternalException("Fout in verbinding met DB.");

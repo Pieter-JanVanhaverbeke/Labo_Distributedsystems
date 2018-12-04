@@ -13,4 +13,6 @@ public interface rmi_int_client_appserver_updater extends Remote {
     void updateBord(GameInfo gameUpdate) throws RemoteException;
 
     void updateLobby(List<GameInfo> activeGames) throws RemoteException;
+
+    void updateGameAddress(String ipAddress, int port);
 }

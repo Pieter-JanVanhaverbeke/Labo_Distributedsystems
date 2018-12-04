@@ -6,14 +6,13 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.SignatureException;
-import application_server.memory_spel.Speler;
+import shared_dispatcher_appserver_stuff.memory_spel.Speler;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.rmi.RemoteException;
 import java.security.Key;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 
 import static application_server.ServerImpl.impl;
 

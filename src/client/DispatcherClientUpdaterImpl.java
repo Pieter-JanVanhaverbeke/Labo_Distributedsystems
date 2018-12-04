@@ -19,4 +19,5 @@ public class DispatcherClientUpdaterImpl implements rmi_int_dispatcher_client_up
         setAddressServer(newServer.getIpAddress());
         setPortServer(newServer.getPortNumber());
     }
+
 }

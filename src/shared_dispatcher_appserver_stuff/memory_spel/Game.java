@@ -1,4 +1,4 @@
-package application_server.memory_spel;
+package shared_dispatcher_appserver_stuff.memory_spel;
 
 import exceptions.GameAlreadyStartedException;
 import exceptions.NotEnoughSpelersException;
@@ -17,8 +17,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static application_server.ServerImpl.impl;
+import static application_server.ServerMain.ADDRESS_SERVER;
 import static application_server.ServerMain.clients;
 import static application_server.ServerMain.gameUpdateSubscribers;
+import static client.ClientMainGUI.PORT_SERVER;
 
 /**
  * Created by ruben on 19/10/18.
@@ -195,16 +197,15 @@ public class Game implements Serializable {
 
     //TODO: mss met versie nrs werken
     //TODO: wat met token geldigheid?
-    private GameInfo updateClients() {
+    private void updateClients() {
         try {
-            GameInfo gameInfo = new GameInfo(this);
+            GameInfo gameInfo = new GameInfo(this, ADDRESS_SERVER, PORT_SERVER);
             for(String username: gameUpdateSubscribers.get(gameId))
                 clients.get(username).updateBord(gameInfo);
 
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-        return null;
     }
 
     public int getGameScore(Speler speler){

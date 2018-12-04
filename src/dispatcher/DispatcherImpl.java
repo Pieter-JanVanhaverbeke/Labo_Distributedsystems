@@ -4,7 +4,8 @@ import shared_dispatcher_appserver_client_stuff.rmi_int_dispatcher_appserver_cli
 import shared_dispatcher_client_stuff.RegisterClientRespons;
 import shared_dispatcher_client_stuff.ServerInfo;
 import shared_dispatcher_client_stuff.rmi_int_dispatcher_client_updater;
-import shated_dispatcher_appserver_stuff.rmi_int_dispatcher_appserver_updater;
+import shared_dispatcher_appserver_stuff.memory_spel.Game;
+import shared_dispatcher_appserver_stuff.rmi_int_dispatcher_appserver_updater;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,7 +32,6 @@ import java.util.Map;
  */
 public class DispatcherImpl extends UnicastRemoteObject implements rmi_int_dispatcher_appserver_client, Serializable {
 
-    private int aantalgames;
     private List<ServerInfo> serverlijst;
     private List<ClientInfo> clientLijst;
     private Map<String, ServerInfo> clientServerMapping;
@@ -51,11 +51,10 @@ public class DispatcherImpl extends UnicastRemoteObject implements rmi_int_dispa
 
     //client krijgt clientId en appServer toegewezen
     public RegisterClientRespons registerClient(String ipAddress, rmi_int_dispatcher_client_updater updater){
-        int id = clientTeller++;
-        clientLijst.add(new ClientInfo(ipAddress, id, updater));
+        clientLijst.add(new ClientInfo(ipAddress, clientTeller, updater));
 
         //zoek naar appserver, start eventueel een nieuwe op
-        return new RegisterClientRespons(null, id);
+        return new RegisterClientRespons(null, clientTeller++);
     }
 
     @Override
@@ -80,32 +79,43 @@ public class DispatcherImpl extends UnicastRemoteObject implements rmi_int_dispa
         }
     }
 
-    private void pingServer(String ipadres){
-        try{
+    private void pingServer(String ipadres) {
+        try {
             InetAddress address = InetAddress.getByName(ipadres);
             boolean reachable = address.isReachable(10000);
 
             System.out.println("Is host reachable? " + reachable);
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
 
-    public void RegisterService(){
+    //appserver laat weten hoeveel games er gestart zijn
+    public void informDispatcher(int aantalgames){
+        //get alle active games van elke app server
+        Map<ServerInfo, Integer> aantalGames = new HashMap<>();
+        for(ServerInfo serverInfo: serverlijst){
+            aantalGames.put(serverInfo, serverInfo.getUpdater().getAantalgames());
+        }
+
+        //kijk of geen herallocatie kan doen tussen app servers
+        List<ReAllocationUpdates> updates = reAllocateGames(aantalGames);
+
+        for(ReAllocationUpdates update: updates){
+            //voer updates uit
+            //zender van Game object (getFrom) update port van clients nqqr -1 => client weet dat game
+            //aan het verplaatsen => wacht totdat address aangepast is door ontvanger (getTo)
+            //ontvanger van Game object (getTo) update de clients naar nieuw adres
+            Game game = update.getFrom().getUpdater().getGameForReAllocation(update.getGameId());
+            update.getTo().getUpdater().setGameForReAllocation(game);
+        }
 
     }
 
-    public void UnregisterService(){
-
-    }
-
-    public int getAantalgames() {
-        return aantalgames;
-    }
-
-    public void setAantalgames(int aantalgames) {
-        this.aantalgames = aantalgames;
+    private List<ReAllocationUpdates> reAllocateGames(Map<ServerInfo, Integer> aantalGames){
+        //check of kan heralloceren
+        return null;
     }
 
 

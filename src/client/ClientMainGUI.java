@@ -44,7 +44,7 @@ public class ClientMainGUI extends Application {
     private static final String ADDRESS_DISPATCHER = "localhost";
     private static final int PORT_DISPATCHER = 12345;
     private static String ADDRESS_SERVER = "localhost";
-    private static int PORT_SERVER = 10001;
+    public static int PORT_SERVER = 10001;
 
     public static GameController gameController;
     public static LobbyController lobbyController;

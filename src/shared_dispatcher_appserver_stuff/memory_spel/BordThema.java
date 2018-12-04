@@ -1,5 +1,5 @@
 /*
-package application_server.memory_spel;
+package shared_dispatcher_appserver_stuff.memory_spel;
 
 */
 /**

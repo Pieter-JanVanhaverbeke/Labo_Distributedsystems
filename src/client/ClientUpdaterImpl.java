@@ -36,4 +36,9 @@ public class ClientUpdaterImpl extends UnicastRemoteObject implements rmi_int_cl
                 lobbyController.updateLobby(activeGames);
         });
     }
+
+    @Override
+    public void updateGameAddress(String ipAddress, int port) {
+        //gameSpecifiek ip/port aanpassen
+    }
 }

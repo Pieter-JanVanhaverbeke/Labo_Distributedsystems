@@ -1,10 +1,9 @@
 package shared_db_appserver_stuff;
 
-import application_server.memory_spel.Game;
-import application_server.memory_spel.Lobby;
+import shared_dispatcher_appserver_stuff.memory_spel.Game;
 import exceptions.UserDoesNotExistException;
 import exceptions.UsernameAlreadyInUseException;
-import application_server.memory_spel.Speler;
+import shared_dispatcher_appserver_stuff.memory_spel.Speler;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

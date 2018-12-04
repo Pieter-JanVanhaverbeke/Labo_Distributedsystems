@@ -1,7 +1,7 @@
 package shared_client_appserver_stuff;
 
-import application_server.memory_spel.Lobby;
-import application_server.memory_spel.Speler;
+import shared_dispatcher_appserver_stuff.memory_spel.Lobby;
+import shared_dispatcher_appserver_stuff.memory_spel.Speler;
 
 import java.io.Serializable;
 

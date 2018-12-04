@@ -1,8 +1,6 @@
 package db_server.DbConnection;
 
 
-import application_server.memory_spel.Speler;
-
 import java.sql.*;
 import java.util.HashSet;
 import java.util.Set;

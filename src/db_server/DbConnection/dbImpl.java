@@ -1,7 +1,6 @@
 package db_server.DbConnection;
 
-import application_server.memory_spel.*;
-import exceptions.PlayerNumberExceededException;
+import shared_dispatcher_appserver_stuff.memory_spel.*;
 import exceptions.UserDoesNotExistException;
 import shared_db_appserver_stuff.rmi_int_appserver_db;
 import exceptions.UsernameAlreadyInUseException;
