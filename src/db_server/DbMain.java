@@ -12,7 +12,7 @@ import java.rmi.registry.Registry;
  */
 public class DbMain {
     private static final int PORTDB = 13001;
-
+    private static final int PORTDB2 = 14001;
     //hier komt de main voor de db server
     private void startDB() {
         try {
@@ -25,8 +25,20 @@ public class DbMain {
         System.out.println("Databasesysteem is ready");
     }
 
+    private void startDB2() {
+        try {
+            Registry registry = LocateRegistry.createRegistry(PORTDB);
+            registry.rebind("DbServerImplService", new dbImpl());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println("Databasesysteem is ready");
+    }
+
     public static void main(String[] args) {
         DbMain main = new DbMain();
+
         main.startDB();
 
     }

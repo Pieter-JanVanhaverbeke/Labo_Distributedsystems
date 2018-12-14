@@ -1,5 +1,6 @@
 package db_server.DbConnection;
 
+import db_server.DbConnection.Chorde.Node;
 import shared_dispatcher_appserver_stuff.memory_spel.*;
 import exceptions.UserDoesNotExistException;
 import shared_db_appserver_stuff.rmi_int_appserver_db;
@@ -16,11 +17,18 @@ import static db_server.DbConnection.dbConnection.connect;
 
 public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db, Serializable {
     private HashMap<String, Speler> userTokens;//bevat de huidig uitgeleende tokens ( = aangemelde users)
+    private Node node;
 
 
     public dbImpl() throws RemoteException {
         userTokens = new HashMap<>();
+        node = new Node();
+        node.create();
+        int id = 0; //TODO INPUT ID DATABANKEN
+        node.setId(id);
     }
+
+
 
 
     @Override
@@ -568,4 +576,46 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
     }
 
 
+
+
+
+
+    ////////////////////////////////////////////
+    ////////////////////////////////////////////
+    ////////////////////////////////////////////
+    /////////////////////////////////////////////
+    //RINGSTRUCTUUR
+
+
+    public void toevoegRing(Node successor){
+        //NOG GEEN SUCCESSOR, EERSTE ELEMENT
+        if(successor == null){
+            node.setId(0);
+            node.create();
+        }
+        else{
+            node.setId(successor.getId() + 1);
+            node.join(successor);
+        }
+
+
+     /*   if(successorid==-1){
+            node.create();
+        }
+
+        else{
+            node.join();
+        }
+*/
+    }
+
+
+    @Override
+    public Node getNode() {
+        return node;
+    }
+
+    public void setNode(Node node) {
+        this.node = node;
+    }
 }
