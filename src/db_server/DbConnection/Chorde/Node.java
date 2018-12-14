@@ -1,8 +1,9 @@
 package db_server.DbConnection.Chorde;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
-public class Node {
+public class Node implements Serializable {
  /*     *internal.Node
     predecessor *internal.Node
     successor *internal.Node
@@ -21,6 +22,11 @@ public class Node {
         successor = null;
         id = 0;
         m = 3;
+        fingertable = new HashMap<>();
+    }
+
+    public Node(int id){
+
     }
 
 
