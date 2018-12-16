@@ -1,6 +1,7 @@
 package db_server.DbConnection;
 
 import db_server.DbConnection.Chorde.Node;
+import db_server.DbConnection.Chorde.Peer;
 import shared_dispatcher_appserver_stuff.memory_spel.*;
 import exceptions.UserDoesNotExistException;
 import shared_db_appserver_stuff.rmi_int_appserver_db;
@@ -8,39 +9,58 @@ import exceptions.UsernameAlreadyInUseException;
 import org.joda.time.DateTime;
 
 import java.io.Serializable;
+import java.rmi.AccessException;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.*;
 import java.util.*;
 
+import static application_server.ServerImpl.PORTDB;
 import static db_server.DbConnection.dbConnection.connect;
 
 public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db, Serializable {
     private HashMap<String, Speler> userTokens;//bevat de huidig uitgeleende tokens ( = aangemelde users)
     private Node node;
+    private Peer peer;
+    String databankstring;
+    private rmi_int_appserver_db implDBvolgende;
 
 
     public dbImpl() throws RemoteException {
         userTokens = new HashMap<>();
+     //   node = new Node();
+        peer = new Peer();
+
+
+
+        /*
         node = new Node();
-        node.create();
+        node.toevoeg(null);             //TODO AANPASSEN
         int id = 0; //TODO INPUT ID DATABANKEN
         node.setId(id);
+        */
     }
 
 
 
-
+    /**
+     *Methode die user aanmaakt, meegegeven argumenten zijn username, passwordHash en de salt van het paswoord.
+     * Return is een int, primary key van de user dat de huidige tijd bedraagd
+     *
+     * */
     @Override
     public int createUser(String username, String passwordHash, String salt) throws UsernameAlreadyInUseException {
         int id =-1;
 
-        if (dbConnection.getUserSet().contains(username)) {
+        if (dbConnection.getUserSet(databankstring).contains(username)) {
             System.out.println("gebruikersnaam: " + username + " al gebruikt");
             throw new UsernameAlreadyInUseException(username);
         } else {
             String sql = "INSERT INTO Users(username,password,globalScore,salt) VALUES(?,?,?,?)";
-            Connection conn = connect();
+            Connection conn = connect(databankstring);
 
             try (PreparedStatement pstmt = conn.prepareStatement(sql))
             {
@@ -66,12 +86,64 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
             return id;
         }
     }
+    /** Methode dat de create user rondbrengt naar alle databankservers
+     * */
+    @Override
+    public void floodCreateUser(String username,String passwordHash, String salt, int eindid){
+        try {
+            createUser( username,  passwordHash,  salt);
+        } catch (UsernameAlreadyInUseException e) {
+            e.printStackTrace();
+        }
 
+
+        if(eindid!=peer.getId()){              //TODO goed eine setten
+            try {
+                implDBvolgende.floodCreateUser(username, passwordHash,  salt,  eindid);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+
+    /** Methode om de globale score aan te passen van een speler in een databank */
+    public void updateGlobalScore(int spelerid, int punten){
+        String sql = "UPDATE Users SET globalScore = ? WHERE spelerid = ?;";
+        try (Connection conn = connect(databankstring);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, punten);
+            pstmt.setInt(2, spelerid);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+    /** Methode om de methode updateGlobalScore toe te passen rond elke databank*/
+    @Override
+    public void floodUpdateGlobalScore(int spelerid, int punten, int eindid){
+
+        updateGlobalScore( spelerid,  punten);
+        if(eindid!=peer.getId()){
+            try {
+                implDBvolgende.floodUpdateGlobalScore(spelerid, punten, eindid);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+    /** Methode die als ingegeven argument de gebruiker de salt teruggeeft van de gebruiker waarvoor gehashed werd*/
     @Override
     public String getSalt(String username) throws UserDoesNotExistException {
         String salt = "";
         String sql = "SELECT * FROM Users WHERE username = ?;";
-        try (Connection conn = connect();
+        try (Connection conn = connect(databankstring);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, username);
 
@@ -92,11 +164,16 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         return salt;
     }
 
-    @Override
+   /* @Override
+    public void setUsertoken(Speler speler, String token) throws RemoteException {
+
+    }
+*/
+ /*   @Override
     public void setUsertoken(Speler speler, String token) {
         String username = speler.getUsername();
         String sql = "UPDATE Users SET token = ? , WHERE username = ?";
-        try (Connection conn = connect();
+        try (Connection conn = connect(databankstring);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, token);
             pstmt.setString(2, username);
@@ -108,15 +185,15 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
 
         updateTime(username);           //setten van tijd usertoken
     }
-
-
+*/
+    /** Methode om een game te creëren in een databank, return type is int en geeft de primary key terug*/
     @Override
     public int createGame(String creator, String createdate, boolean started, int aantalspelers, int bordgrootte, int layout, String bordspeltypes, String bordspelfaceup) {
 
         int id = -1;
-        String sql = "INSERT INTO Game(creator,createdate,started,aantalspelers,bordgrootte,layout,bordspeltypes,bordspelfaceup,spelersbeurt)VALUES(?,?,?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO Game(creator,createdate,started,aantalspelers,bordgrootte,layout,bordspeltypes,bordspelfaceup,spelersbeurt, gameid)VALUES(?,?,?,?,?,?,?,?,?,?)";
 
-        Connection conn = connect();
+        Connection conn = connect(databankstring);
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, creator);
             pstmt.setString(2, createdate);
@@ -127,6 +204,8 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
             pstmt.setString(7, bordspeltypes);
             pstmt.setString(8, bordspelfaceup);
             pstmt.setInt(9,0);
+            System.out.println(System.currentTimeMillis());
+            pstmt.setString(10, String.valueOf(System.currentTimeMillis()));
             pstmt.executeUpdate();
 
         } catch (SQLException e) {
@@ -146,13 +225,14 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
 
     }
 
+    /** Methode om een spel te verwijderen uit een databank met key gameId */
     @Override
-    public void deleteGame(int gameId) {
+    public void deleteGame(String gameId) {
         String sql = "DELETE FROM Game WHERE gameid=?";
-        Connection conn = connect();
+        Connection conn = connect(databankstring);
         try (
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, gameId);
+            pstmt.setString(1, gameId);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -161,21 +241,35 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         String sql2 = "DELETE FROM GameSpelertable WHERE gameid=?";
         try (
                 PreparedStatement pstmt = conn.prepareStatement(sql2)) {
-            pstmt.setInt(1, gameId);
+            pstmt.setString(1, gameId);
             pstmt.executeUpdate();
         } catch (SQLException e1) {
             e1.printStackTrace();
         }
 
     }
+    /** Methode die rondvraagd aan alle databanken om game te deleten */
+    @Override
+    public void floodDeleteGame(String gameId, int eindid){//TODO NOG TESTEN
+        deleteGame(gameId);
+        if(eindid!=peer.getId()){
+            try {
+                implDBvolgende.floodDeleteGame(gameId, eindid);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
+
+    /** Methode de faceup logica aan te passen aan een game*/
         @Override
-    public void updateFaceUp(int gameid,String data){
+    public void updateFaceUp(String gameid,String data){
         String sql = "UPDATE  Game SET bordspelfaceup = ? WHERE gameid=?";
-        try (Connection conn = connect();
+        try (Connection conn = connect(databankstring);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1,data);
-            pstmt.setInt(2, gameid);
+            pstmt.setString(2, gameid);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -184,12 +278,12 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
 
 
     @Override
-    public void addSpelerToGame(int userid, int gameid){
+    public void addSpelerToGame(int userid, String gameid){
         String sql = "INSERT INTO GameSpelertable(userid,gameid,spelerpunten) VALUES(?,?,?)";
-        try (Connection conn = connect();
+        try (Connection conn = connect(databankstring);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, userid);
-            pstmt.setInt(2, gameid);
+            pstmt.setString(2, gameid);
             pstmt.setInt(3,0);
             pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -199,25 +293,45 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
     }
 
 
+    /*void floodAddSpelerToGame(int userid, int gameid, int eindid){
+
+    }
+*/
+    /** Methode om een speler met userid te verwijderen van een game met bepaalde gameid*/
     @Override
-    public void removeSpelerToGame(int userid, int gameid){
+    public void removeSpelerToGame(int userid, String gameid){
         String sql = "DELETE FROM GameSpelertable WHERE userid = ? AND gameid = ?";
-        try (Connection conn = connect();
+        try (Connection conn = connect(databankstring);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, userid);
-            pstmt.setInt(2, gameid);
+            pstmt.setString(2, gameid);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void updatePunten(int gameid, int userid, int punten){
+
+    /** Methode om een removeSpelerToGame toe te passen rond alle databanken */
+    @Override
+    public void floodRemoveSpelerToGame(int userid, String gameid, int eindid){
+        removeSpelerToGame(userid, gameid);                                     //TODO NIET OVER ALLE DB GAAN
+        if(eindid!=peer.getId()){
+            try {
+                implDBvolgende.floodRemoveSpelerToGame(userid, gameid, eindid);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /** Methode om de punten te updaten van een spel in de databank*/
+    public void updatePunten(String gameid, int userid, int punten){
         String sql = "UPDATE GameSpelertable SET spelerpunten = ? WHERE gameid = ? AND userid = ?";
-        try (Connection conn = connect();
+        try (Connection conn = connect(databankstring);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, punten);
-            pstmt.setInt(2, gameid);
+            pstmt.setString(2, gameid);
             pstmt.setInt(3,userid);
             pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -225,30 +339,44 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         }
     }
 
+    /** Methode die updatePunten doorgeeft naar alle databanken */
+    public void floodUpdatePunten(String gameid, int userid, int punten, int eindid){      //TODO NIET ALLES CHECKEN?
+        updatePunten( gameid,  userid, punten);
+        if(eindid!=peer.getId()){
+            try {
+                implDBvolgende.floodUpdatePunten(gameid, userid, punten, eindid);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
-    public void updateGlobalScore(int spelerid, int punten){
-        String sql = "UPDATE Users SET globalScore = ? WHERE spelerid = ?;";
-        try (Connection conn = connect();
+
+
+    /** Methode die een spelersbeurt update van game met gameid*/
+    public void updateSpelersbeurt(String gameid, int spelersbeurt){
+        String sql = "UPDATE Game SET spelersbeurt = ? WHERE gameid = ?;";
+        try (Connection conn = connect(databankstring);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, punten);
-            pstmt.setInt(2, spelerid);
+            System.out.println("gameid van spel: " + gameid);
+            System.out.println("spelerbeurt: " + spelersbeurt);
+            pstmt.setInt(1, spelersbeurt);
+            pstmt.setString(2, gameid);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void updateSpelersbeurt(int gameid, int spelersbeurt){
-        String sql = "UPDATE Game SET spelersbeurt = ? WHERE gameid = ?;";
-        try (Connection conn = connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            System.out.println("gameid van spel: " + gameid);
-            System.out.println("spelerbeurt: " + spelersbeurt);
-            pstmt.setInt(1, spelersbeurt);
-            pstmt.setInt(2, gameid);
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
+    /** Methode die updateSpelersbeurt doorgeeft aan verschillende databanken */
+    public void floodUpdateSpelersbeurt(String gameid, int spelersbeurt, int eindid){
+        updateSpelersbeurt( gameid, spelersbeurt);
+        if(eindid!=peer.getId()){
+            try {
+                implDBvolgende.floodUpdateSpelersbeurt(gameid, spelersbeurt, eindid);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -256,17 +384,18 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
 
     //////////////////////////////////// HaalDatabase ///////////////////////////////////////////
 
+    /** Methode die alle games opvraagd van een databank, return type is map met primary key gameid en value de games*/
     @Override //return lege lijst als geen games
     public Map<Integer, Game> getAllGames() { //return alle games in db met gameId = key
         Map<Integer, Game> map = new HashMap<Integer, Game>();
         try {
-            Connection conn = connect();
+            Connection conn = connect(databankstring);
             Statement stmt = conn.createStatement();
             String sql = "SELECT * FROM Game";
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {                         //voor alle games
 
-                int gameid = rs.getInt("gameid");
+                String gameid = rs.getString("gameid");
                 String creator = rs.getString("creator");
                 String createdate = rs.getString("createdate");
                 boolean started = rs.getBoolean("started");
@@ -301,7 +430,7 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
                 bordspel.setType(layout);
 
                 //alles in game steken
-                Game game = new Game(bordgrootte, aantalspelers, creator, layout, gameid);
+                Game game = new Game(bordgrootte, aantalspelers, creator, layout, Integer.parseInt(gameid));
                 game.setCreateDate(createdate);
                 game.setStarted(started);
                 game.setBordspel(bordspel);
@@ -326,14 +455,36 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         return map;
         }
 
-
+    /** Methode die GetAlleGames rondvraagt aan alle databanken, return type is map met primary key gameid en value de games */
     @Override
-    public String getFaceUp(int gameid){
+    public Map<Integer, Game> floodGetAlleGames(Map<Integer, Game> gamesmap, int eindid, int teller) {   //TODO OPLOSSEN GAMES TERUGGEVEN
+
+        if (eindid == this.peer.getId()) {
+            teller++;
+        }
+        if(teller<2) {
+            gamesmap.putAll(getAllGames());
+            try {
+               gamesmap = implDBvolgende.floodGetAlleGames(gamesmap,eindid,teller);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println(gamesmap.size());
+        return gamesmap;
+    }
+
+
+
+
+    /** Methode die info van omgedraaide kaartjes teruggeeft van game met gameid, return type is String die bestaat uit 0 en 1'en*/
+    @Override
+    public String getFaceUp(String gameid){
             String faceup = "";
             String sql = "SELECT * FROM Game WHERE gameid = ?;";
-            try (Connection conn = connect();
+            try (Connection conn = connect(databankstring);
                  PreparedStatement pstmt = conn.prepareStatement(sql)) {
-                pstmt.setInt(1, gameid);
+                pstmt.setString(1, gameid);
 
                 ResultSet rs = pstmt.executeQuery();
 
@@ -347,14 +498,31 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
 
         return faceup;
     }
+    /** Methode die getFaceUp rondvraagt aan alle databanken,  return type is String die bestaat uit 0 en 1'en */
+    public String floodGetFaceUp(String gameid, String faceup, int eindid, int teller){
+        if (eindid == this.peer.getId()) {
+            teller++;
+        }
 
-        @Override
+        if(teller<2) {
+            faceup = faceup + getFaceUp(gameid);
+            try {
+                faceup = implDBvolgende.floodGetFaceUp(gameid,faceup,eindid,teller);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+        return faceup;
+    }
+
+    /** Methode die alle spelers opvraagd aan databank, return type is lijst van de spelers */
+    @Override
     public List<Speler> getAllSpelers() {
 
         List<Speler> spelerslijst = new ArrayList<Speler>();
 
         try {
-            Connection conn = connect();
+            Connection conn = connect(databankstring);
             Statement stmt = conn.createStatement();
             String sql = "SELECT * FROM Users";
             ResultSet rs = stmt.executeQuery(sql);
@@ -379,16 +547,16 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
     }
 
 
-
+    /** Methode die alle spelersids opvraagd van een bepaalde game met gameid, returntype is lijst van spelerids */
     @Override
-    public List<Integer> getAlleSpelerid (int gameid) {
+    public List<Integer> getAlleSpelerid (String gameid) {
         ArrayList<Integer> speleridlijst = new ArrayList<Integer>();
 
 
         String sql = "SELECT userid FROM GameSpelertable WHERE gameid = ?;";
-        try (Connection conn = connect();
+        try (Connection conn = connect(databankstring);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, gameid);
+            pstmt.setString(1, gameid);
 
             ResultSet rs = pstmt.executeQuery();
 
@@ -409,10 +577,12 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
 
     // }
 
+
+    /** Methode die een speler teruggeeft met String username*/
     @Override
     public Speler getSpeler(String username) {
         String sql = "SELECT * FROM Users WHERE username = ?;";
-        try (Connection conn = connect();
+        try (Connection conn = connect(databankstring);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, username);
 
@@ -440,10 +610,11 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
     }
 
 
+    /** Methode die speler ophaald met een spelerid*/
     @Override
     public Speler getSpeler(int spelerid) {
         String sql = "SELECT * FROM Users WHERE spelerid = ?;";
-        try (Connection conn = connect();
+        try (Connection conn = connect(databankstring);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, spelerid);
 
@@ -472,10 +643,10 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
 
 
 
-    @Override
+  /*  @Override
     public void changeCredentials(String username, String passwdHash) throws UsernameAlreadyInUseException {
         String sql = "INSERT INTO Users(passwdHash) Where username=username VALUES(?)";
-        try (Connection conn = connect();
+        try (Connection conn = connect(databankstring);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, passwdHash);
             pstmt.executeUpdate();
@@ -484,7 +655,7 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         }
 
 
-    }
+    }*/
 
     private void updateTime(String username) {
         String sql = "UPDATE Users SET timestamptoken = ? WHERE username = ?";
@@ -494,7 +665,7 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         //   String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
         String time =  new DateTime().toString();
 
-        try (Connection conn = connect();
+        try (Connection conn = connect(databankstring);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, time);
             pstmt.setString(2, username);
@@ -511,7 +682,7 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
 
     }
 
-    public static Set<String> getUserSet(){
+   /* public static Set<String> getUserSet(){
         Set<String> userlijst = new HashSet<String>();
 
         String sql = "SELECT * FROM Users";
@@ -532,16 +703,17 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         }
 
         return userlijst;
-    }
+    }*/
 
+    /** Methode die spelerpunten in lijst teruggeeft van bepaalde gameid*/
     @Override
-    public ArrayList<Integer> getSpelerPunten(int gameid) {
+    public ArrayList<Integer> getSpelerPunten(String gameid) {
         //   HashMap<Integer,Integer> scores = new HashMap<>();
         ArrayList<Integer> scores = new ArrayList<>();
         String sql = "SELECT * FROM GameSpelertable WHERE gameid = ?;";
-        try (Connection conn = connect();
+        try (Connection conn = connect(databankstring);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, gameid);
+            pstmt.setString(1, gameid);
 
             ResultSet rs  = pstmt.executeQuery();
 
@@ -558,13 +730,15 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
     }
 
     //zet started state van game met gameId op par:b
+
+    /** Methode die een game start met een gameid*/
     @Override
-    public void setStarted(boolean b, int gameId) {
+    public void setStarted(boolean b, String gameId) {
         String sql = "UPDATE Game SET started = ? WHERE gameid = ?";
-        try (Connection conn = connect();
+        try (Connection conn = connect(databankstring);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setBoolean(1, b);
-            pstmt.setInt(2, gameId);
+            pstmt.setString(2, gameId);
             pstmt.executeUpdate();
         }
         catch(
@@ -572,6 +746,17 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
 
         {
             e.printStackTrace();
+        }
+    }
+    /** Methode setStarted doorgeeft rond verschillende databanken*/
+    public void floodSetStarted(boolean b, String gameId, int eindid){
+        setStarted(b, gameId);
+        if(eindid!=peer.getId()){              //TODO goed eine setten
+            try {
+                implDBvolgende.floodSetStarted(b, gameId , eindid);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -611,11 +796,101 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
 
 
     @Override
+    public void toevoegNode(Node predecessor){
+        if(predecessor == null){
+
+            this.node.setId(0);
+            this.node.setPredecessor(this.getNode());
+            this.node.setSuccessor(this.getNode());
+         //   this.node.create();
+
+        }
+        else{
+            this.node.setId(predecessor.getId() + 1);
+            this.node.setPredecessor(predecessor);
+            //this.node.toevoeg(predecessor);
+            predecessor.setSuccessor(this.getNode());
+        }
+
+    }
+
+
+    @Override
     public Node getNode() {
         return node;
     }
 
+    @Override
     public void setNode(Node node) {
         this.node = node;
     }
+
+
+
+    /** Methode die databank server toevoegd aan architectuur (ring)*/
+    @Override
+    public void toevoegPeer(Peer predecessor){
+        if(predecessor == null){
+            this.peer.setId(0);
+            this.peer.setPredecessor(peer.getId());
+            this.peer.setSuccessor(peer.getId());
+            //   this.node.create();
+
+        }
+        else{
+            this.peer.setId(predecessor.getId() + 1);
+            this.peer.setPredecessor(predecessor.getId());
+            //this.node.toevoeg(predecessor);
+            predecessor.setSuccessor(this.peer.getId());
+        }
+
+    }
+    /** Methode die Databankserver connecteert met databank van bepaalde port*/
+    public void connectSuccessor(int port) throws RemoteException {
+
+        Registry registryServer = LocateRegistry.getRegistry("localhost", port);
+        try {
+            implDBvolgende = (rmi_int_appserver_db) registryServer.lookup("DbServerImplService");
+            System.out.println("SUCCESOR CONNECTION GEMAAKT");
+        } catch (NotBoundException e) {
+            e.printStackTrace();
+        } catch (AccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public Peer getPeer() {
+        return peer;
+    }
+
+    @Override
+    public void setPeer(Peer peer) {
+        this.peer = peer;
+    }
+
+    @Override
+    public void setSuccessor(Peer peer) {
+        this.peer.setSuccessor(peer.getId());
+    }
+
+    @Override
+    public void setPredecessor(Peer peer) {
+        this.peer.setPredecessor(peer.getId());
+    }
+
+    public String getDatabankstring() {
+        return databankstring;
+    }
+
+    public void setDatabankstring(String databankstring) {
+        this.databankstring = databankstring;
+    }
+
+
+
+
+
+
+
 }
