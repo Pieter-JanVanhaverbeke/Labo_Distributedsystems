@@ -12,6 +12,8 @@ import java.rmi.registry.Registry;
  * Created by ruben on 1/11/18.
  */
 public class DbMain {
+    public static String databankstring = "jdbc:sqlite:memory1.db";
+
     public static rmi_int_dispatcher_appserver_client dispatcherImpl;
 
     private static final String ADDRESS_DB = "localhost";

@@ -81,10 +81,6 @@ public interface rmi_int_appserver_db extends Remote {
 
     void setPredecessor(Peer peer) throws RemoteException;
 
-    void setDatabankstring(String string) throws RemoteException;
-
-    String getDatabankstring() throws RemoteException;
-
     void floodCreateUser(String username,String passwordHash, String salt, int eindid) throws RemoteException;
 
     void floodUpdateGlobalScore(int spelerid, int punten, int eindid) throws RemoteException;

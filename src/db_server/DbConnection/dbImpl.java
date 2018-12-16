@@ -20,12 +20,12 @@ import java.sql.*;
 import java.util.*;
 
 import static db_server.DbConnection.dbConnection.connect;
+import static db_server.DbMain.databankstring;
 
 public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db, Serializable {
     private HashMap<String, Speler> userTokens;//bevat de huidig uitgeleende tokens ( = aangemelde users)
     private Node node;
     private Peer peer;
-    String databankstring = "jdbc:sqlite:memory.db";
     private rmi_int_appserver_db implDBvolgende;
 
 
@@ -950,13 +950,6 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         this.peer.setPredecessor(peer.getId());
     }
 
-    public String getDatabankstring() {
-        return databankstring;
-    }
-
-    public void setDatabankstring(String databankstring) {
-        this.databankstring = databankstring;
-    }
 
 
 
