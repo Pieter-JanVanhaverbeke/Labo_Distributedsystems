@@ -1,20 +1,22 @@
 package application_server.Utils;
 
+import exceptions.NoServerAvailableException;
 import exceptions.NoValidTokenException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.SignatureException;
-import shared_dispatcher_appserver_stuff.memory_spel.Speler;
+import application_server.memory_spel.Speler;
 
 import javax.crypto.spec.SecretKeySpec;
+import java.rmi.ConnectException;
 import java.rmi.RemoteException;
 import java.security.Key;
 import java.util.Calendar;
 import java.util.Date;
 
-import static application_server.ServerImpl.impl;
+import static application_server.ServerMain.*;
 
 /**
  * Created by ruben on 23/10/18.
@@ -40,13 +42,21 @@ public class Utils {
                 .compact();
     }
 
-    public static Speler validateToken(String token) throws NoValidTokenException, RemoteException {
+    public static Speler validateToken(String token) throws NoValidTokenException, RemoteException, NoServerAvailableException {
         try{
             Jws<Claims> claims = Jwts.parser().setSigningKey(JWT_KEY).parseClaimsJws(token);
-            return impl.getSpeler(claims.getBody().getId());
+            String id = claims.getBody().getId();
+            if(!spelers.containsKey(id))
+                spelers.put(id, dbImpl.getSpeler(id));
+
+            return spelers.get(id);
         }
         catch (SignatureException se){
             throw new NoValidTokenException("Token is niet valid!");
+        } catch (ConnectException e) {
+            e.printStackTrace();
+            renewDbServer();
+            return validateToken(token);
         }
     }
 }

@@ -43,10 +43,4 @@ public class dbConnection {
 
         return userlijst;
     }
-
-
-
-    }
-    /**
-     * Connect to a sample database
-     */
+}

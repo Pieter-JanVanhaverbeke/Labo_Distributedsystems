@@ -1,9 +1,10 @@
 package db_server;
 
-import application_server.ServerImpl;
-import application_server.ServerMain;
 import db_server.DbConnection.dbImpl;
+import shared_dispatcher_appserver_client_stuff.rmi_int_dispatcher_appserver_client;
 
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
@@ -11,30 +12,42 @@ import java.rmi.registry.Registry;
  * Created by ruben on 1/11/18.
  */
 public class DbMain {
-    private static final int PORTDB1 = 13001;
-    private static final int PORTDB2 = 14001;
-    private static final int PORTDB3 = 15001;
-    private static final int PORTDB4 = 16001;
+    public static rmi_int_dispatcher_appserver_client dispatcherImpl;
+
+    private static final String ADDRESS_DB = "localhost";
+    private static final int PORT_DB = 20000;
+    private static int DB_ID;
+    private static final String ADDRESS_DISPATCHER = "localhost";
+    private static final int PORT_DISPATCHER = 12345;
+
+
     //hier komt de main voor de db server
-    public void startDB(int port) {
+    private void startDB() throws RemoteException, NotBoundException {
+        //registreer bij de dispatcher
+        Registry registryDispatcher = LocateRegistry.getRegistry(ADDRESS_DISPATCHER, PORT_DISPATCHER);
+        dispatcherImpl = (rmi_int_dispatcher_appserver_client) registryDispatcher.lookup("DispatcherImplService");
+        DB_ID = dispatcherImpl.registerDBServer(ADDRESS_DB, PORT_DB);
+
         try {
-            Registry registry = LocateRegistry.createRegistry(port);
+            Registry registry = LocateRegistry.createRegistry(PORT_DB);
             registry.rebind("DbServerImplService", new dbImpl());
 
         } catch (Exception e) {
             e.printStackTrace();
         }
         System.out.println("Databasesysteem is ready");
+        System.out.println("id: " + DB_ID + ", port: " + PORT_DB);
     }
 
-
     public static void main(String[] args) {
-        DbMain main = new DbMain();
-
-        main.startDB(PORTDB1);
-        main.startDB(PORTDB2);
-        main.startDB(PORTDB3);
-        main.startDB(PORTDB4);
+        try {
+            DbMain main = new DbMain();
+            main.startDB();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        } catch (NotBoundException e) {
+            e.printStackTrace();
+        }
 
     }
 

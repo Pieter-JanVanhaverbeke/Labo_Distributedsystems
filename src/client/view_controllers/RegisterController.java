@@ -2,10 +2,12 @@ package client.view_controllers;
 
 import application_server.Utils.Bycrypt.BCrypt;
 import client.ClientUpdaterImpl;
+import exceptions.NoServerAvailableException;
 import exceptions.UsernameAlreadyInUseException;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 
+import java.rmi.ConnectException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
@@ -41,11 +43,21 @@ public class RegisterController {
                 token = serverImpl.registrerNewClient(username.getText(), encodedhash, salt, new ClientUpdaterImpl());
                 usernameLogedIn = username.getText();
                 setScene(LOBBY_SCENE, LOBBY_WIDTH, LOBBY_HEIGHT);
-            } catch (RemoteException e) {
+            } catch (ConnectException e) {
                 e.printStackTrace();
+                try {
+                    renewAppServer();
+                    createAccount();
+                } catch (NoServerAvailableException e1) {
+                    e1.printStackTrace();
+                }
             } catch (UsernameAlreadyInUseException e) {
                 e.printStackTrace();
             } catch (NotBoundException e) {
+                e.printStackTrace();
+            } catch (NoServerAvailableException e) {
+                e.printStackTrace();
+            } catch (RemoteException e) {
                 e.printStackTrace();
             }
         }

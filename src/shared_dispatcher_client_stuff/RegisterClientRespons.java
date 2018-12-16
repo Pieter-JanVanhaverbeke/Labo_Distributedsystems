@@ -1,5 +1,7 @@
 package shared_dispatcher_client_stuff;
 
+import shared_dispatcher_appserver_client_stuff.ServerInfo;
+
 import java.io.Serializable;
 
 /**

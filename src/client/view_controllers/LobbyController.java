@@ -5,6 +5,7 @@ import static client.utils.Constants.*;
 
 import client.ClientMainGUI;
 import exceptions.InternalException;
+import exceptions.NoServerAvailableException;
 import javafx.application.Platform;
 import shared_client_appserver_stuff.GameInfo;
 import exceptions.NoValidTokenException;
@@ -14,6 +15,7 @@ import javafx.scene.Parent;
 import javafx.scene.layout.GridPane;
 
 import java.io.IOException;
+import java.rmi.ConnectException;
 import java.rmi.RemoteException;
 import java.util.List;
 
@@ -33,13 +35,21 @@ public class LobbyController {
             List<GameInfo> activeGames = serverImpl.getActiveGamesList(token);
             updateLobby(activeGames);
 
-        } catch (RemoteException e) {
+        } catch (ConnectException e) {
             e.printStackTrace();
+            try {
+                renewAppServer();
+                initialize();
+            } catch (NoServerAvailableException e1) {
+                e1.printStackTrace();
+            }
         } catch (NoValidTokenException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InternalException e) {
+            e.printStackTrace();
+        } catch (NoServerAvailableException e) {
             e.printStackTrace();
         }
     }
@@ -66,8 +76,6 @@ public class LobbyController {
             Parent tile = loader.load();
             gameGrid.add(tile, i % LOBBY_COLUMN_NUMBER, i / LOBBY_COLUMN_NUMBER); //TODO: check of automatisch rijen aanmaakt als index te groot word
 
-        } catch (RemoteException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -78,10 +86,18 @@ public class LobbyController {
         try {
             serverImpl.logout(usernameLogedIn);
             token = null;
-            gameId = -1;
+            gameId = null;
             usernameLogedIn = null;
             lobbyController = null;
             setScene(LOGIN_SCENE, LOGIN_WIDTH, LOGIN_HEIGHT);
+        } catch (ConnectException e) {
+            e.printStackTrace();
+            try {
+                renewAppServer();
+                logout();
+            } catch (NoServerAvailableException e1) {
+                e1.printStackTrace();
+            }
         } catch (RemoteException e) {
             e.printStackTrace();
         }

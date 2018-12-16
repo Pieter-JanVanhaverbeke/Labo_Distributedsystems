@@ -1,11 +1,11 @@
 package shared_db_appserver_stuff;
 
+import application_server.memory_spel.Game;
 import db_server.DbConnection.Chorde.Node;
 import db_server.DbConnection.Chorde.Peer;
-import shared_dispatcher_appserver_stuff.memory_spel.Game;
 import exceptions.UserDoesNotExistException;
 import exceptions.UsernameAlreadyInUseException;
-import shared_dispatcher_appserver_stuff.memory_spel.Speler;
+import application_server.memory_spel.Speler;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -24,13 +24,11 @@ public interface rmi_int_appserver_db extends Remote {
 
     //void setUsertoken(Speler speler, String token) throws RemoteException;
 
-    int createGame(String creator, String createdate, boolean started, int aantalspelers, int bordgrootte, int layout, String bordspeltypes, String bordspelfaceup) throws RemoteException;
-
     void addSpelerToGame(int userid, String gameid) throws RemoteException;
 
     void removeSpelerToGame(int userid, String gameid) throws RemoteException;
 
-    Map<Integer, Game> getAllGames() throws RemoteException;
+    Map<String, Game> getAllGames() throws RemoteException;
 
     List<Speler> getAllSpelers() throws  RemoteException;
 
@@ -41,9 +39,13 @@ public interface rmi_int_appserver_db extends Remote {
 
     void deleteGame(String gameId) throws RemoteException;
 
+    String createGame(String creator, String createdate, boolean started, int aantalspelers, int bordgrootte, int layout, String bordspeltypes, String bordspelfaceup, String ip, int port, int id) throws RemoteException;
+
     void updateFaceUp(String gameid,String data)throws RemoteException;
 
     String getFaceUp(String gameid)throws RemoteException;
+
+    Game getGame(String gameId) throws RemoteException;
 
     List<Integer> getAlleSpelerid (String gameid)throws RemoteException;
 
@@ -91,7 +93,7 @@ public interface rmi_int_appserver_db extends Remote {
 
     void connectSuccessor(int port) throws RemoteException;
 
-    Map<Integer, Game>  floodGetAlleGames(Map<Integer, Game> Gamesmap, int eindid, int teller) throws RemoteException;
+    Map<String, Game> floodGetAlleGames(Map<String, Game> gamesmap, int eindid, int teller) throws RemoteException;
 
     void floodRemoveSpelerToGame(int userid, String gameid, int eindid) throws RemoteException;
 
@@ -105,6 +107,8 @@ public interface rmi_int_appserver_db extends Remote {
 
     //void floodAddSpelerToGame(int userid, int gameid, int eindid) throws RemoteException;
 
+
+    void fullUpdate(Game game) throws RemoteException;
 
     //returned null if geen lobby
   //  Lobby getLobby() throws RemoteException;

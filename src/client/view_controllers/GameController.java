@@ -14,7 +14,9 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import shared_client_appserver_stuff.GameInfo;
 import shared_client_appserver_stuff.SpelerInfo;
+import shared_dispatcher_appserver_client_stuff.ServerInfo;
 
+import java.rmi.ConnectException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -64,6 +66,16 @@ public class GameController implements EventHandler<Event> {
             gameController = null;
             Platform.exit(); //TODO als game sluit => alles sluiten?? eerste afmelden!!
             System.exit(0);
+        } catch (ConnectException e) {
+            e.printStackTrace();
+            try {
+                renewAppServer();
+                exit();
+            } catch (NoServerAvailableException e1) {
+                e1.printStackTrace();
+            }
+        } catch (NoServerAvailableException e) {
+            e.printStackTrace();
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -72,12 +84,30 @@ public class GameController implements EventHandler<Event> {
 
     @FXML
     public void initialize(){
+
         gameController = this;
         scores = new HashMap<>();
 
         try {
-            gameInfo = serverImpl.getGame(token, gameId);
+            gameInfo = serverImpl.getGameForPlaying(token, gameId, false);
+
+            if(gameInfo == null) {
+                back();
+                return;
+            }
+
             pictures = THEMA_NUMBER.get(gameInfo.getThema());
+
+            //verbind met juiste server
+            ServerInfo serverInfo = gameInfo.getServerInfo();
+            if(serverInfo.getId() != ID_SERVER) {
+                int id = serverInfo.getId();
+                serverInfo = connectToAppServer(serverInfo);
+                if (serverInfo.getId() != id) {
+                    gameInfo = serverImpl.getGameForPlaying(token, gameId, true);
+                }
+            }
+
 
             //spelers kolom
             spelersRij = new ArrayList<>();
@@ -120,12 +150,23 @@ public class GameController implements EventHandler<Event> {
                 }
             }
             serverImpl.registerWatcher(token, gameId);
+            serverImpl.checkUpperGamesCount();
 
         } catch (NoValidTokenException e) {
             e.printStackTrace();
-        } catch (RemoteException e) {
+        } catch (ConnectException e) {
+            e.printStackTrace();
+            try {
+                renewAppServer();
+                initialize();
+            } catch (NoServerAvailableException e1) {
+                e1.printStackTrace();
+            }
+        } catch (NoServerAvailableException e) {
             e.printStackTrace();
         } catch (InternalException e) {
+            e.printStackTrace();
+        } catch (RemoteException e) {
             e.printStackTrace();
         }
     }
@@ -157,8 +198,14 @@ public class GameController implements EventHandler<Event> {
             else{
                 throw new PlayerNotInGameException("U speelt niet mee in deze game.");
             }
-        } catch (RemoteException e) {
+        } catch (ConnectException e) {
             e.printStackTrace();
+            try {
+                renewAppServer();
+                handle(event);
+            } catch (NoServerAvailableException e1) {
+                e1.printStackTrace();
+            }
         } catch (NoValidTokenException e) {
             e.printStackTrace();
         } catch (NotYourTurnException e) {
@@ -168,6 +215,10 @@ public class GameController implements EventHandler<Event> {
         } catch (InternalException e) {
             e.printStackTrace();
         } catch (PlayerNotInGameException e) {
+            e.printStackTrace();
+        } catch (NoServerAvailableException e) {
+            e.printStackTrace();
+        } catch (RemoteException e) {
             e.printStackTrace();
         }
     }
@@ -211,6 +262,16 @@ public class GameController implements EventHandler<Event> {
             serverImpl.unRegisterWatcher(token, gameId);
             gameController = null;
             setScene(LOBBY_SCENE, LOBBY_WIDTH, LOBBY_HEIGHT);
+        } catch (ConnectException e) {
+            e.printStackTrace();
+            try {
+                renewAppServer();
+                back();
+            } catch (NoServerAvailableException e1) {
+                e1.printStackTrace();
+            }
+        } catch (NoServerAvailableException e) {
+            e.printStackTrace();
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -223,6 +284,17 @@ public class GameController implements EventHandler<Event> {
             serverImpl.deleteGame(gameId);
             gameController = null;
             setScene(LOBBY_SCENE, LOBBY_WIDTH, LOBBY_HEIGHT);
+            serverImpl.checkLowerGamesCount(); //niet netjes!!!!!
+        } catch (ConnectException e) {
+            e.printStackTrace();
+            try {
+                renewAppServer();
+                stop();
+            } catch (NoServerAvailableException e1) {
+                e1.printStackTrace();
+            }
+        } catch (NoServerAvailableException e) {
+            e.printStackTrace();
         } catch (RemoteException e) {
             e.printStackTrace();
         }

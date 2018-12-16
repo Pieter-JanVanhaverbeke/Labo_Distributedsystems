@@ -5,7 +5,6 @@ import java.rmi.registry.Registry;
 
 public class DispatcherMain {
 
-
     private static final int PORT_DISPATCHER = 12345;
 
     private void startDispatcher() {

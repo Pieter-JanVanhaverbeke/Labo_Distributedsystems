@@ -1,6 +1,7 @@
 package shared_client_appserver_stuff;
 
-import shared_dispatcher_appserver_stuff.memory_spel.Game;
+import application_server.memory_spel.Game;
+import shared_dispatcher_appserver_client_stuff.ServerInfo;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -10,7 +11,7 @@ import java.util.List;
  * Created by ruben on 28/10/18.
  */
 public class GameInfo implements Serializable {
-    private int gameId;
+    private String gameId;
     private int aantalSpelers;
     private List<SpelerInfo> spelers;
     private int spelersBeurt;
@@ -20,17 +21,15 @@ public class GameInfo implements Serializable {
     private int breedte;
     private int lengte;
     private int thema;
-    int[][] bord;
-    //private Map<SpelerInfo, Integer> puntentLijst;
-    private String ipAddress;
-    private int port;
+    private int[][] bord;
+    private ServerInfo serverInfo;
 
-    public GameInfo(Game game, String ipAddress, int port){
+    public GameInfo(Game game){
         //puntentLijst = new HashMap<>();
         this.gameId = game.getGameId();
         this.aantalSpelers = game.getAantalspelers();
         this.spelers = new ArrayList<>();
-        game.getSpelers().forEach(e -> spelers.add(new SpelerInfo(e, gameId)));
+        game.getSpelers().forEach(e -> spelers.add(new SpelerInfo(e, gameId, game)));
         this.spelersBeurt = game.getSpelerbeurt();
         this.createDate = game.getCreateDate();
         this.creator = game.getCreator();
@@ -39,15 +38,14 @@ public class GameInfo implements Serializable {
         this.lengte = game.getBordspel().getLengte();
         this.thema = game.getBordspel().getType();
         this.bord = game.getBordspel().getBordRemote();
-        this.ipAddress = ipAddress;
-        this.port = port;
+        this.serverInfo = game.getServerInfo();
     }
 
-    public int getGameId() {
+    public String getGameId() {
         return gameId;
     }
 
-    public void setGameId(int gameId) {
+    public void setGameId(String gameId) {
         this.gameId = gameId;
     }
 
@@ -131,27 +129,11 @@ public class GameInfo implements Serializable {
         this.bord = bord;
     }
 
-    public String getIpAddress() {
-        return ipAddress;
+    public ServerInfo getServerInfo() {
+        return serverInfo;
     }
 
-    public void setIpAddress(String ipAddress) {
-        this.ipAddress = ipAddress;
+    public void setServerInfo(ServerInfo serverInfo) {
+        this.serverInfo = serverInfo;
     }
-
-    public int getPort() {
-        return port;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
-    }
-
-    /* public Map<SpelerInfo, Integer> getPuntentLijst() {
-        return puntentLijst;
-    }
-
-    public void setPuntentLijst(Map<SpelerInfo, Integer> puntentLijst) {
-        this.puntentLijst = puntentLijst;
-    }*/
 }

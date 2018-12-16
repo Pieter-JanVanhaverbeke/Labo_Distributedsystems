@@ -10,35 +10,44 @@ import java.util.List;
 public interface rmi_int_client_appserver extends Remote {
 
     //////////////////////////////// Control //////////////////////////////////////////
-    String registrerNewClient(String username, String passwdHash, String salt, rmi_int_client_appserver_updater clientUpdater) throws UsernameAlreadyInUseException, RemoteException, NotBoundException;
+    String registrerNewClient(String username, String passwdHash, String salt, rmi_int_client_appserver_updater clientUpdater) throws UsernameAlreadyInUseException, RemoteException, NotBoundException, NoServerAvailableException;
 
-    String logIn(String username, String passwordHash, rmi_int_client_appserver_updater clientUpdater) throws WrongPasswordException, UserDoesNotExistException, RemoteException, NotBoundException;
+    void registerClient(String token, rmi_int_client_appserver_updater clientUpdater) throws NoValidTokenException, RemoteException, NoServerAvailableException;
+
+    String logIn(String username, String passwordHash, rmi_int_client_appserver_updater clientUpdater) throws WrongPasswordException, UserDoesNotExistException, RemoteException, NotBoundException, NoServerAvailableException;
 
     void logout(String clientId) throws RemoteException;
 
-    String getSalt(String username) throws RemoteException,UserDoesNotExistException;
+    String getSalt(String username) throws RemoteException, UserDoesNotExistException, NoServerAvailableException;
 
     //////////////////////////////// Lobby //////////////////////////////////////////
     //returned de gameId van de gemaakte game
-    int createGame(int aantalSpelers, int bordGrootte, String token, int style) throws RemoteException, GameNotCreatedException, NoValidTokenException, InternalException;
+    String createGame(int aantalSpelers, int bordGrootte, String token, int style) throws RemoteException, GameNotCreatedException, NoValidTokenException, InternalException, NoServerAvailableException;
 
-    void joinGame(int gameId, String token) throws RemoteException, NoValidTokenException, PlayerNumberExceededException, InternalException;
+    void joinGame(String gameId, String token) throws RemoteException, NoValidTokenException, PlayerNumberExceededException, InternalException, NoServerAvailableException;
 
     //verwijderd speler van game spelerslijst als game nog niet gestart is
-    void unJoinGame(int gameId, String token) throws RemoteException, NoValidTokenException, GameAlreadyStartedException, InternalException;
+    void unJoinGame(String gameId, String token) throws RemoteException, NoValidTokenException, GameAlreadyStartedException, InternalException, NoServerAvailableException;
 
-    List<GameInfo> getActiveGamesList(String token) throws RemoteException, NoValidTokenException, InternalException;
+    List<GameInfo> getActiveGamesList(String token) throws RemoteException, NoValidTokenException, InternalException, NoServerAvailableException;
 
-    GameInfo getGame(String token, int gameId) throws RemoteException, NoValidTokenException, InternalException;
+    GameInfo getGameForLobby(String token, String gameId) throws RemoteException, NoValidTokenException, InternalException, NoServerAvailableException;
 
-    void registerWatcher(String token, int gameId) throws RemoteException;
+    GameInfo getGameForPlaying(String token, String gameId, boolean reallocation) throws RemoteException, NoValidTokenException, InternalException, NoServerAvailableException;
 
-    void unRegisterWatcher(String token, int gameId) throws RemoteException;
+    void registerWatcher(String token, String gameId) throws RemoteException, NoServerAvailableException;
+
+    void unRegisterWatcher(String token, String gameId) throws RemoteException, NoServerAvailableException;
 
     //////////////////////////////////// Game ///////////////////////////////////////////
-    void flipCard(String token, int gameId, int x, int y) throws RemoteException, NoValidTokenException, NotYourTurnException, NotEnoughSpelersException, InternalException;
+    void flipCard(String token, String gameId, int x, int y) throws RemoteException, NoValidTokenException, NotYourTurnException, NotEnoughSpelersException, InternalException, NoServerAvailableException;
 
-    void startGame(int gameId, String token) throws RemoteException, NoValidTokenException, InternalException;
+    void startGame(String gameId, String token) throws RemoteException, NoValidTokenException, InternalException, NoServerAvailableException;
 
-    void deleteGame(int gameId) throws RemoteException;
+    void deleteGame(String gameId) throws RemoteException, NoServerAvailableException;
+
+    void checkUpperGamesCount() throws RemoteException;
+
+    void checkLowerGamesCount() throws RemoteException;
+
 }

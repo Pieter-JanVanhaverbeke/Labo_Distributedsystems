@@ -2,6 +2,7 @@ package client.view_controllers;
 
 import exceptions.GameNotCreatedException;
 import exceptions.InternalException;
+import exceptions.NoServerAvailableException;
 import exceptions.NoValidTokenException;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -13,6 +14,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
+import java.rmi.ConnectException;
 import java.rmi.RemoteException;
 
 import static client.ClientMainGUI.*;
@@ -66,13 +68,24 @@ public class CreateGameController implements EventHandler<MouseEvent> {
         try {
             serverImpl.createGame(Integer.parseInt(playersNumber.getText()), Integer.parseInt(boardSize.getText()), token, style);
             setScene(LOBBY_SCENE, LOBBY_WIDTH, LOBBY_HEIGHT);
+            serverImpl.checkUpperGamesCount(); //niet netjes!!!!!
         } catch (GameNotCreatedException e) {
             e.printStackTrace();
         } catch (NoValidTokenException e) {
             e.printStackTrace();
-        } catch (RemoteException e) {
+        } catch (ConnectException e) {
             e.printStackTrace();
+            try {
+                renewAppServer();
+                create();
+            } catch (NoServerAvailableException e1) {
+                e1.printStackTrace();
+            }
         } catch (InternalException e) {
+            e.printStackTrace();
+        } catch (NoServerAvailableException e) {
+            e.printStackTrace();
+        } catch (RemoteException e) {
             e.printStackTrace();
         }
     }

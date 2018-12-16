@@ -3,7 +3,8 @@ package client;
 import client.view_controllers.ErrorController;
 import client.view_controllers.GameController;
 import client.view_controllers.LobbyController;
-import dispatcher.DispatcherImpl;
+import exceptions.NoServerAvailableException;
+import exceptions.NoValidTokenException;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -14,8 +15,11 @@ import javafx.stage.Stage;
 import shared_client_appserver_stuff.rmi_int_client_appserver;
 import shared_dispatcher_appserver_client_stuff.rmi_int_dispatcher_appserver_client;
 import shared_dispatcher_client_stuff.RegisterClientRespons;
+import shared_dispatcher_appserver_client_stuff.ServerInfo;
 
 import java.io.IOException;
+import java.rmi.AccessException;
+import java.rmi.ConnectException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -31,8 +35,9 @@ public class ClientMainGUI extends Application {
     //TODO logout on exit!!!
     public static rmi_int_client_appserver serverImpl;
     public static rmi_int_dispatcher_appserver_client dispatcherImpl;
+    public static ClientUpdaterImpl clientUpdater;
     public static String token;
-    public static int gameId; //heeft value geopende game
+    public static String gameId; //heeft value geopende game
     public static String usernameLogedIn;
 
     public static Stage primaryStage;
@@ -45,6 +50,7 @@ public class ClientMainGUI extends Application {
     private static final int PORT_DISPATCHER = 12345;
     private static String ADDRESS_SERVER = "localhost";
     public static int PORT_SERVER = 10001;
+    public static int ID_SERVER;
 
     public static GameController gameController;
     public static LobbyController lobbyController;
@@ -66,21 +72,47 @@ public class ClientMainGUI extends Application {
             e.printStackTrace();
         } catch (NotBoundException e) {
             e.printStackTrace();
+        } catch (NoServerAvailableException e) {
+            e.printStackTrace();
         }
     }
 
-    private static void serverConnection() throws RemoteException, NotBoundException {
+    private static void serverConnection() throws RemoteException, NotBoundException, NoServerAvailableException {
         //registreer bij de dispatcher en krijg een appserver toegewezen
         Registry registryDispatcher = LocateRegistry.getRegistry(ADDRESS_DISPATCHER, PORT_DISPATCHER);
         dispatcherImpl = (rmi_int_dispatcher_appserver_client) registryDispatcher.lookup("DispatcherImplService");
-        RegisterClientRespons respons = dispatcherImpl.registerClient(ADDRESS_CLIENT, new DispatcherClientUpdaterImpl());
+        RegisterClientRespons respons = dispatcherImpl.registerClient();
         clientId = respons.getId();
         setAddressServer(respons.getServerInfo().getIpAddress());
         setPortServer(respons.getServerInfo().getPortNumber());
+        setIdServer(respons.getServerInfo().getId());
+        System.out.println("Server: " + ID_SERVER);
 
-        Registry registryServer = LocateRegistry.getRegistry(ADDRESS_SERVER, PORT_SERVER);
-        serverImpl = (rmi_int_client_appserver) registryServer.lookup("ServerImplService");
-        System.out.println("Server connection ok");
+        clientUpdater = new ClientUpdaterImpl();
+
+        connect();
+    }
+
+    private static void connect(){
+        try {
+            Registry registryServer = LocateRegistry.getRegistry(ADDRESS_SERVER, PORT_SERVER);
+            serverImpl = (rmi_int_client_appserver) registryServer.lookup("ServerImplService");
+            System.out.println("Server connection ok");
+        }
+        catch (ConnectException ce){
+            try {
+                renewAppServer();
+                connect();
+            } catch (NoServerAvailableException e) {
+                e.printStackTrace();
+            }
+        } catch (AccessException e) {
+            e.printStackTrace();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        } catch (NotBoundException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void setScene(String scenePath, int width, int height) {
@@ -126,11 +158,67 @@ public class ClientMainGUI extends Application {
         }
     }
 
+    public static void renewAppServer() throws NoServerAvailableException {
+        try {
+            System.out.println("bad serverId: " + ID_SERVER);
+            ServerInfo serverInfo = dispatcherImpl.reportBadAppServer(ID_SERVER);
+            connectToAppServer(serverInfo);
+
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static ServerInfo connectToAppServer(ServerInfo serverInfo){
+        try {
+            setIdServer(serverInfo.getId());
+            setPortServer(serverInfo.getPortNumber());
+            setAddressServer(serverInfo.getIpAddress());
+            System.out.println("Nieuwe server: " + ID_SERVER);
+
+            Registry registryServer = LocateRegistry.getRegistry(ADDRESS_SERVER, PORT_SERVER);
+            serverImpl = (rmi_int_client_appserver) registryServer.lookup("ServerImplService");
+            serverImpl.registerClient(token, clientUpdater);
+
+            //als game aant spelen was => terug registeren zodat updates krijgt van bord
+            if (gameController != null)
+                serverImpl.registerWatcher(token, gameId);
+
+            System.out.println("Server connection ok");
+            if(lobbyController != null)
+                lobbyController.initialize();
+
+        }catch (ConnectException c){
+            c.printStackTrace();
+            try {
+                return dispatcherImpl.reportBadAppServer(ID_SERVER);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            } catch (NoServerAvailableException e) {
+                e.printStackTrace();
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        } catch (NoValidTokenException e) {
+            e.printStackTrace();
+        } catch (NotBoundException e) {
+            e.printStackTrace();
+        } catch (NoServerAvailableException e) {
+            e.printStackTrace();
+        }
+
+        return serverInfo;
+    }
+
     public static synchronized void setAddressServer(String addressServer) {
         ADDRESS_SERVER = addressServer;
     }
 
     public static synchronized void setPortServer(int portServer) {
         PORT_SERVER = portServer;
+    }
+
+    public static synchronized void setIdServer(int id) {
+        ID_SERVER = id;
     }
 }

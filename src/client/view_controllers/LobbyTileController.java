@@ -1,10 +1,7 @@
 package client.view_controllers;
 
 import client.ClientMainGUI;
-import exceptions.GameAlreadyStartedException;
-import exceptions.InternalException;
-import exceptions.NoValidTokenException;
-import exceptions.PlayerNumberExceededException;
+import exceptions.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -12,6 +9,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import shared_client_appserver_stuff.GameInfo;
 
+import java.rmi.ConnectException;
 import java.rmi.RemoteException;
 
 import static client.utils.Constants.*;
@@ -40,7 +38,7 @@ public class LobbyTileController {
     @FXML
     public ImageView themeImage;
 
-    private int gameId;
+    private String gameId;
 
     @FXML
     public void buttonPressed(){
@@ -55,9 +53,19 @@ public class LobbyTileController {
                 } catch (NoValidTokenException e) {
                     e.printStackTrace();
                 }
-                catch(RemoteException e){
+                catch(ConnectException e){
                     e.printStackTrace();
+                    try {
+                        renewAppServer();
+                        buttonPressed();
+                    } catch (NoServerAvailableException e1) {
+                        e1.printStackTrace();
+                    }
                 } catch (InternalException e) {
+                    e.printStackTrace();
+                } catch (NoServerAvailableException e) {
+                    e.printStackTrace();
+                } catch (RemoteException e) {
                     e.printStackTrace();
                 }
                 break;
@@ -65,13 +73,23 @@ public class LobbyTileController {
             case JOIN_GAME:
                 try {
                     serverImpl.joinGame(gameId, token);
-                } catch (RemoteException e) {
+                } catch (ConnectException e) {
                     e.printStackTrace();
+                    try {
+                        renewAppServer();
+                        buttonPressed();
+                    } catch (NoServerAvailableException e1) {
+                        e1.printStackTrace();
+                    }
                 } catch (NoValidTokenException e) {
                     e.printStackTrace();
                 } catch (PlayerNumberExceededException e) {
                     e.printStackTrace();
                 } catch (InternalException e) {
+                    e.printStackTrace();
+                } catch (NoServerAvailableException e) {
+                    e.printStackTrace();
+                } catch (RemoteException e) {
                     e.printStackTrace();
                 }
                 break;
@@ -83,9 +101,19 @@ public class LobbyTileController {
                     e.printStackTrace();
                 } catch (GameAlreadyStartedException e) {
                     e.printStackTrace();
-                } catch (RemoteException e) {
+                } catch (ConnectException e) {
                     e.printStackTrace();
+                    try {
+                        renewAppServer();
+                        buttonPressed();
+                    } catch (NoServerAvailableException e1) {
+                        e1.printStackTrace();
+                    }
                 } catch (InternalException e) {
+                    e.printStackTrace();
+                } catch (NoServerAvailableException e) {
+                    e.printStackTrace();
+                } catch (RemoteException e) {
                     e.printStackTrace();
                 }
                 break;
@@ -102,13 +130,23 @@ public class LobbyTileController {
         }
 
         try {
-            GameInfo gameInfo = serverImpl.getGame(token, gameId);
+            GameInfo gameInfo = serverImpl.getGameForLobby(token, gameId);
             fillTile(gameInfo);
-        } catch (RemoteException e) {
+        } catch (ConnectException e) {
             e.printStackTrace();
+            try {
+                renewAppServer();
+                buttonPressed();
+            } catch (NoServerAvailableException e1) {
+                e1.printStackTrace();
+            }
         } catch (NoValidTokenException e) {
             e.printStackTrace();
         } catch (InternalException e) {
+            e.printStackTrace();
+        } catch (NoServerAvailableException e) {
+            e.printStackTrace();
+        } catch (RemoteException e) {
             e.printStackTrace();
         }
     }
@@ -185,11 +223,11 @@ public class LobbyTileController {
         this.players.setText(players);
     }
 
-    public int getGameId() {
+    public String getGameId() {
         return gameId;
     }
 
-    public void setGameId(int gameId) {
+    public void setGameId(String gameId) {
         this.gameId = gameId;
     }
 

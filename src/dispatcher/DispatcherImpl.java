@@ -1,16 +1,13 @@
 package dispatcher;
 
+import exceptions.NoServerAvailableException;
 import shared_dispatcher_appserver_client_stuff.rmi_int_dispatcher_appserver_client;
 import shared_dispatcher_client_stuff.RegisterClientRespons;
-import shared_dispatcher_client_stuff.ServerInfo;
-import shared_dispatcher_client_stuff.rmi_int_dispatcher_client_updater;
-import shared_dispatcher_appserver_stuff.memory_spel.Game;
-import shared_dispatcher_appserver_stuff.rmi_int_dispatcher_appserver_updater;
+import shared_dispatcher_appserver_client_stuff.ServerInfo;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.net.InetAddress;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
@@ -32,36 +29,115 @@ import java.util.Map;
  */
 public class DispatcherImpl extends UnicastRemoteObject implements rmi_int_dispatcher_appserver_client, Serializable {
 
-    private List<ServerInfo> serverlijst;
-    private List<ClientInfo> clientLijst;
-    private Map<String, ServerInfo> clientServerMapping;
-    private static int serverTeller = 0; // = id van server?
-    private static int clientTeller = 0; // = id van client?
+    //db id is key
+    private Map<Integer, DbInfo> dbInfoList = new HashMap<>();
+    //serverId is key
+    private Map<Integer, ServerInfo> serverlijst;
+    private static int serverTeller = 0; // = id van server
+    private static int dbTeller = 0; // = id van db
+    private static int clientTeller = 0; // = id van client
+    private boolean reallocating = false;
 
     public DispatcherImpl() throws RemoteException {
-        serverlijst = new ArrayList<>();
-        clientLijst = new ArrayList<>();
-        clientServerMapping = new HashMap<>();
+        serverlijst = new HashMap<>();
     }
+
+    public DbInfo getsuccessor(int dbId){
+
+        return null;
+    }
+
+    /////////////////////////////////// appservers ///////////////////////////////////
 
     //appserver had al port gekregen bij het opstarten van de jar
-    public void registerAppServer(String ipAddress, int port, int id, rmi_int_dispatcher_appserver_updater updater){
-        serverlijst.add(new ServerInfo(ipAddress, port, id, updater));
+    public int registerAppServer(String ipAddress, int port){
+        serverlijst.put(serverTeller, new ServerInfo(ipAddress, port, serverTeller));
+        System.out.println("registered AppServerId: " +  serverTeller);
+        return serverTeller++;
     }
 
-    //client krijgt clientId en appServer toegewezen
-    public RegisterClientRespons registerClient(String ipAddress, rmi_int_dispatcher_client_updater updater){
-        clientLijst.add(new ClientInfo(ipAddress, clientTeller, updater));
+    //slechts 1 server per keer sluiten => permission vragen aan server
+    public boolean reallocationRequest(int serverId){
+        if(reallocating)
+            return false;
+        else{
+            reallocating = true;
+            System.out.println("Realocation true");
+            return true;
+        }
+    }
 
-        //zoek naar appserver, start eventueel een nieuwe op
-        return new RegisterClientRespons(null, clientTeller++);
+    //verwijder server uit lijst
+    public void deleteAppServer(int serverId){
+        reallocating = false;
+        serverlijst.remove(serverId);
+        System.out.println("ServerId: " + serverId + " deleted");
+        System.out.println("reallocation false");
+    }
+
+    public void updateNumberOfGames(int serverId, int usersCount){
+        ServerInfo serverInfo = serverlijst.get(serverId);
+        if(serverInfo != null)
+            serverInfo.setGameCount(usersCount);
+        reallocating = false;
+        System.out.println("reallocation false");
+
+        serverlijst.forEach((k, v) -> System.out.println("ServerId: " + k + " -> gameId: " + v.getId() + ", game count: " + v.getGameCount()));
     }
 
     @Override
-    public ServerInfo reportBadAppServer(ServerInfo badServer) {
-        //verwijder server if nog niet eerder gebeurt + probeer server te down shutten
-        //return een nieuwe appserver
-        return null;
+    public void requestNewAppServer() {
+        startAppServer();
+    }
+
+    //client krijgt clientId en appServer toegewezen
+    public RegisterClientRespons registerClient() throws NoServerAvailableException {
+        //return random appserver
+        //prutsen
+        return new RegisterClientRespons(getRandomServer(), clientTeller++);
+    }
+
+    //verwijder server if nog niet eerder gebeurt + probeer server te down shutten
+    //return een nieuwe appserver
+    @Override
+    public ServerInfo reportBadAppServer(int serverId) throws NoServerAvailableException {
+        ServerInfo serverInfo = serverlijst.get(serverId);
+
+        System.out.println("Bad app server: " + serverId);
+        if (serverInfo != null){
+            //check of server idd niet antwoord
+            //if(pingServer(serverInfo.getIpAddress())){
+            //    return serverInfo;
+            //}
+            serverlijst.remove(serverId);
+            //serverInfo.getUpdater().shutDown();
+        }
+
+        return getRandomServer();
+
+    }
+
+    public int registerDBServer(String address, int port){
+        dbInfoList.put(dbTeller, new DbInfo(address, port, dbTeller));
+        System.out.println("registered DBserverId: " +  dbTeller);
+        return dbTeller++;
+    }
+
+    public DbInfo reportBadDbServer(int dbId) throws NoServerAvailableException {
+        //verwijder oude uit lijst en return een nieuwe db server
+
+        System.out.println("bad db: " + dbId);
+        DbInfo dbInfo = dbInfoList.get(dbId);
+
+        if(dbInfo != null)
+            dbInfoList.remove(dbId);
+
+        return getRandomDb();
+    }
+
+    @Override
+    public List<ServerInfo> getActiveAppServers() {
+        return new ArrayList<>(serverlijst.values());
     }
 
     //start nieuwe server in nieuw process
@@ -69,53 +145,48 @@ public class DispatcherImpl extends UnicastRemoteObject implements rmi_int_dispa
     // daaruit kan de dispatcher het ip adress en het portnumber halen
     private void startAppServer(){
         try {
+            System.out.println("Nieuwe server starten.");
+            //get random db
+            DbInfo dbInfo = getRandomDb();
             // Run a java app in a separate system process met als commamd line argument de id die de server krijgt
-            Process proc = Runtime.getRuntime().exec("java -jar appserver.jar " + serverTeller++);
+            Process proc = Runtime.getRuntime().exec("java -jar appserver.jar " + dbInfo.getAddress() + Integer.toString(dbInfo.getPort()));
             // Then retreive the process output
             InputStream in = proc.getInputStream();
             InputStream err = proc.getErrorStream();
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (NoServerAvailableException e) {
+            e.printStackTrace();
         }
     }
 
-    private void pingServer(String ipadres) {
+    private boolean pingServer(String ipadres) {
         try {
-            InetAddress address = InetAddress.getByName(ipadres);
+            //machine aanstaan != applicatie runnen
+            /*InetAddress address = InetAddress.getByName(ipadres);
             boolean reachable = address.isReachable(10000);
-
             System.out.println("Is host reachable? " + reachable);
+            return reachable;*/
+
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-    }
-
-    //appserver laat weten hoeveel games er gestart zijn
-    public void informDispatcher(int aantalgames){
-        //get alle active games van elke app server
-        Map<ServerInfo, Integer> aantalGames = new HashMap<>();
-        for(ServerInfo serverInfo: serverlijst){
-            aantalGames.put(serverInfo, serverInfo.getUpdater().getAantalgames());
-        }
-
-        //kijk of geen herallocatie kan doen tussen app servers
-        List<ReAllocationUpdates> updates = reAllocateGames(aantalGames);
-
-        for(ReAllocationUpdates update: updates){
-            //voer updates uit
-            //zender van Game object (getFrom) update port van clients nqqr -1 => client weet dat game
-            //aan het verplaatsen => wacht totdat address aangepast is door ontvanger (getTo)
-            //ontvanger van Game object (getTo) update de clients naar nieuw adres
-            Game game = update.getFrom().getUpdater().getGameForReAllocation(update.getGameId());
-            update.getTo().getUpdater().setGameForReAllocation(game);
-        }
+        return false;
 
     }
 
-    private List<ReAllocationUpdates> reAllocateGames(Map<ServerInfo, Integer> aantalGames){
-        //check of kan heralloceren
-        return null;
+    private ServerInfo getRandomServer() throws NoServerAvailableException {
+        if(serverlijst.isEmpty())
+            throw new NoServerAvailableException("Geen applicatieServers beschikbaar.");
+        return new ArrayList<>(serverlijst.values()).get((int)(Math.random()*serverlijst.size()));
+    }
+
+    private DbInfo getRandomDb() throws NoServerAvailableException {
+        if(dbInfoList.isEmpty())
+            throw new NoServerAvailableException("Geen dbServers beschikbaar.");
+        return new ArrayList<>(dbInfoList.values()).get((int)(Math.random()*dbInfoList.size()));
+
     }
 
 

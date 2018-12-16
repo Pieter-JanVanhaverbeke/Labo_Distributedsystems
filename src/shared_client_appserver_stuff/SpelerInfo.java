@@ -1,7 +1,7 @@
 package shared_client_appserver_stuff;
 
-import shared_dispatcher_appserver_stuff.memory_spel.Lobby;
-import shared_dispatcher_appserver_stuff.memory_spel.Speler;
+import application_server.memory_spel.Game;
+import application_server.memory_spel.Speler;
 
 import java.io.Serializable;
 
@@ -12,14 +12,14 @@ public class SpelerInfo implements Serializable {
     private String username;
     private int totalScore;
     private int gameScore;
-    private int gameId;
+    private String gameId;
 
 
-    public SpelerInfo(Speler speler, int gameId) {
+    public SpelerInfo(Speler speler, String gameId, Game game) {
         this.gameId = gameId;
         this.totalScore = speler.getGlobalScore();
         this.username = speler.getUsername();
-        this.gameScore = Lobby.getGame(gameId).getGameScore(speler);
+        this.gameScore = game.getGameScore(speler);
     }
 
     public String getUsername() {
@@ -46,11 +46,11 @@ public class SpelerInfo implements Serializable {
         this.gameScore = gameScore;
     }
 
-    public int getGameId() {
+    public String getGameId() {
         return gameId;
     }
 
-    public void setGameId(int gameId) {
+    public void setGameId(String gameId) {
         this.gameId = gameId;
     }
 }

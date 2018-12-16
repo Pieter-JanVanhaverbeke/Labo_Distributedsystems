@@ -1,4 +1,4 @@
-package shared_dispatcher_client_stuff;
+package shared_dispatcher_appserver_client_stuff;
 
 import shared_dispatcher_appserver_stuff.rmi_int_dispatcher_appserver_updater;
 
@@ -13,12 +13,13 @@ public class ServerInfo implements Serializable {
     private int portNumber;
     private int id;
     private rmi_int_dispatcher_appserver_updater updater;
+    private int gameCount;
 
-    public ServerInfo(String ipAddress, int portNumber, int id, rmi_int_dispatcher_appserver_updater updater) {
+    public ServerInfo(String ipAddress, int portNumber, int id) {
         this.ipAddress = ipAddress;
         this.portNumber = portNumber;
         this.id = id;
-        this.updater = updater;
+        //this.updater = updater;
     }
 
     public String getIpAddress() {
@@ -46,10 +47,18 @@ public class ServerInfo implements Serializable {
     }
 
     public rmi_int_dispatcher_appserver_updater getUpdater() {
-        return updater;
+       return updater;
     }
 
     public void setUpdater(rmi_int_dispatcher_appserver_updater updater) {
         this.updater = updater;
+    }
+
+    public int getGameCount() {
+        return gameCount;
+    }
+
+    public void setGameCount(int gameCount) {
+        this.gameCount = gameCount;
     }
 }

@@ -1,6 +1,6 @@
 package dispatcher;
 
-import shared_dispatcher_client_stuff.ServerInfo;
+import shared_dispatcher_appserver_client_stuff.ServerInfo;
 
 /**
  * Created by ruben on 4/12/18.

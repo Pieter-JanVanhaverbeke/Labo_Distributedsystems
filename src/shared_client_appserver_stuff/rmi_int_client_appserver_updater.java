@@ -1,5 +1,7 @@
 package shared_client_appserver_stuff;
 
+import shared_dispatcher_appserver_client_stuff.ServerInfo;
+
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
@@ -14,5 +16,5 @@ public interface rmi_int_client_appserver_updater extends Remote {
 
     void updateLobby(List<GameInfo> activeGames) throws RemoteException;
 
-    void updateGameAddress(String ipAddress, int port);
+    void updateAppServer(ServerInfo serverInfo) throws RemoteException;
 }

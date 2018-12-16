@@ -2,6 +2,7 @@ package client.view_controllers;
 
 import application_server.Utils.Bycrypt.BCrypt;
 import client.ClientUpdaterImpl;
+import exceptions.NoServerAvailableException;
 import exceptions.UserDoesNotExistException;
 import exceptions.WrongPasswordException;
 import javafx.application.Platform;
@@ -10,6 +11,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 
+import java.rmi.ConnectException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -38,12 +40,19 @@ public class LoginController extends Observable {
             String salt = serverImpl.getSalt(username.getText());
             String passwdHash = BCrypt.hashpw(password.getText(),salt);
 
-            token = serverImpl.logIn(username.getText(), passwdHash, new ClientUpdaterImpl());
+            token = serverImpl.logIn(username.getText(), passwdHash, clientUpdater);
             usernameLogedIn = username.getText();
             setScene(LOBBY_SCENE, LOBBY_WIDTH, LOBBY_HEIGHT);
-        } catch (RemoteException e) {
+        } catch (ConnectException e) {
             e.printStackTrace(); //TODO: error overlay tonen
-        } catch (UserDoesNotExistException e) {
+            try {
+                renewAppServer();
+                login();
+            } catch (NoServerAvailableException e1) {
+                e1.printStackTrace();
+            }
+        }
+        catch (UserDoesNotExistException e) {
             Button button = new Button(OK);
             button.setOnAction(actionEvent -> errorWindow.close());
             List<Button> options = new ArrayList<>();
@@ -53,6 +62,10 @@ public class LoginController extends Observable {
         } catch (WrongPasswordException e) {
             e.printStackTrace();
         } catch (NotBoundException e) {
+            e.printStackTrace();
+        } catch (NoServerAvailableException e) {
+            e.printStackTrace();
+        } catch (RemoteException e) {
             e.printStackTrace();
         }
     }

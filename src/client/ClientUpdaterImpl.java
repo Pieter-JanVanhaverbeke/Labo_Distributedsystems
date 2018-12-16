@@ -3,12 +3,14 @@ package client;
 import javafx.application.Platform;
 import shared_client_appserver_stuff.GameInfo;
 import shared_client_appserver_stuff.rmi_int_client_appserver_updater;
+import shared_dispatcher_appserver_client_stuff.ServerInfo;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 
+import static client.ClientMainGUI.connectToAppServer;
 import static client.ClientMainGUI.gameController;
 import static client.ClientMainGUI.lobbyController;
 
@@ -20,6 +22,10 @@ public class ClientUpdaterImpl extends UnicastRemoteObject implements rmi_int_cl
 
     public ClientUpdaterImpl() throws RemoteException{
 
+    }
+
+    public void updateAppServer(ServerInfo serverInfo){
+        connectToAppServer(serverInfo);
     }
 
     @Override
@@ -35,10 +41,5 @@ public class ClientUpdaterImpl extends UnicastRemoteObject implements rmi_int_cl
             if(lobbyController != null)
                 lobbyController.updateLobby(activeGames);
         });
-    }
-
-    @Override
-    public void updateGameAddress(String ipAddress, int port) {
-        //gameSpecifiek ip/port aanpassen
     }
 }
