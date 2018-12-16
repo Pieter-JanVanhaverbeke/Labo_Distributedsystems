@@ -185,7 +185,7 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
     public synchronized String createGame(String creator, String createdate, boolean started, int aantalspelers, int bordgrootte, int layout, String bordspeltypes, String bordspelfaceup, String serverIp, int serverPort, int serverId) {
 
         String id = null;
-        String sql = "INSERT INTO Game(creator,createdate,started,aantalspelers,bordgrootte,layout,bordspeltypes,bordspelfaceup,spelersbeurt, serverip, serverport, serverid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO Game(creator,createdate,started,aantalspelers,bordgrootte,layout,bordspeltypes,bordspelfaceup,spelersbeurt, serverip, serverport, serverid, gameid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
         Connection conn = connect(databankstring);
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -201,9 +201,8 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
             pstmt.setString(10, serverIp);
             pstmt.setInt(11, serverPort);
             pstmt.setInt(12, serverId);
-            pstmt.setInt(9,0);
-            System.out.println(System.currentTimeMillis());
-            pstmt.setString(10, String.valueOf(System.currentTimeMillis()));
+            //System.out.println(System.currentTimeMillis());
+            pstmt.setString(13, String.valueOf(System.currentTimeMillis()));
             pstmt.executeUpdate();
 
         } catch (SQLException e) {
@@ -382,6 +381,36 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
     @Override
     public synchronized void fullUpdate(Game game) {
 
+        String sql = "UPDATE  Game SET creator = ?, createdate = ?, started = ?, aantalspelers = ?, bordspelfaceup = ?, spelersbeurt = ?, serverip = ?, serverport = ?, serverid = ? WHERE gameid=?;";
+        try (Connection conn = connect(databankstring);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(10,game.getGameId());
+            pstmt.setString(1, game.getCreator());
+            pstmt.setString(2, game.getCreateDate());
+            pstmt.setBoolean(3, game.isStarted());
+            pstmt.setInt(4, game.getAantalspelers());
+            pstmt.setString(5, game.getFaceUp());
+            pstmt.setInt(6, game.getSpelerbeurt());
+            pstmt.setString(7, game.getServerInfo().getIpAddress());
+            pstmt.setInt(8, game.getServerInfo().getPortNumber());
+            pstmt.setInt(9, game.getServerInfo().getId());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        sql = "DELETE FROM GameSpelertable WHERE gameid = ?";
+        try (Connection conn = connect(databankstring);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1,game.getGameId());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        for(Speler speler: game.getSpelers()){
+            addSpelerToGame(speler.getSpelerId(), game.getGameId());
+        }
     }
 
 

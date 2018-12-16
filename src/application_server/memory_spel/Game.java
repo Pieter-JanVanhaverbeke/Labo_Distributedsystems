@@ -209,23 +209,9 @@ public class Game implements Serializable {
 
             faceup = sb.toString();
             */
-            StringBuilder faceup = new StringBuilder();
 
-            Kaart[][] bord = bordspel.getBord();
-            String s = "";
-            for(int i = 0; i<bord.length; i++){
-                for (int j = 0; j<bord[0].length; j++){
-                    Kaart kaart = bord[i][j];
-                    if(kaart.isFaceUp())
-                        faceup.append(s + "1");
-                    else{
-                        faceup.append(s + "0");
-                    }
-                    s = " ";
-                }
-            }
 
-            dbImpl.updateFaceUp(gameId, faceup.toString());
+            dbImpl.updateFaceUp(gameId, getFaceUp());
 
             /*//Schrijven punten naar DB
             for (int i = 0; i < aantalspelers; i++) {
@@ -239,6 +225,25 @@ public class Game implements Serializable {
             schrijfNaarDB();
         }
 
+    }
+
+    public String getFaceUp(){
+        StringBuilder faceup = new StringBuilder();
+
+        Kaart[][] bord = bordspel.getBord();
+        String s = "";
+        for(int i = 0; i<bord.length; i++){
+            for (int j = 0; j<bord[0].length; j++){
+                Kaart kaart = bord[i][j];
+                if(kaart.isFaceUp())
+                    faceup.append(s + "1");
+                else{
+                    faceup.append(s + "0");
+                }
+                s = " ";
+            }
+        }
+        return faceup.toString();
     }
 
     private void updateBoardClients() {
