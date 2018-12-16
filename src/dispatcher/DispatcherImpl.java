@@ -42,7 +42,7 @@ public class DispatcherImpl extends UnicastRemoteObject implements rmi_int_dispa
         serverlijst = new HashMap<>();
     }
 
-    public DbInfo getsuccessor(int dbId){
+    public synchronized DbInfo getsuccessor(int dbId){
 
         return null;
     }
@@ -50,14 +50,14 @@ public class DispatcherImpl extends UnicastRemoteObject implements rmi_int_dispa
     /////////////////////////////////// appservers ///////////////////////////////////
 
     //appserver had al port gekregen bij het opstarten van de jar
-    public int registerAppServer(String ipAddress, int port){
+    public synchronized int registerAppServer(String ipAddress, int port){
         serverlijst.put(serverTeller, new ServerInfo(ipAddress, port, serverTeller));
         System.out.println("registered AppServerId: " +  serverTeller);
         return serverTeller++;
     }
 
     //slechts 1 server per keer sluiten => permission vragen aan server
-    public boolean reallocationRequest(int serverId){
+    public synchronized boolean reallocationRequest(int serverId){
         if(reallocating)
             return false;
         else{
@@ -68,14 +68,14 @@ public class DispatcherImpl extends UnicastRemoteObject implements rmi_int_dispa
     }
 
     //verwijder server uit lijst
-    public void deleteAppServer(int serverId){
+    public synchronized void deleteAppServer(int serverId){
         reallocating = false;
         serverlijst.remove(serverId);
         System.out.println("ServerId: " + serverId + " deleted");
         System.out.println("reallocation false");
     }
 
-    public void updateNumberOfGames(int serverId, int usersCount){
+    public synchronized void updateNumberOfGames(int serverId, int usersCount){
         ServerInfo serverInfo = serverlijst.get(serverId);
         if(serverInfo != null)
             serverInfo.setGameCount(usersCount);
@@ -86,12 +86,12 @@ public class DispatcherImpl extends UnicastRemoteObject implements rmi_int_dispa
     }
 
     @Override
-    public void requestNewAppServer() {
+    public synchronized void requestNewAppServer() {
         startAppServer();
     }
 
     //client krijgt clientId en appServer toegewezen
-    public RegisterClientRespons registerClient() throws NoServerAvailableException {
+    public synchronized RegisterClientRespons registerClient() throws NoServerAvailableException {
         //return random appserver
         //prutsen
         return new RegisterClientRespons(getRandomServer(), clientTeller++);
@@ -100,7 +100,7 @@ public class DispatcherImpl extends UnicastRemoteObject implements rmi_int_dispa
     //verwijder server if nog niet eerder gebeurt + probeer server te down shutten
     //return een nieuwe appserver
     @Override
-    public ServerInfo reportBadAppServer(int serverId) throws NoServerAvailableException {
+    public synchronized ServerInfo reportBadAppServer(int serverId) throws NoServerAvailableException {
         ServerInfo serverInfo = serverlijst.get(serverId);
 
         System.out.println("Bad app server: " + serverId);
@@ -117,13 +117,13 @@ public class DispatcherImpl extends UnicastRemoteObject implements rmi_int_dispa
 
     }
 
-    public int registerDBServer(String address, int port){
+    public synchronized int registerDBServer(String address, int port){
         dbInfoList.put(dbTeller, new DbInfo(address, port, dbTeller));
         System.out.println("registered DBserverId: " +  dbTeller);
         return dbTeller++;
     }
 
-    public DbInfo reportBadDbServer(int dbId) throws NoServerAvailableException {
+    public synchronized DbInfo reportBadDbServer(int dbId) throws NoServerAvailableException {
         //verwijder oude uit lijst en return een nieuwe db server
 
         System.out.println("bad db: " + dbId);
@@ -136,14 +136,14 @@ public class DispatcherImpl extends UnicastRemoteObject implements rmi_int_dispa
     }
 
     @Override
-    public List<ServerInfo> getActiveAppServers() {
+    public synchronized List<ServerInfo> getActiveAppServers() {
         return new ArrayList<>(serverlijst.values());
     }
 
     //start nieuwe server in nieuw process
     //stap 2 is dat de nieuwe server zichzelf registreerd bij de dispatcher via de rmi interface
     // daaruit kan de dispatcher het ip adress en het portnumber halen
-    private void startAppServer(){
+    private synchronized void startAppServer(){
         try {
             System.out.println("Nieuwe server starten.");
             //get random db
@@ -160,7 +160,7 @@ public class DispatcherImpl extends UnicastRemoteObject implements rmi_int_dispa
         }
     }
 
-    private boolean pingServer(String ipadres) {
+    private synchronized boolean pingServer(String ipadres) {
         try {
             //machine aanstaan != applicatie runnen
             /*InetAddress address = InetAddress.getByName(ipadres);
@@ -176,13 +176,13 @@ public class DispatcherImpl extends UnicastRemoteObject implements rmi_int_dispa
 
     }
 
-    private ServerInfo getRandomServer() throws NoServerAvailableException {
+    private synchronized ServerInfo getRandomServer() throws NoServerAvailableException {
         if(serverlijst.isEmpty())
             throw new NoServerAvailableException("Geen applicatieServers beschikbaar.");
         return new ArrayList<>(serverlijst.values()).get((int)(Math.random()*serverlijst.size()));
     }
 
-    private DbInfo getRandomDb() throws NoServerAvailableException {
+    private synchronized DbInfo getRandomDb() throws NoServerAvailableException {
         if(dbInfoList.isEmpty())
             throw new NoServerAvailableException("Geen dbServers beschikbaar.");
         return new ArrayList<>(dbInfoList.values()).get((int)(Math.random()*dbInfoList.size()));

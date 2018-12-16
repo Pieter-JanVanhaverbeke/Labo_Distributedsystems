@@ -24,19 +24,19 @@ public class ClientUpdaterImpl extends UnicastRemoteObject implements rmi_int_cl
 
     }
 
-    public void updateAppServer(ServerInfo serverInfo){
+    public synchronized void updateAppServer(ServerInfo serverInfo){
         connectToAppServer(serverInfo);
     }
 
     @Override
-    public void updateBord(GameInfo gameInfo) {
+    public synchronized void updateBord(GameInfo gameInfo) {
         Platform.runLater(() -> {
             if(gameController != null)
                 gameController.updateBord(gameInfo);
         });
     }
 
-    public void updateLobby(List<GameInfo> activeGames){
+    public synchronized void updateLobby(List<GameInfo> activeGames){
         Platform.runLater(() -> {
             if(lobbyController != null)
                 lobbyController.updateLobby(activeGames);

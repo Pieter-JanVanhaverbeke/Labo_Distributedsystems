@@ -48,7 +48,7 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
 
     //////////////////////////////// Control //////////////////////////////////////////
     @Override
-    public String registrerNewClient(String username, String passwdHash, String salt, rmi_int_client_appserver_updater clientUpdater) throws UsernameAlreadyInUseException, RemoteException, NoServerAvailableException {
+    public synchronized String registrerNewClient(String username, String passwdHash, String salt, rmi_int_client_appserver_updater clientUpdater) throws UsernameAlreadyInUseException, RemoteException, NoServerAvailableException {
         try {
             int clientId = dbImpl.createUser(username, passwdHash, salt);
             System.out.println("gebruiker: " + username + " aangemaakt en aangemeld!");
@@ -63,14 +63,14 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
 
     //user toevoegen aan deze server zonder te moeten aanmelden (wel valid token nodig)
     //voor als user herverdeeld worden bij het afsluiten/crashen van een server
-    public void registerClient(String token, rmi_int_client_appserver_updater clientUpdater) throws NoValidTokenException, RemoteException, NoServerAvailableException {
+    public synchronized void registerClient(String token, rmi_int_client_appserver_updater clientUpdater) throws NoValidTokenException, RemoteException, NoServerAvailableException {
         Speler speler = validateToken(token);
         clients.put(speler.getUsername(), clientUpdater);
         //check of game aanwezig is gebeurt in game methodes (pull van db als gameId niet aanwezig is)
     }
 
     @Override
-    public String logIn(String username, String passwordHash, rmi_int_client_appserver_updater clientUpdater) throws WrongPasswordException, UserDoesNotExistException, RemoteException, NoServerAvailableException {
+    public synchronized String logIn(String username, String passwordHash, rmi_int_client_appserver_updater clientUpdater) throws WrongPasswordException, UserDoesNotExistException, RemoteException, NoServerAvailableException {
         try {
             Speler speler = dbImpl.getSpeler(username);
 
@@ -94,13 +94,13 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
         }
     }
     @Override
-    public void logout(String clientUsername) {
+    public synchronized void logout(String clientUsername) {
         clients.remove(clientUsername);
         spelers.remove(clientUsername);
     }
 
     @Override
-    public String getSalt(String username) throws UserDoesNotExistException, RemoteException, NoServerAvailableException {
+    public synchronized String getSalt(String username) throws UserDoesNotExistException, RemoteException, NoServerAvailableException {
         try {
             return dbImpl.getSalt(username);
         } catch (ConnectException e) {
@@ -114,7 +114,7 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
     //////////////////////////////// Lobby //////////////////////////////////////////
     //returned de gameId van de gemaakte game
     @Override
-    public String createGame(int aantalSpelers, int bordGrootte, String token, int style) throws GameNotCreatedException, NoValidTokenException, InternalException, NoServerAvailableException {
+    public synchronized String createGame(int aantalSpelers, int bordGrootte, String token, int style) throws GameNotCreatedException, NoValidTokenException, InternalException, NoServerAvailableException {
         String gameId;
         try {
             String creator = validateToken(token).getUsername();
@@ -155,7 +155,7 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
     //speler sws verbonden met game waarop gespeeld gaat worden, if niet hierop
     // staat => dit wordt gameserver
     @Override
-    public void joinGame(String gameId, String token) throws NoValidTokenException, PlayerNumberExceededException, InternalException, NoServerAvailableException {
+    public synchronized void joinGame(String gameId, String token) throws NoValidTokenException, PlayerNumberExceededException, InternalException, NoServerAvailableException {
         try {
             Speler speler = validateToken(token);
             Game game = activeGames.get(gameId);
@@ -173,7 +173,7 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
     //speler sws verbonden met game waarop gespeeld gaat worden, if niet hierop
     // staat => dit wordt gameserver
     @Override
-    public void unJoinGame(String gameId, String token) throws NoValidTokenException, GameAlreadyStartedException, InternalException, NoServerAvailableException {
+    public synchronized void unJoinGame(String gameId, String token) throws NoValidTokenException, GameAlreadyStartedException, InternalException, NoServerAvailableException {
         try {
             Speler speler = validateToken(token);
             Game game = activeGames.get(gameId);
@@ -190,12 +190,12 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
 
     //returned de gekende games op deze server
     @Override
-    public List<GameInfo> getActiveGamesList(String token) throws NoValidTokenException, RemoteException, NoServerAvailableException {
+    public synchronized List<GameInfo> getActiveGamesList(String token) throws NoValidTokenException, RemoteException, NoServerAvailableException {
         validateToken(token);
         return getActiveGames();
     }
 
-    private List<GameInfo> getActiveGames() {
+    private synchronized List<GameInfo> getActiveGames() {
         List<GameInfo> result = new ArrayList<>();
 
         if (activeGames != null) {
@@ -217,7 +217,7 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
 
 
     @Override
-    public GameInfo getGameForLobby(String token, String gameId) throws NoValidTokenException, RemoteException, NoServerAvailableException {
+    public synchronized GameInfo getGameForLobby(String token, String gameId) throws NoValidTokenException, RemoteException, NoServerAvailableException {
         validateToken(token);
 
         if(activeGames.containsKey(gameId))
@@ -235,7 +235,7 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
     }
 
     @Override
-    public GameInfo getGameForPlaying(String token, String gameId, boolean reallocation) throws RemoteException, NoValidTokenException, InternalException, NoServerAvailableException {
+    public synchronized GameInfo getGameForPlaying(String token, String gameId, boolean reallocation) throws RemoteException, NoValidTokenException, InternalException, NoServerAvailableException {
         validateToken(token);
 
         Game game = null;
@@ -263,7 +263,7 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
     }
 
     @Override
-    public void registerWatcher(String token, String gameId) throws RemoteException, NoServerAvailableException {
+    public synchronized void registerWatcher(String token, String gameId) throws RemoteException, NoServerAvailableException {
         try {
             Speler speler = validateToken(token);
             if(clients.containsKey(speler.getUsername())){
@@ -277,7 +277,7 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
     }
 
     @Override
-    public void unRegisterWatcher(String token, String gameId) throws RemoteException, NoServerAvailableException {
+    public synchronized void unRegisterWatcher(String token, String gameId) throws RemoteException, NoServerAvailableException {
         try {
             Speler speler = validateToken(token);
             List<String> lijst = gameUpdateSubscribers.get(gameId);
@@ -293,7 +293,7 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
     //speler sws verbonden met game waarop gespeeld gaat worden, if niet hierop
     // staat => dit wordt gameserver
     @Override
-    public void flipCard(String token, String gameId, int x, int y) throws NoValidTokenException, NotYourTurnException, NotEnoughSpelersException, InternalException, NoServerAvailableException {
+    public synchronized void flipCard(String token, String gameId, int x, int y) throws NoValidTokenException, NotYourTurnException, NotEnoughSpelersException, InternalException, NoServerAvailableException {
         try {
             Speler speler = validateToken(token);
             //omdat enkel na gevonden paar pas in db komt => activeGames niet updates vanuit db zolang 2e kaart niet gedraaid is
@@ -312,7 +312,7 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
     //speler sws verbonden met game waarop gespeeld gaat worden, if niet hierop
     // staat => dit wordt gameserver
     @Override
-    public void startGame(String gameId, String token) throws NoValidTokenException, RemoteException, NoServerAvailableException {
+    public synchronized void startGame(String gameId, String token) throws NoValidTokenException, RemoteException, NoServerAvailableException {
         try {
             validateToken(token);
             Game game = activeGames.get(gameId);
@@ -330,7 +330,7 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
 
 
     @Override
-    public void deleteGame(String gameId) throws RemoteException, NoServerAvailableException {
+    public synchronized void deleteGame(String gameId) throws RemoteException, NoServerAvailableException {
         try {
             activeGames.remove(gameId);
             dbImpl.deleteGame(gameId);
@@ -346,14 +346,14 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
     //elke server ook
 
     //mss beter lokale cache van alle gameInfos bijhouden en na t s updaten vanuit dbs
-    private void updateLobbyClients() throws RemoteException {
+    private synchronized void updateLobbyClients() throws RemoteException {
         List<GameInfo> l = getActiveGames();
         for(rmi_int_client_appserver_updater updater: clients.values()){
             updater.updateLobby(l);
         }
     }
 
-    private void dbUpdate() throws RemoteException, NoServerAvailableException {
+    private synchronized void dbUpdate() throws RemoteException, NoServerAvailableException {
         try {
             //complete update from db
             knownGames = new HashMap<String, Game>();
@@ -375,7 +375,7 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
     //is game aanwezig op deze server ( => op appserver wordt de game gespeeld) => return game
     //else als vraag komt van client => appserver van game is down ofzo iets => haal
     // uit db en deze server wordt gameserver
-    private Game getAndMakeActiveGameAvailable(String gameId) throws RemoteException {
+    private synchronized Game getAndMakeActiveGameAvailable(String gameId) throws RemoteException {
         if(activeGames.containsKey(gameId))
             return activeGames.get(gameId);
 
@@ -397,7 +397,7 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
 
     //client doet actie op game met gameId, als server deze game niet
     // kent => known games updaten
-    private Game getKnownGame(String gameId) throws RemoteException, NoServerAvailableException {
+    private synchronized Game getKnownGame(String gameId) throws RemoteException, NoServerAvailableException {
         if(knownGames.containsKey(gameId))
             return knownGames.get(gameId);
 
@@ -409,7 +409,7 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
     }
 
     //check of kan heralloceren (als over upperbound zit
-    public void checkUpperGamesCount() throws RemoteException {
+    public synchronized void checkUpperGamesCount() throws RemoteException {
 
         //vraag huidige gameconfig van alle servers
         List<ServerInfo> servers = dispatcherImpl.getActiveAppServers();
@@ -445,7 +445,7 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
     }
 
     //check of kan heralloceren (als onder lowebound zit)
-    public void checkLowerGamesCount() throws RemoteException {
+    public synchronized void checkLowerGamesCount() throws RemoteException {
 
         //vraag huidige gameconfig van alle servers
         List<ServerInfo> servers = dispatcherImpl.getActiveAppServers();
@@ -479,14 +479,13 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
     }
 
     //par:aantal is grens van aatnal games op server, if minder op server => kan nog games bij
-    private void verdeel(int bound, int aantal, List<ServerInfo> servers) throws NoServerAvailableException {
+    private synchronized void verdeel(int bound, int aantal, List<ServerInfo> servers) throws NoServerAvailableException {
         //stamp alles naar db + update clients
         try {
 
             //vraag eerst of mag herstructureren (zodat niet allemaal tegelijk afsluit)
             if(!dispatcherImpl.reallocationRequest(serverId))
                 return;
-
 
             for (ServerInfo serverInfo: servers) {
                 int number = serverInfo.getGameCount();
@@ -519,7 +518,7 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
         }
     }
 
-    private void pushToDb(Game game) throws RemoteException, NoServerAvailableException {
+    private synchronized void pushToDb(Game game) throws RemoteException, NoServerAvailableException {
         //alles dat gecached is updaten naar db
         try {
             dbImpl.fullUpdate(game);
@@ -531,7 +530,7 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
         }
     }
 
-    public static void shutDown(){
+    public synchronized static void shutDown(){
         System.out.println("shut down");
         System.exit(0);
     }

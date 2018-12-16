@@ -25,7 +25,7 @@ import static client.ClientMainGUI.dispatcherImpl;
 public class ServerMain {
     public static rmi_int_dispatcher_appserver_client dispatcherImpl;
 
-    protected static final int PORT_SERVER = 10001;
+    protected static final int PORT_SERVER = 10000;
     public static final String ADDRESS_SERVER = "localhost";
     public static int serverId;
     private static final String ADDRESS_DISPATCHER = "localhost";
