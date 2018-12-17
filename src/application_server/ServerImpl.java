@@ -103,6 +103,14 @@ public class ServerImpl extends UnicastRemoteObject implements rmi_int_client_ap
         //check of game aanwezig is gebeurt in game methodes (pull van db als gameId niet aanwezig is)
     }
 
+    /**
+     * Maak registratie ongedaan bij appserver. Client krijgt geen lobby updates meer van deze server.
+     * Gebruikt wanneer client wisseld van appserver.
+     * @param token
+     * @throws NoServerAvailableException
+     * @throws RemoteException
+     * @throws NoValidTokenException
+     */
     @Override
     public synchronized void unregisterClient(String token) throws NoServerAvailableException, RemoteException, NoValidTokenException {
         Speler speler = validateToken(token);
