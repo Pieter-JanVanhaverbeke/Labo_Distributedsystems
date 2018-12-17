@@ -106,6 +106,11 @@ public interface rmi_int_appserver_db extends Remote {
 
     void fullUpdate(Game game) throws RemoteException;
 
+    void toevoegSuccesor(int successorid) throws RemoteException;
+
+    void setPeer(int id) throws RemoteException;
+
+
     //returned null if geen lobby
   //  Lobby getLobby() throws RemoteException;
 

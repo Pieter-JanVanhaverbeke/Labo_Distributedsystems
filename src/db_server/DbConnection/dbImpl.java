@@ -26,6 +26,8 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
     private HashMap<String, Speler> userTokens;//bevat de huidig uitgeleende tokens ( = aangemelde users)
     private Node node;
     private Peer peer;
+    private int successorid;
+    private int id;
     private rmi_int_appserver_db implDBvolgende;
 
 
@@ -33,6 +35,9 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         userTokens = new HashMap<>();
      //   node = new Node();
         peer = new Peer();
+        successorid = -1;
+        id = -1;
+
 
 
 
@@ -49,6 +54,10 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
     /**
      *Methode die user aanmaakt, meegegeven argumenten zijn username, passwordHash en de salt van het paswoord.
      * Return is een int, primary key van de user dat de huidige tijd bedraagd
+     * @param username gebruikersnaam van de gemaakte user
+     * @param passwordHash de meegegeven password die gehashed en gesalted is.
+     * @param salt de meegegeven salt
+     * @return return van de primary key
      *
      * */
     @Override
@@ -86,6 +95,11 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         }
     }
     /** Methode dat de create user rondbrengt naar alle databankservers
+     *   @param username gebruikersnaam van de gemaakte user
+     *   @param passwordHash de meegegeven password die gehashed en gesalted is.
+     *   @param salt de meegegeven salt
+     *   @param eindid de id van de  eerste van de kring van databases
+     *
      * */
     @Override
     public synchronized void floodCreateUser(String username,String passwordHash, String salt, int eindid){
@@ -107,7 +121,11 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
 
 
 
-    /** Methode om de globale score aan te passen van een speler in een databank */
+    /** Methode om de globale score aan te passen van een speler in een databank
+     * @param spelerid spelerid waar je punten wilt updaten
+     * @param punten waarde van punten dat speler nu heeft
+     *
+     * */
     public synchronized void updateGlobalScore(int spelerid, int punten){
         String sql = "UPDATE Users SET globalScore = ? WHERE spelerid = ?;";
         try (Connection conn = connect(databankstring);
@@ -122,7 +140,11 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
 
 
 
-    /** Methode om de methode updateGlobalScore toe te passen rond elke databank*/
+    /** Methode om de methode updateGlobalScore toe te passen rond elke databank
+     * @param spelerid spelerid waar je punten wilt updaten
+     * @param punten waarde van punten dat speler nu heeft
+     * @param eindid de id van de  eerste van de kring van databases
+     * */
     @Override
     public synchronized void floodUpdateGlobalScore(int spelerid, int punten, int eindid){
 
@@ -137,7 +159,11 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
     }
 
 
-    /** Methode die als ingegeven argument de gebruiker de salt teruggeeft van de gebruiker waarvoor gehashed werd*/
+    /** Methode die als ingegeven argument de gebruiker de salt teruggeeft van de gebruiker waarvoor gehashed werd
+     * @param username gebruikersnaam van de opgevraagde salt
+     * @return salt de salt van de gebruikersnaam
+     *
+     * */
     @Override
     public synchronized String getSalt(String username) throws UserDoesNotExistException {
         String salt = "";
@@ -180,7 +206,19 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         updateTime(username);           //setten van tijd usertoken
     }
 */
-    /** Methode om een game te creëren in een databank, return type is int en geeft de primary key terug*/
+    /** Methode om een game te creëren in een databank, return type is int en geeft de primary key terug
+     * @param creator   de naam van de creator van het spel
+     * @param createdate de datum van het gemaakte spel
+     * @param started boolean dat zegt of een spel al begonnen is
+     * @param aantalspelers int die aantal spelers meegeeft
+     * @param bordgrootte int van 1-3, waarbij de bordgrootte gedefinieerd is 1=4X4 2=6X6 3=8X8
+     * @param layout int die layout type meegeeft
+     * @param bordspeltypes String van een matrix van de type kaartjes, de rijen worden achtereenvolgens achter elkaar geplaatst tot op 1 rij
+     * @param bordspelfaceup String van een matrix van de faceup kaartjes, de rijen worden achtereenvolgens achter elkaar geplaatst tot op 1 rij
+     * @param serverIp String van het ip van de server
+     * @param serverId meegegeven id van de applicatieserver
+     * @param serverPort meegegeven applicatiepoort
+     * */
     @Override
     public synchronized String createGame(String creator, String createdate, boolean started, int aantalspelers, int bordgrootte, int layout, String bordspeltypes, String bordspelfaceup, String serverIp, int serverPort, int serverId) {
 
@@ -222,7 +260,10 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
 
     }
 
-    /** Methode om een spel te verwijderen uit een databank met key gameId */
+    /** Methode om een spel te verwijderen uit een databank met key gameId
+     * @param gameId String van de id van de game dat gedelete moet worden
+     *
+     * */
     @Override
     public synchronized void deleteGame(String gameId) {
         String sql = "DELETE FROM Game WHERE gameid=?";
@@ -245,7 +286,10 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         }
 
     }
-    /** Methode die rondvraagd aan alle databanken om game te deleten */
+    /** Methode die rondvraagd aan alle databanken om game te deleten
+     * @param gameId String van de id van de game dat gedelete moet worden
+     * @param eindid de id van de  eerste van de kring van databases
+     * */
     @Override
     public synchronized void floodDeleteGame(String gameId, int eindid){//TODO NOG TESTEN
         deleteGame(gameId);
@@ -259,7 +303,12 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
     }
 
 
-    /** Methode de faceup logica aan te passen aan een game*/
+    /** Methode de faceup logica aan te passen aan een game
+     * @param gameid String van de primary key van game
+     * @param data String van data faceup kaartjes
+     *
+     *
+     * */
         @Override
     public synchronized void updateFaceUp(String gameid,String data){
         String sql = "UPDATE  Game SET bordspelfaceup = ? WHERE gameid=?";
@@ -273,6 +322,12 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         }
     }
 
+
+    /**
+     *
+     * @param userid int die userid meegeeft die moet geadd worden aan server
+     * @param gameid String die id is van game waarbij user moet joinen
+     */
 
     @Override
     public synchronized void addSpelerToGame(int userid, String gameid){
@@ -294,7 +349,11 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
 
     }
 */
-    /** Methode om een speler met userid te verwijderen van een game met bepaalde gameid*/
+    /** Methode om een speler met userid te verwijderen van een game met bepaalde gameid
+     * @param userid int die userid meegeeft die moet verwijderd worden aan server
+     * @param gameid String die id is van game waarbij user moet verdwijnen
+     *
+     * */
     @Override
     public synchronized void removeSpelerToGame(int userid, String gameid){
         String sql = "DELETE FROM GameSpelertable WHERE userid = ? AND gameid = ?";
@@ -309,7 +368,12 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
     }
 
 
-    /** Methode om een removeSpelerToGame toe te passen rond alle databanken */
+    /**Methode om een removeSpelerToGame toe te passen rond alle databanken
+     * @param userid  int die userid meegeeft die moet verwijderd worden aan server
+     * @param gameid  String die id is van game waarbij user moet verdwijnen
+     * @param eindid  de id van de  eerste van de kring van databases
+     *
+     * */
     @Override
     public synchronized void floodRemoveSpelerToGame(int userid, String gameid, int eindid){
         removeSpelerToGame(userid, gameid);                                     //TODO NIET OVER ALLE DB GAAN
@@ -322,7 +386,11 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         }
     }
 
-    /** Methode om de punten te updaten van een spel in de databank*/
+    /** Methode om de punten te updaten van een spel in de databank
+     * @param gameid String met gameid
+     * @param userid int die userid meegeeft
+     * @param punten int die de nieuwe punten geeft aan user
+     * */
     public synchronized void updatePunten(String gameid, int userid, int punten){
         String sql = "UPDATE GameSpelertable SET spelerpunten = ? WHERE gameid = ? AND userid = ?";
         try (Connection conn = connect(databankstring);
@@ -336,7 +404,12 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         }
     }
 
-    /** Methode die updatePunten doorgeeft naar alle databanken */
+    /** Methode die updatePunten doorgeeft naar alle databanken
+     * @param gameid String met gameid
+     * @param userid int die userid meegeeft
+     * @param punten int die de nieuwe punten geeft aan user
+     * @param eindid de id van de  eerste van de kring van databases
+     * */
     public synchronized void floodUpdatePunten(String gameid, int userid, int punten, int eindid){      //TODO NIET ALLES CHECKEN?
         updatePunten( gameid,  userid, punten);
         if(eindid!=peer.getId()){
@@ -350,7 +423,10 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
 
 
 
-    /** Methode die een spelersbeurt update van game met gameid*/
+    /** Methode die een spelersbeurt update van game met gameid
+     * @param gameid String met gameid
+     * @param spelersbeurt int met de spelerid die aan de beurt is (id van het spel)
+     * */
     public synchronized void updateSpelersbeurt(String gameid, int spelersbeurt){
         String sql = "UPDATE Game SET spelersbeurt = ? WHERE gameid = ?;";
         try (Connection conn = connect(databankstring);
@@ -365,7 +441,11 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         }
     }
 
-    /** Methode die updateSpelersbeurt doorgeeft aan verschillende databanken */
+    /** Methode die updateSpelersbeurt doorgeeft aan verschillende databanken
+     * @param gameid String met gameid
+     * @param spelersbeurt int met de spelerid die aan de beurt is (id van het spel)
+     * @param eindid de id van de  eerste van de kring van databases
+     * */
     public synchronized void floodUpdateSpelersbeurt(String gameid, int spelersbeurt, int eindid){
         updateSpelersbeurt( gameid, spelersbeurt);
         if(eindid!=peer.getId()){
@@ -377,6 +457,10 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         }
     }
 
+    /**
+     *
+     * @param game methode dat een full update doet van een game
+     */
     //zet game in db, game bestaat al maar dit is een full update voordat een server shutdownt
     @Override
     public synchronized void fullUpdate(Game game) {
@@ -416,7 +500,9 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
 
     //////////////////////////////////// HaalDatabase ///////////////////////////////////////////
 
-    /** Methode die alle games opvraagd van een databank, return type is map met primary key gameid en value de games*/
+    /** Methode die alle games opvraagd van een databank, return type is map met primary key gameid en value de games
+     * @return map met de gameids als key en de games als value
+     * */
     @Override //return lege lijst als geen games
     public synchronized Map<String, Game> getAllGames() { //return alle games in db met gameId = key
         Map<String, Game> map = new HashMap<>();
@@ -492,7 +578,12 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         return map;
     }
 
-    /** Methode die GetAlleGames rondvraagt aan alle databanken, return type is map met primary key gameid en value de games */
+    /** Methode die GetAlleGames rondvraagt aan alle databanken, return type is map met primary key gameid en value de games
+     * @param gamesmap lege map die zal aangevuld worden voor recursie
+     * @param eindid einde id database van kring
+     * @param teller teller voor recursie, start default op 0
+     * @return map met de gameids als key en de games als value
+     * */
     @Override
     public synchronized Map<String, Game> floodGetAlleGames(Map<String, Game> gamesmap, int eindid, int teller) {   //TODO OPLOSSEN GAMES TERUGGEVEN
 
@@ -511,7 +602,11 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         return gamesmap;
     }
 
-
+    /**
+     *
+     * @param gameId String van gameId
+     * @return Game van gameID
+     */
     @Override
     public synchronized Game getGame(String gameId) {
         Game game = null;
@@ -589,7 +684,11 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
 
 
 
-    /** Methode die info van omgedraaide kaartjes teruggeeft van game met gameid, return type is String die bestaat uit 0 en 1'en*/
+    /** Methode die info van omgedraaide kaartjes teruggeeft van game met gameid, return type is String die bestaat uit 0 en 1'en
+     * @param gameid String van id die je meegeeft
+     *
+     *
+     * */
     @Override
     public synchronized String getFaceUp(String gameid){
             String faceup = "";
@@ -610,7 +709,12 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
 
         return faceup;
     }
-    /** Methode die getFaceUp rondvraagt aan alle databanken,  return type is String die bestaat uit 0 en 1'en */
+    /** Methode die getFaceUp rondvraagt aan alle databanken,  return type is String die bestaat uit 0 en 1'en
+     * @param gameid String van id die je meegeeft
+     * @param faceup String van kaartjes die faceup zijn
+     * @param eindid int van einde databank van kring
+     * @param teller int voor recursie, defaultwaarde is 0
+     * */
     public synchronized String floodGetFaceUp(String gameid, String faceup, int eindid, int teller){
         if (eindid == this.peer.getId()) {
             teller++;
@@ -627,7 +731,10 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         return faceup;
     }
 
-    /** Methode die alle spelers opvraagd aan databank, return type is lijst van de spelers */
+    /** Methode die alle spelers opvraagd aan databank, return type is lijst van de spelers
+     * @return lijst van alle spelers opgeslagen in databank
+     *
+     * */
     @Override
     public synchronized List<Speler> getAllSpelers() {
 
@@ -659,7 +766,10 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
     }
 
 
-    /** Methode die alle spelersids opvraagd van een bepaalde game met gameid, returntype is lijst van spelerids */
+    /** Methode die alle spelersids opvraagd van een bepaalde game met gameid, returntype is lijst van spelerids
+     * @param gameid String van gameid
+     * @return returned lijst van alle integers van spelerids
+     * */
     @Override
     public synchronized List<Integer> getAlleSpelerid (String gameid) {
         ArrayList<Integer> speleridlijst = new ArrayList<Integer>();
@@ -689,7 +799,10 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
     // }
 
 
-    /** Methode die een speler teruggeeft met String username*/
+    /** Methode die een speler teruggeeft met String username
+     * @param username String van username
+     * @return Speler die gelijk is aan username
+     * */
     @Override
     public synchronized Speler getSpeler(String username) {
         String sql = "SELECT * FROM Users WHERE username = ?;";
@@ -721,7 +834,10 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
     }
 
 
-    /** Methode die speler ophaald met een spelerid*/
+    /** Methode die speler ophaald met een spelerid
+     * @param spelerid int van gevraagde spelerid
+     * @return Speler met waarde spelerid
+     * */
     @Override
     public synchronized Speler getSpeler(int spelerid) {
         String sql = "SELECT * FROM Users WHERE spelerid = ?;";
@@ -808,7 +924,11 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         return userlijst;
     }*/
 
-    /** Methode die spelerpunten in lijst teruggeeft van bepaalde gameid*/
+    /** Methode die spelerpunten in lijst teruggeeft van bepaalde gameid
+     * @param gameid String met waarde gameid
+     * @return Lijst van integers van de punten van alle verschillende spelers van de game
+     *
+     * */
     @Override
     public synchronized ArrayList<Integer> getSpelerPunten(String gameid) {
         //   HashMap<Integer,Integer> scores = new HashMap<>();
@@ -834,7 +954,11 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
 
     //zet started state van game met gameId op par:b
 
-    /** Methode die een game start met een gameid*/
+    /** Methode die een game start met een gameid
+     * @param gameId String met waarde gameid
+     * @param b boolean die zegt of spel gestart is
+     *
+     * */
     @Override
     public synchronized void setStarted(boolean b, String gameId) {
         String sql = "UPDATE Game SET started = ? WHERE gameid = ?";
@@ -848,7 +972,12 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
             e.printStackTrace();
         }
     }
-    /** Methode setStarted doorgeeft rond verschillende databanken*/
+    /** Methode setStarted doorgeeft rond verschillende databanken
+     * @param gameId String met waarde gameid
+     * @param b boolean die zegt of spel gestart is
+     * @param eindid int van laatste databank kring
+     *
+     * */
     public synchronized void floodSetStarted(boolean b, String gameId, int eindid){
         setStarted(b, gameId);
         if(eindid!=peer.getId()){              //TODO goed eine setten
@@ -927,15 +1056,17 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
 
 
 
-    /** Methode die databank server toevoegd aan architectuur (ring)*/
+    /** Methode die databank server toevoegd aan architectuur (ring)
+     *
+     * */
     @Override
     public synchronized void toevoegPeer(Peer predecessor){
         if(predecessor == null){
             this.peer.setId(0);
             this.peer.setPredecessor(peer.getId());
             this.peer.setSuccessor(peer.getId());
-            //   this.node.create();
 
+            //   this.node.create();
         }
         else{
             this.peer.setId(predecessor.getId() + 1);
@@ -945,7 +1076,46 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
         }
 
     }
-    /** Methode die Databankserver connecteert met databank van bepaalde port*/
+
+
+    @Override
+    public synchronized void toevoegSuccesor(int portid){
+
+
+            this.peer.setSuccessor(portid);
+
+            try {
+                implDBvolgende.connectSuccessor(portid);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+  /*  @Override
+    public synchronized void toevoegSuccesor(int portid){
+        if(successorid == -1){
+            this.successorid = id;
+
+        }
+        else{
+            this.successorid = portid;
+
+            try {
+                implDBvolgende.connectSuccessor(portid);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }*/
+
+
+
+    /** Methode die Databankserver connecteert met databank van bepaalde port
+     * @param port poort waarbij databank moet geconecteerd worden
+     *
+     * */
     public synchronized void connectSuccessor(int port) throws RemoteException {
 
         Registry registryServer = LocateRegistry.getRegistry("localhost", port);
@@ -977,6 +1147,11 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
     @Override
     public synchronized void setPredecessor(Peer peer) {
         this.peer.setPredecessor(peer.getId());
+    }
+
+    @Override
+    public synchronized void setPeer(int id){
+        this.peer.setId(id);
     }
 
 
