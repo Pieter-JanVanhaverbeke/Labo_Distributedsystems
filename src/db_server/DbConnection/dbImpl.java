@@ -1128,7 +1128,7 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
 
         Registry registryServer = LocateRegistry.getRegistry("localhost", port);
         try {
-            implDBvolgende = (rmi_int_appserver_db) registryServer.lookup("DbServerImplService");
+            implDBvolgende = (rmi_int_appserver_db) registryServer.lookup("DVolgendeImplService");
             System.out.println("SUCCESOR CONNECTION GEMAAKT");
         } catch (NotBoundException e) {
             e.printStackTrace();

@@ -1,6 +1,7 @@
 package dispatcher;
 
 import exceptions.NoServerAvailableException;
+import shared_db_appserver_stuff.rmi_int_appserver_db;
 import shared_dispatcher_appserver_client_stuff.rmi_int_dispatcher_appserver_client;
 import shared_dispatcher_client_stuff.RegisterClientRespons;
 import shared_dispatcher_appserver_client_stuff.ServerInfo;
@@ -8,7 +9,10 @@ import shared_dispatcher_appserver_client_stuff.ServerInfo;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,6 +45,11 @@ public class DispatcherImpl extends UnicastRemoteObject implements rmi_int_dispa
     private static int dbTeller = 0; // = id van db
     private static int clientTeller = 0; // = id van client
     private boolean reallocating = false;
+
+
+    private rmi_int_appserver_db implDB;
+    private int beginpoort;
+
 
     public DispatcherImpl() throws RemoteException {
         serverlijst = new HashMap<>();
@@ -161,8 +170,54 @@ public class DispatcherImpl extends UnicastRemoteObject implements rmi_int_dispa
     public synchronized int registerDBServer(String address, int port){
         dbInfoList.put(dbTeller, new DbInfo(address, port, dbTeller));
         System.out.println("registered DBserverId: " +  dbTeller);
+
+        try {
+            if(dbTeller==0) {
+                Registry registryDBServer = LocateRegistry.getRegistry(address, port + 1);
+                implDB = (rmi_int_appserver_db) registryDBServer.lookup("DbDispatcherService");
+                beginpoort = port;
+                implDB.setPeer(port+2);
+            }
+            else{
+            //    implDB.toevoegSuccesor(port);                                               //successor geadd
+                implDB.connectSuccessor(port+2);
+                Registry registryDBServer = LocateRegistry.getRegistry(address, port+1);
+                implDB = (rmi_int_appserver_db) registryDBServer.lookup("DbDispatcherService");
+             //   implDB.connectSuccessor(beginpoort);                                                                 //kring sluiten
+                implDB.connectSuccessor(beginpoort+2);
+                implDB.setPeer(port+2);
+            }
+
+
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        } catch (NotBoundException e) {
+            e.printStackTrace();
+        }
+
         return dbTeller++;
     }
+
+
+    /*
+
+            if(dbTeller==0){
+                Registry registryDBServer = LocateRegistry.getRegistry(address, port);
+                implDB = (rmi_int_appserver_db) registryDBServer.lookup("DbServerImplService");
+                beginpoort = port;
+                implDB.toevoegSuccesor(beginpoort);
+                implDB.setPeer(port);
+            }
+
+            else{
+                implDB.toevoegSuccesor(port);                                               //successor geadd
+                Registry registryDBServer = LocateRegistry.getRegistry(address, port);
+                implDB = (rmi_int_appserver_db) registryDBServer.lookup("DbServerImplService");
+                implDB.toevoegSuccesor(beginpoort);                                                                 //kring sluiten
+                implDB.setPeer(port);
+            }
+     */
+
 
     /**
      * Raporteer een slechte databankserver

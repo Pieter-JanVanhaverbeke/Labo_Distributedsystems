@@ -28,15 +28,25 @@ public class DbMain {
         //registreer bij de dispatcher
         Registry registryDispatcher = LocateRegistry.getRegistry(ADDRESS_DISPATCHER, PORT_DISPATCHER);
         dispatcherImpl = (rmi_int_dispatcher_appserver_client) registryDispatcher.lookup("DispatcherImplService");
-        DB_ID = dispatcherImpl.registerDBServer(ADDRESS_DB, PORT_DB);
 
         try {
             Registry registry = LocateRegistry.createRegistry(PORT_DB);
             registry.rebind("DbServerImplService", new dbImpl());
 
+            //TODO 2de poort openzetten
+            registry = LocateRegistry.createRegistry(PORT_DB+1);
+            registry.rebind("DbDispatcherService", new dbImpl());
+
+            //TODO 3de poort openzetten
+            registry = LocateRegistry.createRegistry(PORT_DB+2);
+            registry.rebind("DVolgendeImplService", new dbImpl());
+
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+
+        DB_ID = dispatcherImpl.registerDBServer(ADDRESS_DB, PORT_DB);
         System.out.println("Databasesysteem is ready");
         System.out.println("id: " + DB_ID + ", port: " + PORT_DB);
     }
