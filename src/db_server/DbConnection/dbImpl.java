@@ -22,6 +22,9 @@ import java.util.*;
 import static db_server.DbConnection.dbConnection.connect;
 import static db_server.DbMain.databankstring;
 
+/**
+ * Bevat alle methodes die de applicatieserver op de databankserver kan oproepen.
+ */
 public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db, Serializable {
     private HashMap<String, Speler> userTokens;//bevat de huidig uitgeleende tokens ( = aangemelde users)
     private Node node;
@@ -462,6 +465,11 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
      * @param game methode dat een full update doet van een game
      */
     //zet game in db, game bestaat al maar dit is een full update voordat een server shutdownt
+
+    /**
+     * Doe een volledige update van de game naar de databank.
+     * @param game
+     */
     @Override
     public synchronized void fullUpdate(Game game) {
 

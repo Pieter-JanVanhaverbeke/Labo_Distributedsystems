@@ -27,6 +27,10 @@ import java.util.Map;
  *
  * Mind my words...
  */
+
+/**
+ * Bevat alle methode die de client, de appserver en de databankserver kunnen oproepen op de dispatcher.
+ */
 public class DispatcherImpl extends UnicastRemoteObject implements rmi_int_dispatcher_appserver_client, Serializable {
 
     //db id is key
@@ -42,20 +46,28 @@ public class DispatcherImpl extends UnicastRemoteObject implements rmi_int_dispa
         serverlijst = new HashMap<>();
     }
 
-    public synchronized DbInfo getsuccessor(int dbId){
-
-        return null;
-    }
-
     /////////////////////////////////// appservers ///////////////////////////////////
 
     //appserver had al port gekregen bij het opstarten van de jar
+
+    /**
+     * Registreer appserver bij dispatcher
+     * @param ipAddress
+     * @param port
+     * @return de serverid
+     */
     public synchronized int registerAppServer(String ipAddress, int port){
         serverlijst.put(serverTeller, new ServerInfo(ipAddress, port, serverTeller));
         System.out.println("registered AppServerId: " +  serverTeller);
         return serverTeller++;
     }
 
+    /**
+     * Vraag een dispacher of mag heralloceren. Dit voorkomt dat meerdere appservers tegelijk zouden
+     * herverdelen en eventueel aflsuiten.
+     * @param serverId
+     * @return true als mag heralloceren, false anders.
+     */
     //slechts 1 server per keer sluiten => permission vragen aan server
     public synchronized boolean reallocationRequest(int serverId){
         if(reallocating)
@@ -67,6 +79,10 @@ public class DispatcherImpl extends UnicastRemoteObject implements rmi_int_dispa
         }
     }
 
+    /**
+     * Unregister appserver bij de dispatcher als gaat afsluiten.
+     * @param serverId
+     */
     //verwijder server uit lijst
     public synchronized void deleteAppServer(int serverId){
         reallocating = false;
@@ -75,6 +91,11 @@ public class DispatcherImpl extends UnicastRemoteObject implements rmi_int_dispa
         System.out.println("reallocation false");
     }
 
+    /**
+     * Laat aan de dispatcher weten hoeveel active games er op de appserver staan.
+     * @param serverId
+     * @param usersCount
+     */
     public synchronized void updateNumberOfGames(int serverId, int usersCount){
         ServerInfo serverInfo = serverlijst.get(serverId);
         if(serverInfo != null)
@@ -85,11 +106,19 @@ public class DispatcherImpl extends UnicastRemoteObject implements rmi_int_dispa
         serverlijst.forEach((k, v) -> System.out.println("ServerId: " + k + " -> gameId: " + v.getId() + ", game count: " + v.getGameCount()));
     }
 
+    /**
+     * Vraag aan dispatcher om nieuwe gameserver te starten.
+     */
     @Override
     public synchronized void requestNewAppServer() {
         startAppServer();
     }
 
+    /**
+     * Registreer client bij opstart van client
+     * @return Client krijgt een appserver toegekent
+     * @throws NoServerAvailableException
+     */
     //client krijgt clientId en appServer toegewezen
     public synchronized RegisterClientRespons registerClient() throws NoServerAvailableException {
         //return random appserver
@@ -97,6 +126,12 @@ public class DispatcherImpl extends UnicastRemoteObject implements rmi_int_dispa
         return new RegisterClientRespons(getRandomServer(), clientTeller++);
     }
 
+    /**
+     * Raporteer een slechte appserver.
+     * @param serverId
+     * @return Een nieuwe appserver
+     * @throws NoServerAvailableException
+     */
     //verwijder server if nog niet eerder gebeurt + probeer server te down shutten
     //return een nieuwe appserver
     @Override
@@ -117,12 +152,24 @@ public class DispatcherImpl extends UnicastRemoteObject implements rmi_int_dispa
 
     }
 
+    /**
+     * Registreer een nieuwe databank server bij opstart van de databankserver
+     * @param address
+     * @param port
+     * @return de databank id
+     */
     public synchronized int registerDBServer(String address, int port){
         dbInfoList.put(dbTeller, new DbInfo(address, port, dbTeller));
         System.out.println("registered DBserverId: " +  dbTeller);
         return dbTeller++;
     }
 
+    /**
+     * Raporteer een slechte databankserver
+     * @param dbId
+     * @return een nieuwe databank server
+     * @throws NoServerAvailableException
+     */
     public synchronized DbInfo reportBadDbServer(int dbId) throws NoServerAvailableException {
         //verwijder oude uit lijst en return een nieuwe db server
 
@@ -135,6 +182,10 @@ public class DispatcherImpl extends UnicastRemoteObject implements rmi_int_dispa
         return getRandomDb();
     }
 
+    /**
+     * Return een lijst van alle active applicatieservers
+     * @return
+     */
     @Override
     public synchronized List<ServerInfo> getActiveAppServers() {
         return new ArrayList<>(serverlijst.values());

@@ -17,6 +17,7 @@ import static client.ClientMainGUI.lobbyController;
 
 /**
  * Created by ruben on 17/11/18.
+ * Bvat alle methodes die de appserver op de client kan oproepen.
  */
 public class ClientUpdaterImpl extends UnicastRemoteObject implements rmi_int_client_appserver_updater, Serializable {
 
@@ -24,10 +25,18 @@ public class ClientUpdaterImpl extends UnicastRemoteObject implements rmi_int_cl
 
     }
 
+    /**
+     * Verbind deze client met een andere applicatieserver.
+     * @param serverInfo
+     */
     public synchronized void updateAppServer(ServerInfo serverInfo){
         connectToAppServer(serverInfo);
     }
 
+    /**
+     * Update het spel bord met de nieuwe bordinfo.
+     * @param gameInfo
+     */
     @Override
     public synchronized void updateBord(GameInfo gameInfo) {
         Platform.runLater(() -> {
@@ -36,6 +45,10 @@ public class ClientUpdaterImpl extends UnicastRemoteObject implements rmi_int_cl
         });
     }
 
+    /**
+     * Update de lobby met de nieuwe gameinfo
+     * @param activeGames
+     */
     public synchronized void updateLobby(List<GameInfo> activeGames){
         Platform.runLater(() -> {
             if(lobbyController != null)
