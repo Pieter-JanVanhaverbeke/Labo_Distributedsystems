@@ -19,13 +19,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static client.ClientMainGUI.dispatcherImpl;
-
-
 public class ServerMain {
     public static rmi_int_dispatcher_appserver_client dispatcherImpl;
 
-    protected static final int PORT_SERVER = 10000;
+    protected static final int PORT_SERVER = 10001;
     public static final String ADDRESS_SERVER = "localhost";
     public static int serverId;
     private static final String ADDRESS_DISPATCHER = "localhost";
@@ -67,6 +64,8 @@ public class ServerMain {
         knownGames = new HashMap<>();
         activeGames = new HashMap<>();
         spelers = new HashMap<>();
+
+
         try {
             Registry registry = LocateRegistry.createRegistry(PORT_SERVER);
             registry.rebind("ServerImplService", new ServerImpl());
@@ -129,6 +128,5 @@ public class ServerMain {
     public static synchronized void setIdDb(int id) {
         ID_DB = id;
     }
-
 
 }

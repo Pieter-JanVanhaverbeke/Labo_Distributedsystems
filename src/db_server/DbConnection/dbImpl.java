@@ -225,7 +225,7 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
     @Override
     public synchronized String createGame(String creator, String createdate, boolean started, int aantalspelers, int bordgrootte, int layout, String bordspeltypes, String bordspelfaceup, String serverIp, int serverPort, int serverId) {
 
-        String id = null;
+        String id = String.valueOf(System.currentTimeMillis());
         String sql = "INSERT INTO Game(creator,createdate,started,aantalspelers,bordgrootte,layout,bordspeltypes,bordspelfaceup,spelersbeurt, serverip, serverport, serverid, gameid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
         Connection conn = connect(databankstring);
@@ -243,21 +243,21 @@ public class dbImpl extends UnicastRemoteObject implements rmi_int_appserver_db,
             pstmt.setInt(11, serverPort);
             pstmt.setInt(12, serverId);
             //System.out.println(System.currentTimeMillis());
-            pstmt.setString(13, String.valueOf(System.currentTimeMillis()));
+            pstmt.setString(13, id);
             pstmt.executeUpdate();
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        try (PreparedStatement psmt = conn.prepareStatement("SELECT last_insert_rowid() AS NewID;")) {
+        /*try (PreparedStatement psmt = conn.prepareStatement("SELECT last_insert_rowid() AS NewID;")) {
             ResultSet resultSet2 = psmt.executeQuery();
             while (resultSet2.next()) {
                 id = resultSet2.getString("NewID");
             }
         } catch (SQLException e1) {
             e1.printStackTrace();
-        }
+        }*/
 
         return id;
 

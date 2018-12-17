@@ -17,7 +17,7 @@ public class DbMain {
     public static rmi_int_dispatcher_appserver_client dispatcherImpl;
 
     private static final String ADDRESS_DB = "localhost";
-    private static final int PORT_DB = 20001;
+    private static final int PORT_DB = 20000;
     private static int DB_ID;
     private static final String ADDRESS_DISPATCHER = "localhost";
     private static final int PORT_DISPATCHER = 12345;

@@ -1,5 +1,7 @@
 package client;
 
+import exceptions.NoServerAvailableException;
+import exceptions.NoValidTokenException;
 import javafx.application.Platform;
 import shared_client_appserver_stuff.GameInfo;
 import shared_client_appserver_stuff.rmi_int_client_appserver_updater;
@@ -10,9 +12,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 
-import static client.ClientMainGUI.connectToAppServer;
-import static client.ClientMainGUI.gameController;
-import static client.ClientMainGUI.lobbyController;
+import static client.ClientMainGUI.*;
 
 
 /**
@@ -30,6 +30,15 @@ public class ClientUpdaterImpl extends UnicastRemoteObject implements rmi_int_cl
      * @param serverInfo
      */
     public synchronized void updateAppServer(ServerInfo serverInfo){
+        try {
+            serverImpl.unregisterClient(token);
+        } catch (NoServerAvailableException e) {
+            e.printStackTrace();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        } catch (NoValidTokenException e) {
+            e.printStackTrace();
+        }
         connectToAppServer(serverInfo);
     }
 

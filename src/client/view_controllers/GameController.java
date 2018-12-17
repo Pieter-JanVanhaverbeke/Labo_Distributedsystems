@@ -102,6 +102,7 @@ public class GameController implements EventHandler<Event> {
             ServerInfo serverInfo = gameInfo.getServerInfo();
             if(serverInfo.getId() != ID_SERVER) {
                 int id = serverInfo.getId();
+                serverImpl.unregisterClient(token);
                 serverInfo = connectToAppServer(serverInfo);
                 if (serverInfo.getId() != id) {
                     gameInfo = serverImpl.getGameForPlaying(token, gameId, true);
@@ -202,8 +203,15 @@ public class GameController implements EventHandler<Event> {
             e.printStackTrace();
             try {
                 renewAppServer();
+                serverImpl.getGameForPlaying(token, gameId, true);
                 handle(event);
             } catch (NoServerAvailableException e1) {
+                e1.printStackTrace();
+            } catch (RemoteException e1) {
+                e1.printStackTrace();
+            } catch (InternalException e1) {
+                e1.printStackTrace();
+            } catch (NoValidTokenException e1) {
                 e1.printStackTrace();
             }
         } catch (NoValidTokenException e) {
@@ -224,7 +232,7 @@ public class GameController implements EventHandler<Event> {
     }
 
     public void updateBord(GameInfo gameInfo){
-        if(gameInfo.getGameId() != gameId)
+        if(!gameInfo.getGameId().equals(gameId))
             return;
 
         setBorder(gameInfo.getSpelersBeurt(), true);

@@ -55,6 +55,7 @@ public class Game implements Serializable {
         this.theme = style;
         int size = 2 * bordGrootte + 2;
         bordspel = new Bordspel(size, size);
+        bordspel.setType(style);
         spelerbeurt = 0;
         puntenlijst = new HashMap<>();
     }

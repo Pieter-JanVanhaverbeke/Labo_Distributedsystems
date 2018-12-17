@@ -14,6 +14,8 @@ public interface rmi_int_client_appserver extends Remote {
 
     void registerClient(String token, rmi_int_client_appserver_updater clientUpdater) throws NoValidTokenException, RemoteException, NoServerAvailableException;
 
+    void unregisterClient(String token) throws NoServerAvailableException, RemoteException, NoValidTokenException;
+
     String logIn(String username, String passwordHash, rmi_int_client_appserver_updater clientUpdater) throws WrongPasswordException, UserDoesNotExistException, RemoteException, NotBoundException, NoServerAvailableException;
 
     void logout(String clientId) throws RemoteException;
